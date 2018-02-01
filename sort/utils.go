@@ -31,10 +31,11 @@ func _basicTestSort(t *testing.T, testFunc func(arr []int)) {
 }
 
 func _TestSort(t *testing.T, testFunc func(arr []int)) {
-	arr := make([]int,100,100)
-	exp_arr := make([]int,100,100)
+	arrSize := rand.Intn(100)
+	arr := make([]int,arrSize,arrSize)
+	exp_arr := make([]int,arrSize,arrSize)
 	for i := range arr {
-		arr[i] = rand.Intn(100)+1
+		arr[i] = rand.Intn(100)
 	}
 	copy(exp_arr,arr)
 	insertionSort(exp_arr)
