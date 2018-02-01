@@ -49,9 +49,10 @@ func _TestSort(t *testing.T, testFunc func(arr []int)) {
 func _benchmarkSort(b *testing.B, testFunc func(arr []int)) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		arr := []int{}
-		for j := 0; j < 100; j++ {
-			arr = append(arr, rand.Intn(b.N)+1)
+		arrSize := rand.Intn(10000) + 5000
+		arr := make([]int,arrSize,arrSize)
+		for j := range arr {
+			arr[j] = rand.Intn(b.N)
 		}
 		b.StartTimer()
 		testFunc(arr)
