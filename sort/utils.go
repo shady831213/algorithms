@@ -46,7 +46,7 @@ func _TestSort(t *testing.T, testFunc func(arr []int)) {
 	}
 }
 
-func _benchmarkSort(b *testing.B, testFunc func(arr []int)) {
+func _BenchmarkSort(b *testing.B, testFunc func(arr []int)) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		arrSize := rand.Intn(10000) + 5000

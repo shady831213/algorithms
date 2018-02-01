@@ -7,7 +7,7 @@ func Test_mergeSort(t *testing.T)  {
 }
 
 func Benchmark_mergeSort(b *testing.B) {
-	_benchmarkSort(b, mergeSort)
+	_BenchmarkSort(b, mergeSort)
 }
 
 func Test_mergeSortParallel(t *testing.T)  {
@@ -15,5 +15,5 @@ func Test_mergeSortParallel(t *testing.T)  {
 }
 
 func Benchmark_mergeSortParallel(b *testing.B) {
-	_benchmarkSort(b, mergeSortParallel)
+	_BenchmarkSort(b, mergeSortParallel)
 }
