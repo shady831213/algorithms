@@ -7,8 +7,8 @@ import (
 	"math/rand"
 )
 
-type Ints []int
-func (i Ints) Iter() (func()(int,bool)) {
+type ints []int
+func (i ints) Iter() (func()(int,bool)) {
 	index := 0
 	return func() (val int, ok bool) {
 		if index >= len(i) {
@@ -20,7 +20,7 @@ func (i Ints) Iter() (func()(int,bool)) {
 	}
 }
 
-func _basicTestSort(t *testing.T, testFunc func(arr []int)) {
+func basicTestSort(t *testing.T, testFunc func(arr []int)) {
 	arr := []int{5, 4, 2, 1, 2}
 	exp_arr:= []int{1, 2, 2, 4, 5}
 	testFunc(arr)
@@ -30,7 +30,7 @@ func _basicTestSort(t *testing.T, testFunc func(arr []int)) {
 	}
 }
 
-func _TestSort(t *testing.T, testFunc func(arr []int)) {
+func testSort(t *testing.T, testFunc func(arr []int)) {
 	arrSize := rand.Intn(100)
 	arr := make([]int,arrSize,arrSize)
 	exp_arr := make([]int,arrSize,arrSize)
@@ -46,7 +46,7 @@ func _TestSort(t *testing.T, testFunc func(arr []int)) {
 	}
 }
 
-func _BenchmarkSort(b *testing.B, testFunc func(arr []int)) {
+func benchmarkSort(b *testing.B, testFunc func(arr []int)) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		arrSize := 10000

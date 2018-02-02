@@ -5,17 +5,17 @@ import (
 )
 
 func Test_insertionSort_basic(t *testing.T) {
-	_basicTestSort(t,insertionSort)
+	basicTestSort(t,insertionSort)
 }
 
 func Benchmark_insertionSort(b *testing.B) {
-	_BenchmarkSort(b, insertionSort)
+	benchmarkSort(b, insertionSort)
 }
 
 func Test_bubbleSort_basic(t *testing.T) {
-	_TestSort(t,bubbleSort)
+	testSort(t,bubbleSort)
 }
 
 func Benchmark_bubbleSort(b *testing.B) {
-	_BenchmarkSort(b, bubbleSort)
+	benchmarkSort(b, bubbleSort)
 }

@@ -18,7 +18,7 @@ func merge(arr []int)  {
 	leftArr, rightArr := make([]int,i,i), make([]int, len(arr) - i , len(arr) - i )
 	copy(leftArr,arr[:i])
 	copy(rightArr,arr[i:])
-	leftIter, rightIter := Ints(leftArr).Iter(),Ints(rightArr).Iter()
+	leftIter, rightIter := ints(leftArr).Iter(), ints(rightArr).Iter()
 	leftValue,leftHasNext:= leftIter()
 	rightValue,rightHasNext := rightIter()
 	//merge
