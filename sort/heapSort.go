@@ -82,8 +82,11 @@ func (h *heapIntArray) pop()(i interface{}) {
 }
 
 func (h *heapIntArray) append(i interface{}) {
-	h.heap = append([]int{i.(int)},[]int(h.heap)...)
-	h.maxHeaplify(0)
+	h.heap = append(h.heap, i.(int))
+	for idx := len(h.heap)-1; h.heap[idx] > h.heap[h.parent(idx)] && idx > 0; {
+		h.heap[idx], h.heap[h.parent(idx)] = h.heap[h.parent(idx)], h.heap[idx]
+		idx = h.parent(idx)
+	}
 }
 
 func heapSort(arr []int) {
