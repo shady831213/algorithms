@@ -10,153 +10,78 @@ n*(d-1)/d^(h+1), max h is logd((d-1)n), T(n) = (n*(d-1)/d) *sum(1/d^1+2/d^2+...l
 
 package sort
 
-import (
-	"reflect"
-	"math"
-	"errors"
-)
-
-/*
-use physical heap
-*/
-type heapNode struct {
-	p     *heapNode
-	l     *heapNode
-	r     *heapNode
-	value reflect.Value
+type heapIntArray struct {
+	heap []int
 }
 
-func (n *heapNode) getValue() (interface{}) {
-	return n.value.Interface()
+type heapIf interface {
+	parent(int)(int)
+	left(int)(int)
+	right(int)(int)
+	maxHeaplify(int)
+	buildHeap()
+	sort()
+	pop()(interface{})
+	append(interface{})
 }
 
-func (n *heapNode) setValue(i interface{}) {
-	n.value = reflect.ValueOf(i)
-}
-
-func (h *heapNode) swapValue(node *heapNode) {
-	tempValue := node.getValue()
-	node.setValue(h.getValue())
-	h.setValue(tempValue)
-}
-
-func (n *heapNode) getIntValue() (int) {
-	return n.getValue().(int)
-}
-
-type heap struct {
-	nodes []*heapNode
-}
-
-func (h *heap) minHeaplify(node *heapNode) {
-	smallestNode := node
-	leftNode, rightNode := node.l, node.r
-	if leftNode != nil && leftNode.getIntValue() < smallestNode.getIntValue() {
-		smallestNode = leftNode
-	}
-	if rightNode != nil && rightNode.getIntValue() < smallestNode.getIntValue() {
-		smallestNode = rightNode
-	}
-	if smallestNode != node {
-		node.swapValue(smallestNode)
-		h.minHeaplify(smallestNode)
-	}
-}
-
-func (h *heap) getHight() (int) {
-	return int(math.Log2(float64(h.getSize())))
-}
-
-func (h *heap) getSize() (int) {
-	return len(h.nodes)
-}
-
-func (h *heap) pop() (v interface{}) {
-	if h.getSize() == 0 {
-		panic(errors.New("underflow!"))
-	}
-	v = h.nodes[0].getValue()
-
-	h.nodes[0].swapValue(h.nodes[h.getSize()-1])
-	if h.nodes[h.getSize()-1].p != nil && h.nodes[h.getSize()-1].p.l == h.nodes[h.getSize()-1] {
-		h.nodes[h.getSize()-1].p.l = nil
-	}
-	if h.nodes[h.getSize()-1].p != nil && h.nodes[h.getSize()-1].p.r == h.nodes[h.getSize()-1] {
-		h.nodes[h.getSize()-1].p.r = nil
-	}
-	h.nodes = h.nodes[:h.getSize()-1]
-	if h.getSize() != 0 {
-		h.minHeaplify(h.nodes[0])
-	}
-	return
-}
-
-func (h *heap) buildHeap(arr []int) {
-	h.nodes = make([]*heapNode, len(arr), len(arr))
-	for i := range arr {
-		h.nodes[i] = new(heapNode)
-		h.nodes[i].setValue(arr[i])
-	}
-	for i := h.getSize()/2 - 1; i >= 0; i-- {
-		h.nodes[i].l = h.nodes[2*i+1]
-		h.nodes[i].l.p = h.nodes[i]
-		if h.getSize()%2 == 1 {
-			h.nodes[i].r = h.nodes[2*i+2]
-			h.nodes[i].r.p = h.nodes[i]
-		}
-		h.minHeaplify(h.nodes[i])
-	}
-}
-
-func heapSort(arr []int) {
-	heap := new(heap)
-	heap.buildHeap(arr)
-	for i := range arr {
-		arr[i] = heap.pop().(int)
-	}
-}
-
-/*
-use virtual heap
-*/
-
-type heapIntArray []int
-func (h heapIntArray) parent(i int)(int) {
+func (h *heapIntArray) parent(i int)(int) {
 	return i>>1
 }
-func (h heapIntArray) left(i int)(int) {
+func (h *heapIntArray) left(i int)(int) {
 	return (i<<1)+1
 }
-func (h heapIntArray) right(i int)(int) {
+func (h *heapIntArray) right(i int)(int) {
 	return (i<<1)+2
 }
 
-func (h heapIntArray) maxHeaplify(i int) {
-	largest, largest_idx := h[i], i
-	if h.left(i) < len(h) && h[h.left(i)] > largest {
-		largest,largest_idx = h[h.left(i)],h.left(i)
+func (h *heapIntArray) maxHeaplify(i int) {
+	largest, largest_idx := h.heap[i], i
+	if h.left(i) < len(h.heap) && h.heap[h.left(i)] > largest {
+		largest,largest_idx = h.heap[h.left(i)],h.left(i)
 	}
-	if h.right(i) < len(h) && h[h.right(i)] > largest {
-		largest,largest_idx = h[h.right(i)],h.right(i)
+	if h.right(i) < len(h.heap) && h.heap[h.right(i)] > largest {
+		largest,largest_idx = h.heap[h.right(i)],h.right(i)
 	}
 	if i != largest_idx {
-		h[largest_idx], h[i] = h[i], h[largest_idx]
+		h.heap[largest_idx], h.heap[i] = h.heap[i], h.heap[largest_idx]
 		h.maxHeaplify(largest_idx)
 	}
 }
 
-func (h heapIntArray) buildHeap() {
-	for i := (len(h)>>1) - 1; i >= 0; i-- {
+func (h *heapIntArray) buildHeap() {
+
+	for i := (len(h.heap)>>1) - 1; i >= 0; i-- {
 		h.maxHeaplify(i)
 	}
 }
 
-func heapSort2(arr []int) {
-	heap := heapIntArray(arr)
-	heap.buildHeap()
-	for i := len(heap) - 1;i>0;i-- {
-		heap[0], heap[i] = heap[i], heap[0]
-		heap = heap[:i]
-		heap.maxHeaplify(0)
+func (h *heapIntArray) sort() {
+	temp_slice := h.heap
+	for i := len(h.heap) - 1;i>0;i-- {
+		h.heap[0], h.heap[i] = h.heap[i], h.heap[0]
+		h.heap = h.heap[:i]
+		h.maxHeaplify(0)
 	}
+	h.heap = temp_slice
+}
+
+func (h *heapIntArray) pop()(i interface{}) {
+	i = h.heap[0]
+	h.heap[0], h.heap[len(h.heap) - 1] = h.heap[len(h.heap) - 1], h.heap[0]
+	h.heap = h.heap[:len(h.heap) - 1]
+	h.maxHeaplify(0)
+	return
+}
+
+func (h *heapIntArray) append(i interface{}) {
+	h.heap = append([]int{i.(int)},[]int(h.heap)...)
+	h.maxHeaplify(0)
+}
+
+func heapSort(arr []int) {
+	var heap heapIf
+	heap = &heapIntArray{heap:arr}
+	heap.buildHeap()
+	heap.sort()
 }
