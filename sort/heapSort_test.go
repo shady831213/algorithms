@@ -13,6 +13,15 @@ func Benchmark_heapSort(b *testing.B)  {
 	benchmarkSort(b,heapSort)
 }
 
+
+func Test_heapSort2(t *testing.T)  {
+	testSort(t,heapSort2)
+}
+
+func Benchmark_heapSort2(b *testing.B)  {
+	benchmarkSort(b,heapSort2)
+}
+
 func Test_heapPopAndAppend(t *testing.T)  {
 	arr:= heapIntArray([]int{3,2,10,1,7})
 	h := heap.Heap{&arr}

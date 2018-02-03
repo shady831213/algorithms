@@ -17,19 +17,21 @@ so they both can modify shared data.But they have different lenth,index and so o
 
 package sort
 
-import ("algorithms/sort/heap")
+import (
+	"algorithms/sort/heap"
+)
 
 type heapIntArray []int
 
-func (h *heapIntArray)Swap(i int, j int)() {
+func (h *heapIntArray) Swap(i int, j int) () {
 	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
 }
 
-func (h *heapIntArray)Key(i int)(int) {
+func (h *heapIntArray) Key(i int) (int) {
 	return (*h)[i]
 }
 
-func (h *heapIntArray)Len()(int) {
+func (h *heapIntArray) Len() (int) {
 	return len(*h)
 }
 
@@ -37,12 +39,12 @@ func (h *heapIntArray) Less(i, j int) bool {
 	return (*h)[i] < (*h)[j]
 }
 
-func (h *heapIntArray)Pop()(i interface{}) {
+func (h *heapIntArray) Pop() (i interface{}) {
 	(*h), i = (*h)[:len(*h)-1], (*h)[len(*h)-1]
 	return
 }
 
-func (h *heapIntArray)Append(i interface{}) {
+func (h *heapIntArray) Append(i interface{}) {
 	(*h) = append((*h), i.(int))
 }
 
@@ -50,7 +52,50 @@ func heapSort(arr []int) {
 	a := heapIntArray(arr)
 	h := heap.Heap{&a}
 	h.BuildHeap()
-	for i := a.Len() - 1;i>0;i-- {
+	for i := a.Len() - 1; i > 0; i-- {
 		h.Pop()
+	}
+}
+
+/*not generic heap*/
+type intArrayForHeapSort []int
+
+func (h *intArrayForHeapSort) parent(i int) (int) {
+	return i >> 1
+}
+func (h *intArrayForHeapSort) left(i int) (int) {
+	return (i << 1) + 1
+}
+func (h *intArrayForHeapSort) right(i int) (int) {
+	return (i << 1) + 2
+}
+
+func (h *intArrayForHeapSort) maxHeaplify(i int) {
+	largest, largest_idx := (*h)[i], i
+	if (*h).left(i) < len((*h)) && (*h)[(*h).left(i)] > largest {
+		largest, largest_idx = (*h)[(*h).left(i)], (*h).left(i)
+	}
+	if h.right(i) < len((*h)) && (*h)[h.right(i)] > largest {
+		largest, largest_idx = (*h)[h.right(i)], h.right(i)
+	}
+	if i != largest_idx {
+		(*h)[largest_idx], (*h)[i] = (*h)[i], (*h)[largest_idx]
+		h.maxHeaplify(largest_idx)
+	}
+}
+
+func (h *intArrayForHeapSort) buildHeap() {
+	for i := (len((*h)) >> 1) - 1; i >= 0; i-- {
+		h.maxHeaplify(i)
+	}
+}
+
+func heapSort2(arr []int) {
+	h := intArrayForHeapSort(arr)
+	h.buildHeap()
+	for i := len(h) - 1; i > 0; i-- {
+		h[0], h[i] = h[i], h[0]
+		h = h[:i]
+		h.maxHeaplify(0)
 	}
 }
