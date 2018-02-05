@@ -9,6 +9,7 @@ type ArrayIf interface {
 	Next(interface{}) (interface{})
 	Valid(interface{}) (bool)
 	Key(interface{}) (int)
+	Value(interface{}) (interface{})
 	Pop() (interface{})
 	Append(interface{})
 	Parent(interface{}) (interface{})
@@ -59,4 +60,15 @@ func (h *Heap) Append(i interface{}) {
 		h.Arr.Swap(idx, h.Arr.Parent(idx))
 		idx = h.Arr.Parent(idx)
 	}
+}
+
+//O(nlogn)
+func (h *Heap) Union(h1 *Heap)(*Heap) {
+	if h.Len() < h1.Len() {
+		return h1.Union(h)
+	}
+	for i := h1.Arr.Head();  h1.Arr.Valid(i); i = h1.Arr.Next(i) {//O(n)
+		h.Append(h1.Arr.Value(i))//O(logn)
+	}
+	return h
 }

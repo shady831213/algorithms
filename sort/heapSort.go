@@ -58,6 +58,10 @@ func (h *heapIntArray) Key(i interface{}) (int) {
 	return (*h)[i.(int)]
 }
 
+func (h *heapIntArray) Value(i interface{}) (interface{}) {
+	return (*h)[i.(int)]
+}
+
 func (h *heapIntArray) Len() (int) {
 	return len(*h)
 }

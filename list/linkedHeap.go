@@ -65,6 +65,11 @@ func (h *LinkedHeap) Key(i interface{}) (int) {
 	return iE.Value.(int)
 }
 
+func (h *LinkedHeap) Value(i interface{}) (interface{}) {
+	iE := i.(*Element)
+	return iE.Value
+}
+
 func (h *LinkedHeap) Len() (int) {
 	return h.len
 }
@@ -85,18 +90,19 @@ func (h *LinkedHeap) Pop() (i interface{}) {
 }
 
 func (h *LinkedHeap) Append(i interface{}) {
-	newE := Element{Value:i}
+	newE := new(Element)
+	newE.Value = i
 	newE.next = &h.root
 	last := h.Last().(*Element)
 	lastParent := last.parent
-	last.next = &newE
+	last.next = newE
 	newE.prev = last
-	h.root.prev = &newE
+	h.root.prev = newE
 	if lastParent.right == nil{
-		lastParent.right = &newE
+		lastParent.right = newE
 		newE.parent = lastParent
 	} else {
-		lastParent.next.left = &newE
+		lastParent.next.left = newE
 		newE.parent = lastParent.next
 	}
 	h.len++
