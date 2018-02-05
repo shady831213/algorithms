@@ -15,6 +15,7 @@ type ArrayIf interface {
 	Parent(interface{}) (interface{})
 	Left(interface{}) (interface{})
 	Right(interface{}) (interface{})
+	Merge(ArrayIf)
 }
 
 type Heap struct {
@@ -62,13 +63,10 @@ func (h *Heap) Append(i interface{}) {
 	}
 }
 
-//O(nlogn)
-func (h *Heap) Union(h1 *Heap)(*Heap) {
-	if h.Len() < h1.Len() {
-		return h1.Union(h)
-	}
-	for i := h1.Arr.Head();  h1.Arr.Valid(i); i = h1.Arr.Next(i) {//O(n)
-		h.Append(h1.Arr.Value(i))//O(logn)
-	}
-	return h
+//merge:O(n)
+//rebuild:O(n)
+//T(n)=O(n)
+func (h *Heap) Union(h1 *Heap) {
+	h.Arr.Merge(h1.Arr)
+	h.BuildHeap()
 }

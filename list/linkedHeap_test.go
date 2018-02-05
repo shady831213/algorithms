@@ -51,9 +51,9 @@ func Test_likedHeapUnion(t *testing.T) {
 			h2.Append(v)
 		}
 	}
-	hUnion := h.Union(&h2)
-	for hUnion.Len() > 0 {
-		sortedArr = append(sortedArr, hUnion.Pop().(int))
+	h.Union(&h2)
+	for h.Len() > 0 {
+		sortedArr = append(sortedArr, h.Pop().(int))
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(arr)))
 	if !reflect.DeepEqual(sortedArr, arr) {

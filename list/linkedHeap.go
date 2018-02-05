@@ -1,5 +1,9 @@
 package list
 
+import (
+	"algorithms/heap"
+)
+
 type Element struct {
 	parent, left, right, next, prev *Element
 	Value interface{}
@@ -106,4 +110,27 @@ func (h *LinkedHeap) Append(i interface{}) {
 		newE.parent = lastParent.next
 	}
 	h.len++
+}
+//O(n)
+func (h *LinkedHeap) Merge(i heap.ArrayIf) {
+	iHead := i.Head().(*Element)
+	h.Last().(*Element).next = iHead
+	iHead.prev = h.Last().(*Element)
+	h.root.prev = i.Last().(*Element)
+	i.Last().(*Element).next = &h.root
+	for iNode := iHead; h.Valid(iNode); iNode = h.Next(iNode).(*Element) {
+		iNode.parent = nil
+		iNode.left = nil
+		iNode.right = nil
+		prev := iNode.prev
+		prevParent := prev.parent
+		if prevParent.right == nil{
+			prevParent.right = iNode
+			iNode.parent = prevParent
+		} else {
+			prevParent.next.left = iNode
+			iNode.parent = prevParent.next
+		}
+	}
+	h.len += i.Len()
 }

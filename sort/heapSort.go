@@ -75,6 +75,11 @@ func (h *heapIntArray) Append(i interface{}) {
 	(*h) = append((*h), i.(int))
 }
 
+func (h *heapIntArray) Merge(i heap.ArrayIf) {
+	_i := i.(*heapIntArray)
+	(*h) = append((*h), (*_i)...)
+}
+
 func heapSort(arr []int) {
 	a := heapIntArray(arr)
 	h := heap.Heap{&a}
@@ -83,6 +88,7 @@ func heapSort(arr []int) {
 		h.Pop()
 	}
 }
+
 
 /*not generic heap*/
 type intArrayForHeapSort []int
