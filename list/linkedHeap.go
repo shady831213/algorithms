@@ -113,12 +113,21 @@ func (h *LinkedHeap) Append(i interface{}) {
 }
 //O(n)
 func (h *LinkedHeap) Merge(i heap.ArrayIf) {
-	iHead := i.Head().(*Element)
-	h.Last().(*Element).next = iHead
-	iHead.prev = h.Last().(*Element)
-	h.root.prev = i.Last().(*Element)
-	i.Last().(*Element).next = &h.root
-	for iNode := iHead; h.Valid(iNode); iNode = h.Next(iNode).(*Element) {
+	var midNode *Element
+	if h.Len() > i.Len() {
+		midNode = i.Head().(*Element)
+		h.Last().(*Element).next = midNode
+		midNode.prev = h.Last().(*Element)
+		h.root.prev = i.Last().(*Element)
+		i.Last().(*Element).next = &h.root
+	} else {
+		midNode := h.Head().(*Element)
+		i.Last().(*Element).next = midNode
+		midNode.prev = i.Last().(*Element)
+		h.root.next = i.Head().(*Element)
+		i.Head().(*Element).prev = &h.root
+	}
+	for iNode := midNode; h.Valid(iNode); iNode = h.Next(iNode).(*Element) {
 		iNode.parent = nil
 		iNode.left = nil
 		iNode.right = nil
