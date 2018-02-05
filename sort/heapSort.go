@@ -18,25 +18,48 @@ so they both can modify shared data.But they have different lenth,index and so o
 package sort
 
 import (
-	"algorithms/sort/heap"
+	"algorithms/heap"
 )
 
 type heapIntArray []int
 
-func (h *heapIntArray) Swap(i int, j int) () {
-	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
+func (h*heapIntArray) Parent(i interface{})(interface{}) {
+	return i.(int)>>1
+}
+func (h*heapIntArray) Left(i interface{})(interface{}) {
+	return (i.(int)<<1)+1
+}
+func (h*heapIntArray) Right(i interface{})(interface{}) {
+	return (i.(int)<<1)+2
 }
 
-func (h *heapIntArray) Key(i int) (int) {
-	return (*h)[i]
+func (h*heapIntArray) Prev(i interface{})(interface{}) {
+	return i.(int)-1
+}
+func (h*heapIntArray) Next(i interface{})(interface{}) {
+	return i.(int)+1
+}
+
+func (h*heapIntArray) Last()(interface{}) {
+	return len(*h)-1
+}
+func (h*heapIntArray) Head()(interface{}) {
+	return 0
+}
+func (h*heapIntArray) Valid(i interface{})(bool){
+	return i.(int) >= 0 && i.(int) < len(*h)
+}
+
+func (h *heapIntArray) Swap(i interface{}, j interface{}) () {
+	(*h)[i.(int)], (*h)[j.(int)] = (*h)[j.(int)], (*h)[i.(int)]
+}
+
+func (h *heapIntArray) Key(i interface{}) (int) {
+	return (*h)[i.(int)]
 }
 
 func (h *heapIntArray) Len() (int) {
 	return len(*h)
-}
-
-func (h *heapIntArray) Less(i, j int) bool {
-	return (*h)[i] < (*h)[j]
 }
 
 func (h *heapIntArray) Pop() (i interface{}) {

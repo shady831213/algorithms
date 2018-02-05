@@ -2,7 +2,7 @@ package sort
 
 import (
 	"testing"
-	"algorithms/sort/heap"
+	"algorithms/heap"
 )
 
 func Test_heapSort(t *testing.T)  {

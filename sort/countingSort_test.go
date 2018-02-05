@@ -1,7 +1,7 @@
 package sort
 
 import (
-	"algorithms/sort/heap"
+	"algorithms/heap"
 	"testing"
 )
 
