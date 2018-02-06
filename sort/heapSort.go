@@ -23,10 +23,9 @@ import (
 
 
 func heapSort(arr []int) {
-	a := heap.HeapIntArray(arr)
-	h := heap.Heap{&a}
-	h.BuildHeap()
-	for i := a.Len() - 1; i > 0; i-- {
+	h := new(heap.HeapIntArray)
+	h.Init(arr)
+	for i := h.Len() - 1; i > 0; i-- {
 		h.Pop()
 	}
 }

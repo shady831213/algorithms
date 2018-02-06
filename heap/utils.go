@@ -59,7 +59,7 @@ func testHeapUnion(t *testing.T, h1 HeapIf, h2 HeapIf) {
 			h2.Append(v)
 		}
 	}
-	h1.Union(h2)
+	h1 = h1.Union(h2).(HeapIf)
 	for h1.Len() > 0 {
 		sortedArr = append(sortedArr, h1.Pop().(int))
 	}

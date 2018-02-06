@@ -11,9 +11,6 @@ type LtHeapArray struct {
 	len int
 }
 
-func (h*LtHeapArray) Parent(i interface{})(interface{}) {
-	return nil
-}
 func (h*LtHeapArray) Left(i interface{})(interface{}) {
 	iE := i.(*LtHeapElement)
 	return iE.left
@@ -23,21 +20,8 @@ func (h*LtHeapArray) Right(i interface{})(interface{}) {
 	return iE.right
 }
 
-func (h*LtHeapArray) Prev(i interface{})(interface{}) {
-	return nil
-}
-func (h*LtHeapArray) Next(i interface{})(interface{}) {
-	return nil
-}
-
-func (h*LtHeapArray) Last()(interface{}) {
-	return nil
-}
 func (h*LtHeapArray) Head()(interface{}) {
 	return h.root
-}
-func (h*LtHeapArray) Valid(i interface{})(bool){
-	return true
 }
 
 func (h *LtHeapArray) Swap(i interface{}, j interface{}) () {
@@ -72,7 +56,7 @@ func (h *LtHeapArray) Append(i interface{}) {
 	h.root = h.merge(h.root,&newE).(*LtHeapElement)
 	h.len++
 }
-
+//merge:O(logn)
 func (h *LtHeapArray) merge(i interface{},j interface{})(interface{}) {
 	iE :=i.(*LtHeapElement)
 	jE :=j.(*LtHeapElement)
@@ -97,10 +81,9 @@ func (h *LtHeapArray) merge(i interface{},j interface{})(interface{}) {
 	return iE
 }
 
-func (h *LtHeapArray) Merge(i interface{},j interface{})(interface{}) {
+func (h *LtHeapArray) Union(i interface{})(interface{}) {
 	_i :=i.(*LtHeapArray)
-	_j :=j.(*LtHeapArray)
-	_i.root = _i.merge(_i.root,_j.root).(*LtHeapElement)
-	_i.len+=_j.len
-	return _i
+	h.root = h.merge(h.root,_i.root).(*LtHeapElement)
+	h.len+=_i.len
+	return h
 }

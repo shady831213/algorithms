@@ -5,19 +5,16 @@ import (
 )
 
 func Test_leftistHeap(t *testing.T) {
-	lh := new(LtHeapArray)
-	h := LtHeap{lh}
-	testHeap(t, &h)
+	h := new(LtHeapArray)
+	testHeap(t, h)
 }
 
 func Test_leftistHeapUnion(t *testing.T) {
-	lh,lh2 := new(LtHeapArray),new(LtHeapArray)
-	h,h2 := LtHeap{lh},LtHeap{lh2}
-	testHeapUnion(t, &h,&h2)
+	h,h2 := new(LtHeapArray),new(LtHeapArray)
+	testHeapUnion(t, h,h2)
 }
 
 func Benchmark_leftistHeap(b *testing.B) {
-	lh := new(LtHeapArray)
-	h := LtHeap{lh}
-	benchmarkHeap(b,&h)
+	h := new(LtHeapArray)
+	benchmarkHeap(b,h)
 }
