@@ -1,10 +1,9 @@
-package list
+package heap
 
 import (
 	"testing"
 	"reflect"
 	"fmt"
-	"algorithms/heap"
 	"sort"
 	"math/rand"
 )
@@ -18,7 +17,7 @@ func Test_likedHeap(t *testing.T) {
 	sortedArr := make([]int, 0, 0)
 	lh := new(LinkedHeap)
 	lh.Init()
-	h := heap.Heap{lh}
+	h := Heap{lh}
 	for _, v := range arr {
 		h.Append(v)
 	}
@@ -43,7 +42,7 @@ func Test_likedHeapUnion(t *testing.T) {
 	lh, lh2 := new(LinkedHeap),new(LinkedHeap)
 	lh.Init()
 	lh2.Init()
-	h, h2 := heap.Heap{lh}, heap.Heap{lh2}
+	h, h2 := Heap{lh}, Heap{lh2}
 	for i, v := range arr {
 		if i < arrSize1 {
 			h.Append(v)
@@ -75,7 +74,7 @@ func Benchmark_likedHeap(b *testing.B) {
 		sortedArr := make([]int, 0, 0)
 		lh := new(LinkedHeap)
 		lh.Init()
-		h := heap.Heap{lh}
+		h := Heap{lh}
 		for _, v := range arr {
 			h.Append(v)
 		}

@@ -23,7 +23,7 @@ func Benchmark_heapSort2(b *testing.B)  {
 }
 
 func Test_heapPopAndAppend(t *testing.T)  {
-	arr:= heapIntArray([]int{3,2,10,1,7})
+	arr:= heap.HeapIntArray([]int{3,2,10,1,7})
 	h := heap.Heap{&arr}
 	h.BuildHeap()
 	max := h.Pop().(int)

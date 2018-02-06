@@ -8,7 +8,7 @@ import (
 func countingSortWrapper(arr []int) {
 	_arr := make([]int, len(arr), cap(arr))
 	copy(_arr, arr)
-	a := heapIntArray(arr)
+	a := heap.HeapIntArray(arr)
 	h := heap.Heap{&a}
 	h.BuildHeap()
 	max := h.Pop().(int)

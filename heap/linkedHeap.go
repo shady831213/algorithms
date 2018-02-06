@@ -1,8 +1,4 @@
-package list
-
-import (
-	"algorithms/heap"
-)
+package heap
 
 type Element struct {
 	parent, left, right, next, prev *Element
@@ -112,7 +108,7 @@ func (h *LinkedHeap) Append(i interface{}) {
 	h.len++
 }
 //O(n)
-func (h *LinkedHeap) Merge(i heap.ArrayIf) {
+func (h *LinkedHeap) Merge(i ArrayIf) {
 	var midNode *Element
 	if h.Len() > i.Len() {
 		midNode = i.Head().(*Element)
