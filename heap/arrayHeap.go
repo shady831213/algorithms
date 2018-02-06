@@ -54,8 +54,10 @@ func (h *HeapIntArray) Append(i interface{}) {
 	(*h) = append((*h), i.(int))
 }
 
-func (h *HeapIntArray) Merge(i ArrayIf) {
+func (h *HeapIntArray) Merge(i interface{},j interface{})(interface{}) {
 	_i := i.(*HeapIntArray)
-	(*h) = append((*h), (*_i)...)
+	_j := j.(*HeapIntArray)
+	(*_i) = append((*_i), (*_j)...)
+	return _i
 }
 

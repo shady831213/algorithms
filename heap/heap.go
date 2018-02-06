@@ -15,7 +15,16 @@ type ArrayIf interface {
 	Parent(interface{}) (interface{})
 	Left(interface{}) (interface{})
 	Right(interface{}) (interface{})
-	Merge(ArrayIf)
+	Merge(interface{},interface{})(interface{})
+}
+
+type HeapIf interface {
+	Len() (int)
+	MaxHeaplify(interface{})
+	BuildHeap()
+	Pop() (interface{})
+	Append(interface{})
+	Union(interface{})
 }
 
 type Heap struct {
@@ -66,7 +75,36 @@ func (h *Heap) Append(i interface{}) {
 //merge:O(n)
 //rebuild:O(n)
 //T(n)=O(n)
-func (h *Heap) Union(h1 *Heap) {
-	h.Arr.Merge(h1.Arr)
+func (h *Heap) Union(h1 interface{}) {
+	h.Arr = h.Arr.Merge(h.Arr, h1.(*Heap).Arr).(ArrayIf)
 	h.BuildHeap()
+}
+
+type LtHeap struct {
+	Arr ArrayIf
+}
+
+func (h *LtHeap) Len() (int) {
+	return h.Arr.Len()
+}
+
+func (h *LtHeap) MaxHeaplify(i interface{}) {
+}
+
+func (h *LtHeap) BuildHeap() {
+}
+
+func (h *LtHeap) Pop() (i interface{}) {
+	return h.Arr.Pop()
+}
+
+func (h *LtHeap) Append(i interface{}) {
+	h.Arr.Append(i)
+}
+
+//merge:O(n)
+//rebuild:O(n)
+//T(n)=O(n)
+func (h *LtHeap) Union(h1 interface{}) {
+	h.Arr = h.Arr.Merge(h.Arr, h1.(*LtHeap).Arr).(ArrayIf)
 }

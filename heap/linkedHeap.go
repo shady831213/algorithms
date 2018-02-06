@@ -108,34 +108,37 @@ func (h *LinkedHeap) Append(i interface{}) {
 	h.len++
 }
 //O(n)
-func (h *LinkedHeap) Merge(i ArrayIf) {
+func (h *LinkedHeap) Merge(i interface{},j interface{})(interface{}) {
 	var midNode *Element
-	if h.Len() > i.Len() {
-		midNode = i.Head().(*Element)
-		h.Last().(*Element).next = midNode
-		midNode.prev = h.Last().(*Element)
-		h.root.prev = i.Last().(*Element)
-		i.Last().(*Element).next = &h.root
+	_i := i.(*LinkedHeap)
+	_j := j.(*LinkedHeap)
+	if _i.Len() > _j.Len() {
+		midNode = _j.Head().(*Element)
+		_i.Last().(*Element).next = midNode
+		midNode.prev = _i.Last().(*Element)
+		_i.root.prev = _j.Last().(*Element)
+		_j.Last().(*Element).next = &_i.root
 	} else {
-		midNode := h.Head().(*Element)
-		i.Last().(*Element).next = midNode
-		midNode.prev = i.Last().(*Element)
-		h.root.next = i.Head().(*Element)
-		i.Head().(*Element).prev = &h.root
+		midNode := _i.Head().(*Element)
+		_j.Last().(*Element).next = midNode
+		midNode.prev = _j.Last().(*Element)
+		_i.root.next = _j.Head().(*Element)
+		_j.Head().(*Element).prev = &_i.root
 	}
-	for iNode := midNode; h.Valid(iNode); iNode = h.Next(iNode).(*Element) {
-		iNode.parent = nil
-		iNode.left = nil
-		iNode.right = nil
-		prev := iNode.prev
+	for jNode := midNode; _i.Valid(jNode); jNode = _i.Next(jNode).(*Element) {
+		jNode.parent = nil
+		jNode.left = nil
+		jNode.right = nil
+		prev := jNode.prev
 		prevParent := prev.parent
 		if prevParent.right == nil{
-			prevParent.right = iNode
-			iNode.parent = prevParent
+			prevParent.right = jNode
+			jNode.parent = prevParent
 		} else {
-			prevParent.next.left = iNode
-			iNode.parent = prevParent.next
+			prevParent.next.left = jNode
+			jNode.parent = prevParent.next
 		}
 	}
-	h.len += i.Len()
+	_i.len += _j.Len()
+	return _i
 }
