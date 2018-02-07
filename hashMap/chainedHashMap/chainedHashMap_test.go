@@ -4,6 +4,7 @@ import (
 	"testing"
 	"reflect"
 	"fmt"
+	"algorithms/hashMap"
 )
 
 func Test_ChainedHashMap(t *testing.T) {
@@ -41,8 +42,8 @@ func Test_ChainedHashMapResize(t *testing.T) {
 	for i,v := range expMap {
 		cmap.HashInsert(i,v)
 	}
-	if !reflect.DeepEqual(cmap.Cap, uint32(8)) {
-		t.Log(fmt.Sprintf("expect:", 8) + fmt.Sprintf("but get:", cmap.Cap))
+	if !reflect.DeepEqual(cmap.Cap, uint32(4+hashMap.DEFALUTCAP)) {
+		t.Log(fmt.Sprintf("expect:", uint32(4+hashMap.DEFALUTCAP)) + fmt.Sprintf("but get:", cmap.Cap))
 		t.Fail()
 	}
 }
