@@ -9,11 +9,6 @@ import (
 	"encoding/binary"
 )
 
-type ChainedHashElement struct {
-	key interface{}
-	value interface{}
-}
-
 type ChainedHashMap struct {
 	hashMap.HashMapBase
 	backets []*list.List
@@ -31,7 +26,7 @@ func (h *ChainedHashMap) resize () {
 		for _, list := range oldBackets {
 			if list != nil {
 				for e := list.Front();e != nil; e = e.Next() {
-					h.HashInsert(e.Value.(ChainedHashElement).key, e.Value.(ChainedHashElement).value)
+					h.HashInsert(e.Value.(hashMap.HashElement).Key, e.Value.(hashMap.HashElement).Value)
 				}
 			}
 		}
@@ -50,7 +45,7 @@ func (h *ChainedHashMap) hash(key interface{})(uint32) {
 
 func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Element, bool) {
 	for e := list.Front();e != nil; e = e.Next() {
-		if e.Value.(ChainedHashElement).key == key {
+		if e.Value.(hashMap.HashElement).Key == key {
 			return e, true
 		}
 	}
@@ -62,7 +57,7 @@ func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
 	if h.backets[hashKey] == nil{
 		h.backets[hashKey] = list.New()
 	}
-	e := ChainedHashElement{key:key, value: value}
+	e := hashMap.HashElement{Key:key, Value: value}
 	le, exist := h.existInList(key, h.backets[hashKey])
 	if exist {
 		le.Value = e
@@ -80,7 +75,7 @@ func (h *ChainedHashMap) HashGet(key interface{})(interface{}, bool) {
 	}
 	le, exist := h.existInList(key, h.backets[hashKey])
 	if exist {
-		return le.Value.(ChainedHashElement).value, true
+		return le.Value.(hashMap.HashElement).Value, true
 	}
 	return nil,false
 }

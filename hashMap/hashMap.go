@@ -3,6 +3,11 @@ package hashMap
 
 const DEFALUTCAP  = 256
 
+type HashElement struct {
+	Key interface{}
+	Value interface{}
+}
+
 type HashMap interface {
 	HashInsert(interface{},interface{})
 	HashDelete(interface{})
