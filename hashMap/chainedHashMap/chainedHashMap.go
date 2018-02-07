@@ -39,7 +39,7 @@ func (h *ChainedHashMap) hash(key interface{})(uint32) {
 	enc := gob.NewEncoder(buf)
 	enc.Encode(key)
 	hashBytes := hash.Sum(buf.Bytes())
-	hashValue := binary.LittleEndian.Uint32(hashBytes)
+	hashValue := binary.BigEndian.Uint32(hashBytes)
 	return hashValue%h.Cap
 }
 
