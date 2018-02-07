@@ -1,8 +1,9 @@
-package heap
+package arrayHeap
 
+import "algorithms/heap"
 type heapIntArrays []int
 type HeapIntArray struct {
-	Heap
+	heap.Heap
 	heapIntArrays
 }
 
@@ -64,12 +65,6 @@ func (h *heapIntArrays) Union(i interface{})(interface{}) {
 	return h
 }
 
-func (h*HeapIntArray) Init(arr []int) *HeapIntArray {
-	h.heapIntArrays = arr
-	h.Heap.BinHeapArrayIf = &h.heapIntArrays
-	h.BuildHeap()
-	return h
-}
 //merge:O(n)
 //rebuild:O(n)
 //T(n)=O(n)
@@ -85,4 +80,12 @@ func (h *HeapIntArray) Pop() (i interface{}) {
 
 func (h *HeapIntArray) Append(i interface{}) {
 	h.Heap.Append(i)
+}
+
+func New(arr []int) *HeapIntArray {
+	h := new(HeapIntArray)
+	h.heapIntArrays = arr
+	h.Heap.BinHeapArrayIf = &h.heapIntArrays
+	h.BuildHeap()
+	return h
 }

@@ -2,7 +2,7 @@ package sort
 
 import (
 	"testing"
-	"algorithms/heap"
+	"algorithms/heap/arrayHeap"
 )
 
 func Test_heapSort(t *testing.T)  {
@@ -23,8 +23,7 @@ func Benchmark_heapSort2(b *testing.B)  {
 }
 
 func Test_heapPopAndAppend(t *testing.T)  {
-	h := new(heap.HeapIntArray)
-	h.Init([]int{3,2,10,1,7})
+	h := arrayHeap.New([]int{3,2,10,1,7})
 	max := h.Pop().(int)
 	if max != 10 {
 		t.Log("max value should be 10"+" but get "+string(max))

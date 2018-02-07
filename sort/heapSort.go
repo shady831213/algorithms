@@ -18,13 +18,12 @@ so they both can modify shared data.But they have different lenth,index and so o
 package sort
 
 import (
-	"algorithms/heap"
+	"algorithms/heap/arrayHeap"
 )
 
 
 func heapSort(arr []int) {
-	h := new(heap.HeapIntArray)
-	h.Init(arr)
+	h := arrayHeap.New(arr)
 	for i := h.Len() - 1; i > 0; i-- {
 		h.Pop()
 	}

@@ -1,4 +1,6 @@
-package heap
+package linkedHeap
+
+import "algorithms/heap"
 
 type Element struct {
 	parent, left, right, next, prev *Element
@@ -12,17 +14,16 @@ type LinkedHeapList struct {
 
 type LinkedHeap struct {
 	LinkedHeapList
-	Heap
+	heap.Heap
 }
 
-func (h*LinkedHeapList) Init() *LinkedHeapList {
+func (h*LinkedHeapList) Init() {
 	h.root.prev = &h.root
 	h.root.next = &h.root
 	h.root.parent = &h.root
 	h.root.left = &h.root
 	h.root.right = &h.root
 	h.len = 0
-	return h
 }
 
 func (h*LinkedHeapList) Parent(i interface{})(interface{}) {
@@ -148,7 +149,8 @@ func (h *LinkedHeapList) Union(i interface{})(interface{}) {
 }
 
 
-func (h*LinkedHeap) Init() *LinkedHeap {
+func New() *LinkedHeap {
+	h := new(LinkedHeap)
 	h.LinkedHeapList = LinkedHeapList{}
 	h.LinkedHeapList.Init()
 	h.Heap.BinHeapArrayIf = &h.LinkedHeapList
