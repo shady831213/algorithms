@@ -4,10 +4,6 @@ import (
 	"algorithms/hashMap"
 	"crypto/sha1"
 	"crypto/sha256"
-	"bytes"
-	"encoding/gob"
-	"encoding/binary"
-	"hash"
 )
 
 type OpenHashElement struct {
@@ -37,16 +33,8 @@ func (h *OpenHashMap) resize() {
 	}
 }
 
-func (h *OpenHashMap) hashFunc(key interface{}, hash hash.Hash) (uint32) {
-	buf := bytes.NewBuffer(nil)
-	enc := gob.NewEncoder(buf)
-	enc.Encode(key)
-	hashBytes := hash.Sum(buf.Bytes())
-	return binary.BigEndian.Uint32(hashBytes)
-}
-
 func (h *OpenHashMap) hash(key interface{}, i uint32) (uint32) {
-	hashValue1, hashValue2 := h.hashFunc(key, sha1.New()), h.hashFunc(key, sha256.New())
+	hashValue1, hashValue2 := h.HashFunc(key, sha1.New()), h.HashFunc(key, sha256.New())
 	return (hashValue1 + hashValue2*i) % h.Cap
 }
 

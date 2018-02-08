@@ -4,9 +4,6 @@ import (
 	"container/list"
 	"algorithms/hashMap"
 	"crypto/sha1"
-	"bytes"
-	"encoding/gob"
-	"encoding/binary"
 )
 
 type ChainedHashMap struct {
@@ -34,13 +31,7 @@ func (h *ChainedHashMap) resize () {
 }
 
 func (h *ChainedHashMap) hash(key interface{})(uint32) {
-	hash := sha1.New()
-	buf := bytes.NewBuffer(nil)
-	enc := gob.NewEncoder(buf)
-	enc.Encode(key)
-	hashBytes := hash.Sum(buf.Bytes())
-	hashValue := binary.BigEndian.Uint32(hashBytes)
-	return hashValue%h.Cap
+	return h.HashFunc(key,sha1.New())%h.Cap
 }
 
 func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Element, bool) {
