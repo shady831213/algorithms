@@ -4,6 +4,7 @@ import (
 	"algorithms/hashMap"
 	"crypto/sha1"
 	"crypto/sha256"
+	"math/big"
 )
 
 type OpenHashElement struct {
@@ -35,7 +36,10 @@ func (h *OpenHashMap) resize() {
 
 func (h *OpenHashMap) hash(key interface{}, i uint32) (uint32) {
 	hashValue1, hashValue2 := h.HashFunc(key, sha1.New()), h.HashFunc(key, sha256.New())
-	return (hashValue1 + hashValue2*i) % h.Cap
+	ib:=big.NewInt(int64(i))
+	im:=big.NewInt(int64(h.Cap))
+	hashValue2.Mul(hashValue2,ib).Add(hashValue2, hashValue1).Mod(hashValue2,im)
+	return uint32(hashValue2.Uint64())
 }
 
 func (h *OpenHashMap) existKey(key uint32) (bool) {

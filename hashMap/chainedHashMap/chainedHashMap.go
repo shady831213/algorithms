@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"algorithms/hashMap"
 	"crypto/sha1"
+	"math/big"
 )
 
 type ChainedHashMap struct {
@@ -31,7 +32,10 @@ func (h *ChainedHashMap) resize () {
 }
 
 func (h *ChainedHashMap) hash(key interface{})(uint32) {
-	return h.HashFunc(key,sha1.New())%h.Cap
+	hashValue :=  h.HashFunc(key,sha1.New())
+	im:=big.NewInt(int64(h.Cap))
+	hashValue.Mod(hashValue,im)
+	return uint32(hashValue.Uint64())
 }
 
 func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Element, bool) {

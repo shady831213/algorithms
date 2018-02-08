@@ -4,7 +4,7 @@ import (
 	"hash"
 	"bytes"
 	"encoding/gob"
-	"encoding/binary"
+	"math/big"
 )
 
 const DEFALUTCAP  = 256
@@ -39,10 +39,10 @@ func (h *HashMapBase) GetAlpha ()(float64) {
 	return float64(h.Count)/float64(h.Cap)
 }
 
-func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) (uint32) {
+func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) (*big.Int) {
 	buf := bytes.NewBuffer(nil)
 	enc := gob.NewEncoder(buf)
 	enc.Encode(key)
 	hashBytes := hash.Sum(buf.Bytes())
-	return binary.BigEndian.Uint32(hashBytes)
+	return new(big.Int).SetBytes(hashBytes)
 }
