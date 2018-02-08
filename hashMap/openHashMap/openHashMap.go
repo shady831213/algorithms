@@ -22,7 +22,7 @@ type OpenHashMap struct {
 
 func (h *OpenHashMap) Init(cap uint32) {
 	h.HashMapBase.Init(cap)
-	h.backets = make([]*OpenHashElement, cap, cap)
+	h.backets = make([]*OpenHashElement, h.Cap, h.Cap)
 }
 
 func (h *OpenHashMap) resize() {

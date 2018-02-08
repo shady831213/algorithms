@@ -32,13 +32,13 @@ func Test_OpenHashMapDelete(t *testing.T) {
 }
 
 func BenchmarkOpenHashMap_HashInsert(b *testing.B) {
-	hashMap.BenchmarkHashMapInsert(b,New(128))
+	hashMap.BenchmarkHashMapInsert(b,New(0))
 }
 
 func BenchmarkOpenHashMap_HashInsertDelete(b *testing.B) {
-	hashMap.BenchmarkHashMapInsertDelete(b,New(128))
+	hashMap.BenchmarkHashMapInsertDelete(b,New(0))
 }
 
 func BenchmarkOpenHashMap_HashGet(b *testing.B) {
-	hashMap.BenchmarkHashMapGet(b,New(128))
+	hashMap.BenchmarkHashMapGet(b,New(0))
 }

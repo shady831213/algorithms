@@ -16,7 +16,7 @@ type ChainedHashMap struct {
 
 func (h *ChainedHashMap) Init (cap uint32) {
 	h.HashMapBase.Init(cap)
-	h.backets = make([]*list.List, cap, cap)
+	h.backets = make([]*list.List, h.Cap, h.Cap)
 }
 
 func (h *ChainedHashMap) resize () {
