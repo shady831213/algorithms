@@ -33,8 +33,8 @@ func (h *ChainedHashMap) resize () {
 
 func (h *ChainedHashMap) hash(key interface{})(uint32) {
 	hashValue :=  h.HashFunc(key,sha1.New())
-	im:=big.NewInt(int64(h.Cap))
-	hashValue.Mod(hashValue,im)
+	mb:=big.NewInt(int64(h.Cap))
+	hashValue.Mod(hashValue,mb)
 	return uint32(hashValue.Uint64())
 }
 

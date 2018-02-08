@@ -37,8 +37,8 @@ func (h *OpenHashMap) resize() {
 func (h *OpenHashMap) hash(key interface{}, i uint32) (uint32) {
 	hashValue1, hashValue2 := h.HashFunc(key, sha1.New()), h.HashFunc(key, sha256.New())
 	ib:=big.NewInt(int64(i))
-	im:=big.NewInt(int64(h.Cap))
-	hashValue2.Mul(hashValue2,ib).Add(hashValue2, hashValue1).Mod(hashValue2,im)
+	mb:=big.NewInt(int64(h.Cap))
+	hashValue2.Mul(hashValue2,ib).Add(hashValue2, hashValue1).Mod(hashValue2,mb)
 	return uint32(hashValue2.Uint64())
 }
 
