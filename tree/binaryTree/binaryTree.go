@@ -12,7 +12,7 @@ type BinaryTreeIf interface {
 	Successor(interface{})(interface{})
 	Min(interface{})(interface{})
 	Max(interface{})(interface{})
-	InOrderWalk(interface{}, func(interface{}, ...interface{}), ...interface{})
+	InOrderWalk(interface{}, func(interface{})(bool))(bool)
 	//PreOrderWalk(func(interface{}, ...interface{}), ...interface{})
 	//PostOrderWalk(func(interface{}, ...interface{}), ...interface{})
 }

@@ -10,14 +10,14 @@ type BstElement struct {
 }
 
 type Bst struct {
-	root *BstElement
+	Root *BstElement
 }
 
 func (t *Bst) Search(key uint32) (interface{}) {
-	for cur := t.root; cur != nil; {
+	for cur := t.Root; cur != nil; {
 		if cur.Key == key {
 			return cur
-		}else if key < cur.Key {
+		} else if key < cur.Key {
 			cur = cur.left
 		} else {
 			cur = cur.right
@@ -28,8 +28,12 @@ func (t *Bst) Search(key uint32) (interface{}) {
 
 func (t *Bst) Insert(node interface{}) {
 	var target *BstElement
-	n := node.(*BstElement)
-	for cur := t.root; cur != nil; {
+	n, isNode := node.(*BstElement)
+	if !isNode {
+		n = new(BstElement)
+		n.Key = node.(uint32)
+	}
+	for cur := t.Root; cur != nil; {
 		target = cur
 		if n.Key < cur.Key {
 			cur = cur.left
@@ -39,7 +43,7 @@ func (t *Bst) Insert(node interface{}) {
 	}
 	n.parent = target
 	if target == nil {
-		t.root = n
+		t.Root = n
 	} else if n.Key < target.Key {
 		target.left = n
 	} else {
@@ -48,8 +52,8 @@ func (t *Bst) Insert(node interface{}) {
 }
 
 func (t *Bst) Delete(key uint32) {
-	deleteNonCompletedNode := func (node *BstElement) {
-		var reConnectedNode  *BstElement
+	deleteNonCompletedNode := func(node *BstElement) {
+		var reConnectedNode *BstElement
 		if node.left == nil {
 			reConnectedNode = node.right
 		} else {
@@ -58,7 +62,9 @@ func (t *Bst) Delete(key uint32) {
 		if reConnectedNode != nil {
 			reConnectedNode.parent = node.parent
 		}
-		if node.parent.right == node {
+		if node.parent == nil {
+			t.Root = reConnectedNode
+		} else if node.parent.right == node {
 			node.parent.right = reConnectedNode
 		} else {
 			node.parent.left = reConnectedNode
@@ -72,7 +78,7 @@ func (t *Bst) Delete(key uint32) {
 	if node.left == nil || node.right == nil {
 		deleteNonCompletedNode(node)
 	} else {
-		successor := t.Successor(key).(*BstElement)
+		successor := t.Successor(node).(*BstElement)
 		_key, _value := successor.Key, successor.Value
 		deleteNonCompletedNode(successor)
 		node.Key, node.Value = _key, _value
@@ -80,16 +86,16 @@ func (t *Bst) Delete(key uint32) {
 }
 
 func (t *Bst) Min(node interface{}) (interface{}) {
-	cur:=node.(*BstElement)
-	for cur.left != nil{
+	cur := node.(*BstElement)
+	for cur.left != nil {
 		cur = cur.left
 	}
 	return cur
 }
 
 func (t *Bst) Max(node interface{}) (interface{}) {
-	cur:=node.(*BstElement)
-	for cur.right != nil{
+	cur := node.(*BstElement)
+	for cur.right != nil {
 		cur = cur.right
 	}
 	return cur
@@ -131,15 +137,23 @@ type BstRecrusive struct {
 	Bst
 }
 
-func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(interface{}, ...interface{}), args ...interface{}) {
-	if node != nil {
-		n := node.(*BstElement)
-		t.InOrderWalk(n.left, callback, args)
-		callback(n, args)
-		t.InOrderWalk(n.right, callback, args)
+func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	if n != nil {
+		stop := t.InOrderWalk(n.left, callback)
+		if stop {
+			return true
+		}
+		stop = callback(n)
+		if stop {
+			return true
+		}
+		stop = t.InOrderWalk(n.right, callback)
+		return stop
 	}
+	return false
 }
 
-func NewBstRecrusive() binaryTree.BinaryTreeIf {
+func NewBstRecrusive() *BstRecrusive {
 	return new(BstRecrusive)
 }
