@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 	"algorithms/tree/binaryTree"
+	"reflect"
 )
 
 func checkBst(t *testing.T, nodeCnt *int, debug bool) (func(interface{}) (bool)) {
@@ -27,7 +28,7 @@ func checkBst(t *testing.T, nodeCnt *int, debug bool) (func(interface{}) (bool))
 	}
 }
 
-func checkBstPreOder(t *testing.T, bst binaryTree.BinaryTreeIf) {
+func checkBstPreOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
 	resultArr := make([]int, 0, 0)
 
 	bst.PreOrderWalk(bst.Root(), func(node interface{}) bool {
@@ -68,5 +69,36 @@ func checkBstPreOder(t *testing.T, bst binaryTree.BinaryTreeIf) {
 			}
 		}
 	}
+}
 
+func checkBstPostOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
+	resultArr := make([]int, 0, 0)
+	expArr:= make([]int, 0, 0)
+	bst.PostOrderWalk(bst.Root(), func(node interface{}) bool {
+		n := node.(*BstElement)
+		resultArr = append(resultArr,int(n.Key))
+		return false
+	})
+
+	curNode:=bst.Min(bst.Root()).(*BstElement)
+	for curNode.right != nil {
+		curNode = bst.Successor(curNode).(*BstElement)
+	}
+	expArr = append(expArr,int(curNode.Key))
+	for curNode.parent!=nil {
+		//if it is left child ,get the successor of which node's right child is not nil from parent, if it is rignt child, get the parent
+		nextNode := curNode.parent
+		if curNode == nextNode.left {
+			for nextNode.right != nil {
+				nextNode = bst.Successor(nextNode).(*BstElement)
+			}
+		}
+		curNode = nextNode
+		expArr = append(expArr,int(curNode.Key))
+	}
+
+	if !reflect.DeepEqual(resultArr, expArr) {
+		t.Log(fmt.Sprintf("expect:%v", expArr) + fmt.Sprintf("but get:%v", resultArr))
+		t.Fail()
+	}
 }

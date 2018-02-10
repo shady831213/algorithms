@@ -144,5 +144,14 @@ func TestBstRecrusive_PreOrderWalk(t *testing.T) {
 	for _,v := range arr {
 		bst.Insert(uint32(v))
 	}
-	checkBstPreOder(t, bst)
+	checkBstPreOrder(t, bst)
+}
+
+func TestBstRecrusive_PostOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	bst := NewBstRecrusive()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+	}
+	checkBstPostOrder(t, bst)
 }
