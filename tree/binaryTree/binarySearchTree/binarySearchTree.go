@@ -13,7 +13,7 @@ type Bst struct {
 	root *BstElement
 }
 
-func (t *Bst)Root()(interface{})  {
+func (t *Bst) Root() (interface{}) {
 	return t.root
 }
 
@@ -196,16 +196,17 @@ func NewBstRecrusive() *BstRecrusive {
 	return new(BstRecrusive)
 }
 
-
 type BstIterative struct {
 	Bst
 }
 
+//next node should always be successor node
+//O(n), all the connections(n-1) are accessed less than or equal to 2 times
 func (t *BstIterative) InOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
-	for curNode:=t.Min(n).(*BstElement); curNode != nil;{
+	for curNode := t.Min(n).(*BstElement); curNode != nil; {
 		stop := callback(curNode)
-		if stop{
+		if stop {
 			return true
 		}
 		curNode = t.Successor(curNode).(*BstElement)
@@ -213,38 +214,93 @@ func (t *BstIterative) InOrderWalk(node interface{}, callback func(interface{}) 
 	return false
 }
 
+//GoDown: if the node has left child, go through left, otherwise if the node has right child, go through right. After it gets leaf node, go up
+//GoUp : left node: find a completed node or a right node like this:
+//                                                                 3
+//                                                                  \
+//                                                                 cur(5)
+//                                                                 /
+//                                                                4
+// right node: remove itself from parent, then find the successor of parent, then recover parent
+//During going up, when it gets root or a node has right child , go down
+//O(n), all the connections(n-1) are accessed less than or equal to 2 times
 func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
-	n := node.(*BstElement)
-	if n != nil {
-		stop := callback(n)
-		if stop {
-			return true
+	root := node.(*BstElement)
+
+	goDown := func (curNode *BstElement)(*BstElement, bool) {
+		if curNode.left != nil {
+			return curNode.left, true
+		} else if curNode.right != nil {
+			return curNode.right, true
 		}
-		stop = t.PreOrderWalk(n.left, callback)
-		if stop {
-			return true
+		return curNode, false
+	}
+
+	goUp := func (curNode *BstElement)(*BstElement, bool) {
+		if curNode == root || curNode.right != nil {
+			return curNode.right, true
+		} else if curNode == curNode.parent.left {
+			for curNode == curNode.parent.left {
+				curNode = curNode.parent
+				if curNode.right != nil {
+					return curNode.right, true
+				}
+			}
+		} else {
+			parentNode := curNode.parent
+			parentRightNode := parentNode.right
+			parentNode.right = nil
+			curNode = t.Successor(parentNode).(*BstElement)
+			parentNode.right = parentRightNode
 		}
-		stop = t.PreOrderWalk(n.right, callback)
-		return stop
+		return curNode, false
+	}
+
+	down := true
+	for curNode := root; curNode != nil; {
+		if down {
+			stop := callback(curNode)
+			if stop {
+				return true
+			}
+			curNode, down = goDown(curNode)
+		} else {
+			curNode, down = goUp(curNode)
+		}
 	}
 	return false
 }
 
+//start from the leftist node, which must be the min node or leftist leaf node of right sub tree of min node
+//if the node is left leaf node, find the leftist node of right sub tree of parent
+//if the node is right leaf node, go bach to parent
+//O(n), all the connections(n-1) are accessed less than or equal to 2 times
+
 func (t *BstIterative) PostOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
-	if n != nil {
-		stop := t.PostOrderWalk(n.left, callback)
-		if stop {
-			return true
+
+	leftistNode := func(curNode *BstElement)(nextNode *BstElement) {
+		nextNode = curNode
+		for nextNode.right != nil {
+			nextNode = t.Min(nextNode.right).(*BstElement)
 		}
-		stop = t.PostOrderWalk(n.right, callback)
-		if stop {
-			return true
-		}
-		stop = callback(n)
-		return stop
+		return
 	}
-	return false
+
+	for curNode:=leftistNode(t.Min(n).(*BstElement));curNode != n;{
+		stop := callback(curNode)
+		if stop {
+			return true
+		}
+		parentNode := curNode.parent
+		if curNode == parentNode.left {
+			curNode = leftistNode(parentNode)
+		} else {
+			curNode = parentNode
+		}
+
+	}
+	return callback(n)
 }
 
 func NewBstIterative() *BstIterative {

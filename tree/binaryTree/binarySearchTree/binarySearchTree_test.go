@@ -174,3 +174,61 @@ func TestBstIterative_InOrderWalk(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestBstIterative_PreOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	resultArr := make([]int,0,0)
+	expArr := make([]int,0,0)
+	bst := NewBstIterative()
+	expBst := NewBstRecrusive()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+		expBst.Insert(uint32(v))
+	}
+	expBst.PreOrderWalk(expBst.Root(), func(node interface{}) bool {
+		n := node.(*BstElement)
+		expArr = append(expArr,int(n.Key))
+		return false
+	})
+	bst.PreOrderWalk(bst.Root(), func(node interface{}) bool {
+		n := node.(*BstElement)
+		if *debug {
+			fmt.Println(n)
+		}
+		resultArr = append(resultArr,int(n.Key))
+		return false
+	})
+	if !reflect.DeepEqual(resultArr, expArr) {
+		t.Log(fmt.Sprintf("expect:%v", expArr) + fmt.Sprintf("but get:%v", resultArr))
+		t.Fail()
+	}
+}
+
+func TestBstIterative_PostOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	resultArr := make([]int,0,0)
+	expArr := make([]int,0,0)
+	bst := NewBstIterative()
+	expBst := NewBstRecrusive()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+		expBst.Insert(uint32(v))
+	}
+	expBst.PostOrderWalk(expBst.Root(), func(node interface{}) bool {
+		n := node.(*BstElement)
+		expArr = append(expArr,int(n.Key))
+		return false
+	})
+	bst.PostOrderWalk(bst.Root(), func(node interface{}) bool {
+		n := node.(*BstElement)
+		if *debug {
+			fmt.Println(n)
+		}
+		resultArr = append(resultArr,int(n.Key))
+		return false
+	})
+	if !reflect.DeepEqual(resultArr, expArr) {
+		t.Log(fmt.Sprintf("expect:%v", expArr) + fmt.Sprintf("but get:%v", resultArr))
+		t.Fail()
+	}
+}
