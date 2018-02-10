@@ -227,7 +227,7 @@ func (t *BstIterative) InOrderWalk(node interface{}, callback func(interface{}) 
 func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
 	root := node.(*BstElement)
 
-	goDown := func (curNode *BstElement)(*BstElement, bool) {
+	goDown := func(curNode *BstElement) (*BstElement, bool) {
 		if curNode.left != nil {
 			return curNode.left, true
 		} else if curNode.right != nil {
@@ -236,7 +236,7 @@ func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{})
 		return curNode, false
 	}
 
-	goUp := func (curNode *BstElement)(*BstElement, bool) {
+	goUp := func(curNode *BstElement) (*BstElement, bool) {
 		if curNode == root || curNode.right != nil {
 			return curNode.right, true
 		} else if curNode == curNode.parent.left {
@@ -279,7 +279,7 @@ func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{})
 func (t *BstIterative) PostOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 
-	leftistNode := func(curNode *BstElement)(nextNode *BstElement) {
+	leftistNode := func(curNode *BstElement) (nextNode *BstElement) {
 		nextNode = curNode
 		for nextNode.right != nil {
 			nextNode = t.Min(nextNode.right).(*BstElement)
@@ -287,7 +287,7 @@ func (t *BstIterative) PostOrderWalk(node interface{}, callback func(interface{}
 		return
 	}
 
-	for curNode:=leftistNode(t.Min(n).(*BstElement));curNode != n;{
+	for curNode := leftistNode(t.Min(n).(*BstElement)); curNode != n; {
 		stop := callback(curNode)
 		if stop {
 			return true
