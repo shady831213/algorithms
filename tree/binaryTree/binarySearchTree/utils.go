@@ -82,15 +82,15 @@ func checkBstPostOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
 
 	curNode:=bst.Min(bst.Root()).(*BstElement)
 	for curNode.right != nil {
-		curNode = bst.Successor(curNode).(*BstElement)
+		curNode = bst.Min(curNode.right).(*BstElement)
 	}
 	expArr = append(expArr,int(curNode.Key))
 	for curNode.parent!=nil {
-		//if it is left child ,get the successor of which node's right child is not nil from parent, if it is rignt child, get the parent
+		//if it is left child ,get the min of which node's right child is not nil from parent, if it is rignt child, get the parent
 		nextNode := curNode.parent
 		if curNode == nextNode.left {
 			for nextNode.right != nil {
-				nextNode = bst.Successor(nextNode).(*BstElement)
+				nextNode = bst.Min(nextNode.right).(*BstElement)
 			}
 		}
 		curNode = nextNode

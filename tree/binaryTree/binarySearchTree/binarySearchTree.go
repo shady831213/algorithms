@@ -114,7 +114,7 @@ func (t *Bst) Predecesor(node interface{}) (interface{}) {
 		return t.Max(n.left)
 	} else {
 		cur := n
-		for cur.parent == nil || cur.parent.right != cur {
+		for cur.parent != nil && cur.parent.right != cur {
 			cur = cur.parent
 		}
 		return cur.parent
@@ -130,7 +130,7 @@ func (t *Bst) Successor(node interface{}) (interface{}) {
 		return t.Min(n.right)
 	} else {
 		cur := n
-		for cur.parent == nil || cur.parent.left != cur {
+		for cur.parent != nil && cur.parent.left != cur {
 			cur = cur.parent
 		}
 		return cur.parent
@@ -194,4 +194,59 @@ func (t *BstRecrusive) PostOrderWalk(node interface{}, callback func(interface{}
 
 func NewBstRecrusive() *BstRecrusive {
 	return new(BstRecrusive)
+}
+
+
+type BstIterative struct {
+	Bst
+}
+
+func (t *BstIterative) InOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	for curNode:=t.Min(n).(*BstElement); curNode != nil;{
+		stop := callback(curNode)
+		if stop{
+			return true
+		}
+		curNode = t.Successor(curNode).(*BstElement)
+	}
+	return false
+}
+
+func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	if n != nil {
+		stop := callback(n)
+		if stop {
+			return true
+		}
+		stop = t.PreOrderWalk(n.left, callback)
+		if stop {
+			return true
+		}
+		stop = t.PreOrderWalk(n.right, callback)
+		return stop
+	}
+	return false
+}
+
+func (t *BstIterative) PostOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	if n != nil {
+		stop := t.PostOrderWalk(n.left, callback)
+		if stop {
+			return true
+		}
+		stop = t.PostOrderWalk(n.right, callback)
+		if stop {
+			return true
+		}
+		stop = callback(n)
+		return stop
+	}
+	return false
+}
+
+func NewBstIterative() *BstIterative {
+	return new(BstIterative)
 }

@@ -155,3 +155,22 @@ func TestBstRecrusive_PostOrderWalk(t *testing.T) {
 	}
 	checkBstPostOrder(t, bst)
 }
+
+func TestBstIterative_InOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	resultArr := make([]int, 0, 0)
+	bst := NewBstIterative()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+	}
+	sort.Ints(arr)
+	bst.InOrderWalk(bst.root, func(node interface{}) bool {
+		n := node.(*BstElement)
+		resultArr = append(resultArr,int(n.Key))
+		return false
+	})
+	if !reflect.DeepEqual(resultArr, arr) {
+		t.Log(fmt.Sprintf("expect:%v", arr) + fmt.Sprintf("but get:%v", resultArr))
+		t.Fail()
+	}
+}
