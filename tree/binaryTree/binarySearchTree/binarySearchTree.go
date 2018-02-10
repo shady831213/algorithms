@@ -10,11 +10,15 @@ type BstElement struct {
 }
 
 type Bst struct {
-	Root *BstElement
+	root *BstElement
+}
+
+func (t *Bst)Root()(interface{})  {
+	return t.root
 }
 
 func (t *Bst) Search(key uint32) (interface{}) {
-	for cur := t.Root; cur != nil; {
+	for cur := t.root; cur != nil; {
 		if cur.Key == key {
 			return cur
 		} else if key < cur.Key {
@@ -33,7 +37,7 @@ func (t *Bst) Insert(node interface{}) {
 		n = new(BstElement)
 		n.Key = node.(uint32)
 	}
-	for cur := t.Root; cur != nil; {
+	for cur := t.root; cur != nil; {
 		target = cur
 		if n.Key < cur.Key {
 			cur = cur.left
@@ -43,7 +47,7 @@ func (t *Bst) Insert(node interface{}) {
 	}
 	n.parent = target
 	if target == nil {
-		t.Root = n
+		t.root = n
 	} else if n.Key < target.Key {
 		target.left = n
 	} else {
@@ -63,7 +67,7 @@ func (t *Bst) Delete(key uint32) {
 			reConnectedNode.parent = node.parent
 		}
 		if node.parent == nil {
-			t.Root = reConnectedNode
+			t.root = reConnectedNode
 		} else if node.parent.right == node {
 			node.parent.right = reConnectedNode
 		} else {
@@ -149,6 +153,40 @@ func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(interface{}) 
 			return true
 		}
 		stop = t.InOrderWalk(n.right, callback)
+		return stop
+	}
+	return false
+}
+
+func (t *BstRecrusive) PreOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	if n != nil {
+		stop := callback(n)
+		if stop {
+			return true
+		}
+		stop = t.PreOrderWalk(n.left, callback)
+		if stop {
+			return true
+		}
+		stop = t.PreOrderWalk(n.right, callback)
+		return stop
+	}
+	return false
+}
+
+func (t *BstRecrusive) PostOrderWalk(node interface{}, callback func(interface{}) (bool)) (bool) {
+	n := node.(*BstElement)
+	if n != nil {
+		stop := t.PostOrderWalk(n.left, callback)
+		if stop {
+			return true
+		}
+		stop = t.PostOrderWalk(n.right, callback)
+		if stop {
+			return true
+		}
+		stop = callback(n)
 		return stop
 	}
 	return false

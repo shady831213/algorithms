@@ -5,6 +5,7 @@ type BinaryTreeElement struct {
 }
 
 type BinaryTreeIf interface {
+	Root()(interface{})
 	Search(uint32)(interface{})
 	Insert(interface{})
 	Delete(uint32)
@@ -13,6 +14,6 @@ type BinaryTreeIf interface {
 	Min(interface{})(interface{})
 	Max(interface{})(interface{})
 	InOrderWalk(interface{}, func(interface{})(bool))(bool)
-	//PreOrderWalk(func(interface{}, ...interface{}), ...interface{})
-	//PostOrderWalk(func(interface{}, ...interface{}), ...interface{})
+	PreOrderWalk(interface{}, func(interface{})(bool))(bool)
+	PostOrderWalk(interface{}, func(interface{})(bool))(bool)
 }

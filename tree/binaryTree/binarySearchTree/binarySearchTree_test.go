@@ -6,18 +6,19 @@ import (
 	"fmt"
 	"flag"
 	"sort"
+	"reflect"
 )
 
 var debug  = flag.Bool("debug", false, "debug flag")
 
-func TestBst_InsertAndInOrderWalk(t *testing.T) {
+func TestBst_Insert(t *testing.T) {
 	arr := tree.RandomSlice(0,20, 10)
 	nodeCnt := 0
 	bst := NewBstRecrusive()
 	for _,v := range arr {
 		bst.Insert(uint32(v))
 	}
-	bst.InOrderWalk(bst.Root, checkBst(t, &nodeCnt, *debug))
+	bst.InOrderWalk(bst.root, checkBst(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
 		t.Log(fmt.Sprintf("node cnt expect to ", len(arr), "but get:",nodeCnt))
 		t.Fail()
@@ -38,7 +39,7 @@ func TestBst_Delete(t *testing.T) {
 	for i:=0;i < delNum;i++{
 		bst.Delete(uint32(arr[i]))
 	}
-	bst.InOrderWalk(bst.Root, checkBst(t, &nodeCnt, *debug))
+	bst.InOrderWalk(bst.root, checkBst(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) - delNum {
 		t.Log(fmt.Sprintf("node cnt expect to ", len(arr) - delNum, "but get:",nodeCnt))
 		t.Fail()
@@ -52,7 +53,7 @@ func TestBst_Min(t *testing.T) {
 	for _,v := range arr {
 		bst.Insert(uint32(v))
 	}
-	min := int(bst.Min(bst.Root).(*BstElement).Key)
+	min := int(bst.Min(bst.root).(*BstElement).Key)
 	sort.Ints(arr)
 	if min != arr[0] {
 		t.Log(fmt.Sprintf("min expect to ", arr[0], "but get:",min))
@@ -66,7 +67,7 @@ func TestBst_Max(t *testing.T) {
 	for _,v := range arr {
 		bst.Insert(uint32(v))
 	}
-	max := int(bst.Max(bst.Root).(*BstElement).Key)
+	max := int(bst.Max(bst.root).(*BstElement).Key)
 	sort.Ints(arr)
 	if max != arr[len(arr)-1] {
 		t.Log(fmt.Sprintf("max expect to ", arr[len(arr)-1], "but get:",max))
@@ -116,4 +117,32 @@ func TestBst_Successor(t *testing.T) {
 		t.Log(fmt.Sprintf("Successor of",arr[key], " expect to ", arr[key+1] , "but get:",result))
 		t.Fail()
 	}
+}
+
+func TestBstRecrusive_InOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	resultArr := make([]int, 0, 0)
+	bst := NewBstRecrusive()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+	}
+	sort.Ints(arr)
+	bst.InOrderWalk(bst.root, func(node interface{}) bool {
+		n := node.(*BstElement)
+		resultArr = append(resultArr,int(n.Key))
+		return false
+	})
+	if !reflect.DeepEqual(resultArr, arr) {
+		t.Log(fmt.Sprintf("expect:%v", arr) + fmt.Sprintf("but get:%v", resultArr))
+		t.Fail()
+	}
+}
+
+func TestBstRecrusive_PreOrderWalk(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	bst := NewBstRecrusive()
+	for _,v := range arr {
+		bst.Insert(uint32(v))
+	}
+	checkBstPreOder(t, bst)
 }
