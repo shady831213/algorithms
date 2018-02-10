@@ -91,7 +91,7 @@ func (t *BstIterative) PreOrderWalk(node interface{}, callback func(interface{})
 		} else if curNode == curNode.parent.left {
 			for curNode == curNode.parent.left {
 				curNode = curNode.parent
-				if curNode.right != nil {
+				if curNode == root || curNode.right != nil {
 					return curNode.right, true
 				}
 			}
