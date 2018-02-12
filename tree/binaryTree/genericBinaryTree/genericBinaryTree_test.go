@@ -144,7 +144,7 @@ func TestGBTRecrusive_PreOrderWalk(t *testing.T) {
 	for _,v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	checkGBTPreOrder(t, gbt)
+	checkGBTPreOrder(t, gbt, arr)
 }
 
 func TestGBTRecrusive_PostOrderWalk(t *testing.T) {
@@ -153,5 +153,5 @@ func TestGBTRecrusive_PostOrderWalk(t *testing.T) {
 	for _,v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	checkGBTPostOrder(t, gbt)
+	checkGBTPostOrder(t, gbt, arr)
 }
