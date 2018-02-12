@@ -64,6 +64,7 @@ func (t *GBT) Insert(node interface{}) {
 	n.parent = target
 	if t.IsNil(target) {
 		t.nilNode.left = n
+		t.nilNode.right = n
 	} else if n.Key < target.Key {
 		target.left = n
 	} else {
@@ -84,6 +85,7 @@ func (t *GBT) Delete(key uint32) {
 		}
 		if t.IsNil(node.parent) {
 			t.nilNode.left = reConnectedNode
+			t.nilNode.right = reConnectedNode
 		} else if node.parent.right == node {
 			node.parent.right = reConnectedNode
 		} else {
@@ -150,6 +152,41 @@ func (t *GBT) Successor(node interface{}) (interface{}) {
 			cur = cur.parent
 		}
 		return cur.parent
+	}
+}
+//if new node is nilNode, nilNode point to the new root
+func (t *GBT) LeftRotate(node interface{}) {
+	n := node.(*GBTElement)
+	newNode := n.right
+	n.parent, newNode.parent = newNode, n.parent
+	newNode.left, n.right = n, newNode.left
+	if newNode.parent.right == n {
+		newNode.parent.right = newNode
+	} else {
+		newNode.parent.left = newNode
+	}
+	//process Nil
+	if t.IsNil(newNode) {
+		t.nilNode.right = t.nilNode.left
+		t.nilNode.parent = t.nilNode
+	}
+}
+//if new node is nilNode, nilNode point to the new root
+func (t *GBT) RightRotate(node interface{}){
+	n := node.(*GBTElement)
+	newNode := n.right
+	n.parent, newNode.parent = newNode, n.parent
+	newNode.right, n.left = n, newNode.right
+
+	if newNode.parent.right == n {
+		newNode.parent.right = newNode
+	} else {
+		newNode.parent.left = newNode
+	}
+	//process Nil
+	if t.IsNil(newNode) {
+		t.nilNode.left = t.nilNode.right
+		t.nilNode.parent = t.nilNode
 	}
 }
 

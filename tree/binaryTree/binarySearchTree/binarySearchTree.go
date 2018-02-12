@@ -141,6 +141,14 @@ func (t *Bst) Successor(node interface{}) (interface{}) {
 	}
 }
 
+func (t *Bst) LeftRotate(node interface{}) {
+	panic("not implement in Bst!")
+}
+
+func (t *Bst) RightRotate(node interface{}){
+	panic("not implement in Bst!")
+}
+
 type BstRecrusive struct {
 	Bst
 }
