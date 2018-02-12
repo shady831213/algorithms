@@ -10,7 +10,7 @@ type GBTElement struct {
 }
 
 type GBT struct {
-	nilNode *GBTElement//nil node
+	nilNode *GBTElement//nil node, left, right point to the root, parent point to it self, empty pointer point to th nilNode
 }
 
 func (t *GBT) init() {
@@ -154,40 +154,37 @@ func (t *GBT) Successor(node interface{}) (interface{}) {
 		return cur.parent
 	}
 }
-//if new node is nilNode, nilNode point to the new root
+
 func (t *GBT) LeftRotate(node interface{}) {
 	n := node.(*GBTElement)
+	if t.IsNil(n.right) {
+		return
+	}
 	newNode := n.right
+	if n.parent.left == n {
+		n.parent.left = newNode
+	}
+	if n.parent.right == n {
+		n.parent.right = newNode
+	}
 	n.parent, newNode.parent = newNode, n.parent
-	newNode.left, n.right = n, newNode.left
-	if newNode.parent.right == n {
-		newNode.parent.right = newNode
-	} else {
-		newNode.parent.left = newNode
-	}
-	//process Nil
-	if t.IsNil(newNode) {
-		t.nilNode.right = t.nilNode.left
-		t.nilNode.parent = t.nilNode
-	}
+	newNode.left,newNode.left.parent, n.right = n, n, newNode.left
 }
-//if new node is nilNode, nilNode point to the new root
+
 func (t *GBT) RightRotate(node interface{}){
 	n := node.(*GBTElement)
-	newNode := n.right
+	if t.IsNil(n.left) {
+		return
+	}
+	newNode := n.left
+	if n.parent.right == n {
+		n.parent.right = newNode
+	}
+	if n.parent.left == n {
+		n.parent.left = newNode
+	}
 	n.parent, newNode.parent = newNode, n.parent
-	newNode.right, n.left = n, newNode.right
-
-	if newNode.parent.right == n {
-		newNode.parent.right = newNode
-	} else {
-		newNode.parent.left = newNode
-	}
-	//process Nil
-	if t.IsNil(newNode) {
-		t.nilNode.left = t.nilNode.right
-		t.nilNode.parent = t.nilNode
-	}
+	newNode.right,newNode.right.parent, n.left = n, n, newNode.right
 }
 
 //next node should always be successor node

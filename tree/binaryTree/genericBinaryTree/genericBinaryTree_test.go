@@ -20,7 +20,7 @@ func TestGBT_Insert(t *testing.T) {
 	}
 	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
-		t.Log(fmt.Sprintf("node cnt expect to ", len(arr), "but get:",nodeCnt))
+		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
 		t.Fail()
 	}
 }
@@ -114,7 +114,106 @@ func TestGBT_Successor(t *testing.T) {
 	key := tree.GetRand().Intn(len(arr) - 2) + 1
 	result := int(gbt.Successor(gbt.Search(uint32(arr[key]))).(*GBTElement).Key)
 	if result != arr[key+1] {
-		t.Log(fmt.Sprintf("Successor of",arr[key], " expect to ", arr[key+1] , "but get:",result))
+		t.Log("Successor of",arr[key], " expect to ", arr[key+1] , "but get:",result)
+		t.Fail()
+	}
+}
+
+func TestGBT_LeftRotate(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	nodeCnt := 0
+	gbt := New()
+	for _,v := range arr {
+		gbt.Insert(uint32(v))
+	}
+	//left rotate randomly
+	leftRotateNodes := make([]*GBTElement, 0, 0)
+	gbt.InOrderWalk(gbt.Root(),func(GBT binaryTree.BinaryTreeIf,node interface{}) bool {
+		rotate := tree.GetRand().Intn(2)
+		if rotate == 1 {
+			leftRotateNodes = append(leftRotateNodes, node.(*GBTElement))
+			if *debug {
+				return true
+			}
+		}
+		return false
+	})
+	for _, v := range leftRotateNodes {
+		gbt.LeftRotate(v)
+	}
+	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	if nodeCnt != len(arr) {
+		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
+		t.Fail()
+	}
+	if *debug {
+		resultArr := make([]int, 0, 0)
+		sort.Ints(arr)
+		gbt.InOrderWalk(gbt.Root(), func(GBT binaryTree.BinaryTreeIf, node interface{}) bool {
+			n := node.(*GBTElement)
+			resultArr = append(resultArr, int(n.Key))
+			return false
+		})
+		if !reflect.DeepEqual(resultArr, arr) {
+			t.Log(fmt.Sprintf("expect:%v", arr) + fmt.Sprintf("but get:%v", resultArr))
+			t.Fail()
+		}
+	}
+}
+
+func TestGBT_RightRotate(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	nodeCnt := 0
+	gbt := New()
+	for _,v := range arr {
+		gbt.Insert(uint32(v))
+	}
+	//Right rotate randomly
+	rightRotateNodes := make([]*GBTElement, 0, 0)
+	gbt.InOrderWalk(gbt.Root(),func(GBT binaryTree.BinaryTreeIf,node interface{}) bool {
+		rotate := tree.GetRand().Intn(2)
+		if rotate == 1 {
+			rightRotateNodes = append(rightRotateNodes, node.(*GBTElement))
+		}
+		return false
+	})
+	for _, v := range rightRotateNodes {
+		gbt.RightRotate(v)
+	}
+	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	if nodeCnt != len(arr) {
+		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
+		t.Fail()
+	}
+}
+
+func TestGBT_Rotate(t *testing.T) {
+	arr := tree.RandomSlice(0,20, 10)
+	nodeCnt := 0
+	gbt := New()
+	for _,v := range arr {
+		gbt.Insert(uint32(v))
+	}
+	//Right rotate randomly
+	rotateNodes := make([]*GBTElement, 0, 0)
+	gbt.InOrderWalk(gbt.Root(),func(GBT binaryTree.BinaryTreeIf,node interface{}) bool {
+		rotate := tree.GetRand().Intn(2)
+		if rotate == 1 {
+			rotateNodes = append(rotateNodes, node.(*GBTElement))
+		}
+		return false
+	})
+	for _, v := range rotateNodes {
+		rotate := tree.GetRand().Intn(2)
+		if rotate == 1 {
+			gbt.LeftRotate(v)
+		} else {
+			gbt.RightRotate(v)
+		}
+	}
+	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	if nodeCnt != len(arr) {
+		t.Log(fmt.Sprintf("node cnt expect to ", len(arr), "but get:",nodeCnt))
 		t.Fail()
 	}
 }
@@ -127,7 +226,7 @@ func TestGBTRecrusive_InOrderWalk(t *testing.T) {
 		gbt.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	gbt.InOrderWalk(gbt.Root(), func(tree binaryTree.BinaryTreeIf,node interface{}) bool {
+	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTree.BinaryTreeIf,node interface{}) bool {
 		n := node.(*GBTElement)
 		resultArr = append(resultArr,int(n.Key))
 		return false
