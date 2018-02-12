@@ -7,6 +7,7 @@ import (
 	"flag"
 	"sort"
 	"reflect"
+	"algorithms/tree/binaryTree"
 )
 
 var debug  = flag.Bool("debug", false, "debug flag")
@@ -127,7 +128,7 @@ func TestBstRecrusive_InOrderWalk(t *testing.T) {
 		bst.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	bst.InOrderWalk(bst.root, func(node interface{}) bool {
+	bst.InOrderWalk(bst.root, func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		resultArr = append(resultArr,int(n.Key))
 		return false
@@ -164,7 +165,7 @@ func TestBstIterative_InOrderWalk(t *testing.T) {
 		bst.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	bst.InOrderWalk(bst.root, func(node interface{}) bool {
+	bst.InOrderWalk(bst.root, func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		resultArr = append(resultArr,int(n.Key))
 		return false
@@ -185,12 +186,12 @@ func TestBstIterative_PreOrderWalk(t *testing.T) {
 		bst.Insert(uint32(v))
 		expBst.Insert(uint32(v))
 	}
-	expBst.PreOrderWalk(expBst.Root(), func(node interface{}) bool {
+	expBst.PreOrderWalk(expBst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		expArr = append(expArr,int(n.Key))
 		return false
 	})
-	bst.PreOrderWalk(bst.Root(), func(node interface{}) bool {
+	bst.PreOrderWalk(bst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		if *debug {
 			fmt.Println(n)
@@ -214,12 +215,12 @@ func TestBstIterative_PostOrderWalk(t *testing.T) {
 		bst.Insert(uint32(v))
 		expBst.Insert(uint32(v))
 	}
-	expBst.PostOrderWalk(expBst.Root(), func(node interface{}) bool {
+	expBst.PostOrderWalk(expBst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		expArr = append(expArr,int(n.Key))
 		return false
 	})
-	bst.PostOrderWalk(bst.Root(), func(node interface{}) bool {
+	bst.PostOrderWalk(bst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		if *debug {
 			fmt.Println(n)

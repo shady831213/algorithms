@@ -1,4 +1,4 @@
-package binarySearchTree
+package genericBinaryTree
 
 import (
 	"fmt"
@@ -7,15 +7,15 @@ import (
 	"reflect"
 )
 
-func checkBst(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTreeIf, interface{}) (bool)) {
+func checkGBT(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTreeIf, interface{}) (bool)) {
 	return func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
-		if n.left != nil && n.left.Key >= n.Key {
+		n := node.(*GBTElement)
+		if !tree.IsNil(n.left) && n.left.Key >= n.Key {
 			t.Log(fmt.Sprintf("left child ", n.left, "of node:", n, "is more than or equal to n!"))
 			t.Fail()
 			return true
 		}
-		if n.right != nil && n.right.Key <= n.Key {
+		if !tree.IsNil(n.right) && n.right.Key <= n.Key {
 			t.Log(fmt.Sprintf("right child ", n.right, "of node:", n, "is less than or equal to n!"))
 			t.Fail()
 			return true
@@ -28,21 +28,21 @@ func checkBst(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTre
 	}
 }
 
-func checkBstPreOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
+func checkGBTPreOrder(t *testing.T, tree binaryTree.BinaryTreeIf) {
 	resultArr := make([]int, 0, 0)
 
-	bst.PreOrderWalk(bst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	tree.PreOrderWalk(tree.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
+		n := node.(*GBTElement)
 		resultArr = append(resultArr,int(n.Key))
 		return false
 	})
 
-	if bst.Root().(*BstElement).Key != uint32(resultArr[0]) {
-		t.Log("first element is expected to be root ", bst.Root().(*BstElement).Key, " but get ", uint32(resultArr[0]))
+	if tree.Root().(*GBTElement).Key != uint32(resultArr[0]) {
+		t.Log("first element is expected to be root ", tree.Root().(*GBTElement).Key, " but get ", uint32(resultArr[0]))
 		t.Fail()
 	}
 
-	min := int(bst.Min(bst.Root()).(*BstElement).Key)
+	min := int(tree.Min(tree.Root()).(*GBTElement).Key)
 	for i := range resultArr[:len(resultArr)-1] {
 		if resultArr[i] > resultArr[i+1] {
 			//expect decreasing numbers down to min
@@ -59,7 +59,7 @@ func checkBstPreOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
 				return
 			}
 			//next min value should be the min of the nearest right sub tree
-			nextMin := int(bst.Min(bst.Search(uint32(resultArr[i+1]))).(*BstElement).Key)
+			nextMin := int(tree.Min(tree.Search(uint32(resultArr[i+1]))).(*GBTElement).Key)
 			if nextMin <= min {
 				t.Log("next min", nextMin, "of element ", resultArr[i+1], " @", i+1, "is expected to be more than ", min)
 				t.Fail()
@@ -71,26 +71,26 @@ func checkBstPreOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
 	}
 }
 
-func checkBstPostOrder(t *testing.T, bst binaryTree.BinaryTreeIf) {
+func checkGBTPostOrder(t *testing.T, tree binaryTree.BinaryTreeIf) {
 	resultArr := make([]int, 0, 0)
 	expArr:= make([]int, 0, 0)
-	bst.PostOrderWalk(bst.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	tree.PostOrderWalk(tree.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
+		n := node.(*GBTElement)
 		resultArr = append(resultArr,int(n.Key))
 		return false
 	})
 
-	curNode:=bst.Min(bst.Root()).(*BstElement)
-	for curNode.right != nil {
-		curNode = bst.Min(curNode.right).(*BstElement)
+	curNode:= tree.Min(tree.Root()).(*GBTElement)
+	for !tree.IsNil(curNode.right) {
+		curNode = tree.Min(curNode.right).(*GBTElement)
 	}
 	expArr = append(expArr,int(curNode.Key))
-	for curNode.parent!=nil {
+	for !tree.IsNil(curNode.parent) {
 		//if it is left child ,get the min of which node's right child is not nil from parent, if it is rignt child, get the parent
 		nextNode := curNode.parent
 		if curNode == nextNode.left {
-			for nextNode.right != nil {
-				nextNode = bst.Min(nextNode.right).(*BstElement)
+			for !tree.IsNil(nextNode.right) {
+				nextNode = tree.Min(nextNode.right).(*GBTElement)
 			}
 		}
 		curNode = nextNode
