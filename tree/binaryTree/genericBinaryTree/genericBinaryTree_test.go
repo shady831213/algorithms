@@ -18,7 +18,7 @@ func TestGBT_Insert(t *testing.T) {
 	for _,v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	gbt.InOrderWalk(gbt.Root(), CheckGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
 		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
 		t.Fail()
@@ -39,7 +39,7 @@ func TestGBT_Delete(t *testing.T) {
 	for i:=0;i < delNum;i++{
 		gbt.Delete(uint32(arr[i]))
 	}
-	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	gbt.InOrderWalk(gbt.Root(), CheckGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) - delNum {
 		t.Log(fmt.Sprintf("node cnt expect to ", len(arr) - delNum, "but get:",nodeCnt))
 		t.Fail()
@@ -97,7 +97,7 @@ func TestGBT_Predecesor(t *testing.T) {
 	}
 	sort.Ints(arr)
 	key := tree.GetRand().Intn(len(arr) - 2) + 1
-	result := int(gbt.Predecesor(gbt.Search(uint32(arr[key]))).(*GBTElement).Key)
+	result := int(gbt.Predecesor(gbt.Search(uint32(arr[key])),gbt.Root()).(*GBTElement).Key)
 	if result != arr[key-1] {
 		t.Log(fmt.Sprintf("Predecesor of",arr[key], " expect to ", arr[key-1] , "but get:",result))
 		t.Fail()
@@ -112,7 +112,7 @@ func TestGBT_Successor(t *testing.T) {
 	}
 	sort.Ints(arr)
 	key := tree.GetRand().Intn(len(arr) - 2) + 1
-	result := int(gbt.Successor(gbt.Search(uint32(arr[key]))).(*GBTElement).Key)
+	result := int(gbt.Successor(gbt.Search(uint32(arr[key])),gbt.Root()).(*GBTElement).Key)
 	if result != arr[key+1] {
 		t.Log("Successor of",arr[key], " expect to ", arr[key+1] , "but get:",result)
 		t.Fail()
@@ -126,7 +126,7 @@ func TestGBT_LeftRotate(t *testing.T) {
 	for _,v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	//left rotate randomly
+	//Left rotate randomly
 	leftRotateNodes := make([]*GBTElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(),func(GBT binaryTree.BinaryTreeIf,node interface{}) bool {
 		rotate := tree.GetRand().Intn(2)
@@ -141,7 +141,7 @@ func TestGBT_LeftRotate(t *testing.T) {
 	for _, v := range leftRotateNodes {
 		gbt.LeftRotate(v)
 	}
-	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	gbt.InOrderWalk(gbt.Root(), CheckGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
 		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
 		t.Fail()
@@ -180,7 +180,7 @@ func TestGBT_RightRotate(t *testing.T) {
 	for _, v := range rightRotateNodes {
 		gbt.RightRotate(v)
 	}
-	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	gbt.InOrderWalk(gbt.Root(), CheckGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
 		t.Log("node cnt expect to ", len(arr), "but get:",nodeCnt)
 		t.Fail()
@@ -211,7 +211,7 @@ func TestGBT_Rotate(t *testing.T) {
 			gbt.RightRotate(v)
 		}
 	}
-	gbt.InOrderWalk(gbt.Root(), checkGBT(t, &nodeCnt, *debug))
+	gbt.InOrderWalk(gbt.Root(), CheckGBT(t, &nodeCnt, *debug))
 	if nodeCnt != len(arr) {
 		t.Log(fmt.Sprintf("node cnt expect to ", len(arr), "but get:",nodeCnt))
 		t.Fail()

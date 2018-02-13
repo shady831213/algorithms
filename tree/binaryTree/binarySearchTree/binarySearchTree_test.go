@@ -98,7 +98,7 @@ func TestBst_Predecesor(t *testing.T) {
 	}
 	sort.Ints(arr)
 	key := tree.GetRand().Intn(len(arr) - 2) + 1
-	result := int(bst.Predecesor(bst.Search(uint32(arr[key]))).(*BstElement).Key)
+	result := int(bst.Predecesor(bst.Search(uint32(arr[key])), bst.Root()).(*BstElement).Key)
 	if result != arr[key-1] {
 		t.Log(fmt.Sprintf("Predecesor of",arr[key], " expect to ", arr[key-1] , "but get:",result))
 		t.Fail()
@@ -113,7 +113,7 @@ func TestBst_Successor(t *testing.T) {
 	}
 	sort.Ints(arr)
 	key := tree.GetRand().Intn(len(arr) - 2) + 1
-	result := int(bst.Successor(bst.Search(uint32(arr[key]))).(*BstElement).Key)
+	result := int(bst.Successor(bst.Search(uint32(arr[key])), bst.Root()).(*BstElement).Key)
 	if result != arr[key+1] {
 		t.Log(fmt.Sprintf("Successor of",arr[key], " expect to ", arr[key+1] , "but get:",result))
 		t.Fail()

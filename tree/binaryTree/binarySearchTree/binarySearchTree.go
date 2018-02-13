@@ -34,7 +34,7 @@ func (t *Bst) Search(key uint32) (interface{}) {
 	return nil
 }
 
-func (t *Bst) Insert(node interface{}) {
+func (t *Bst) Insert(node interface{})(interface{}) {
 	var target *BstElement
 	n, isNode := node.(*BstElement)
 	if !isNode {
@@ -57,9 +57,10 @@ func (t *Bst) Insert(node interface{}) {
 	} else {
 		target.right = n
 	}
+	return n
 }
 
-func (t *Bst) Delete(key uint32) {
+func (t *Bst) Delete(key uint32)(interface{}) {
 	deleteNonCompletedNode := func(node *BstElement) {
 		var reConnectedNode *BstElement
 		if node.left == nil {
@@ -81,16 +82,17 @@ func (t *Bst) Delete(key uint32) {
 	}
 	node := t.Search(key).(*BstElement)
 	if node == nil {
-		return
+		return node
 	}
 	if node.left == nil || node.right == nil {
 		deleteNonCompletedNode(node)
 	} else {
-		successor := t.Successor(node).(*BstElement)
+		successor := t.Successor(node, t.Root()).(*BstElement)
 		_key, _value := successor.Key, successor.Value
 		deleteNonCompletedNode(successor)
 		node.Key, node.Value = _key, _value
 	}
+	return node
 }
 
 func (t *Bst) Min(node interface{}) (interface{}) {
@@ -109,7 +111,7 @@ func (t *Bst) Max(node interface{}) (interface{}) {
 	return cur
 }
 
-func (t *Bst) Predecesor(node interface{}) (interface{}) {
+func (t *Bst) Predecesor(node interface{}, root interface{}) (interface{}) {
 	n := node.(*BstElement)
 	if n == nil {
 		return nil
@@ -125,7 +127,7 @@ func (t *Bst) Predecesor(node interface{}) (interface{}) {
 	}
 }
 
-func (t *Bst) Successor(node interface{}) (interface{}) {
+func (t *Bst) Successor(node interface{}, root interface{}) (interface{}) {
 	n := node.(*BstElement)
 	if n == nil {
 		return nil
@@ -141,11 +143,11 @@ func (t *Bst) Successor(node interface{}) (interface{}) {
 	}
 }
 
-func (t *Bst) LeftRotate(node interface{}) {
+func (t *Bst) LeftRotate(node interface{})(interface{}) {
 	panic("not implement in Bst!")
 }
 
-func (t *Bst) RightRotate(node interface{}){
+func (t *Bst) RightRotate(node interface{})(interface{}) {
 	panic("not implement in Bst!")
 }
 
@@ -221,7 +223,7 @@ func (t *BstIterative) InOrderWalk(node interface{}, callback func(binaryTree.Bi
 		if stop {
 			return true
 		}
-		curNode = t.Successor(curNode).(*BstElement)
+		curNode = t.Successor(curNode, n).(*BstElement)
 	}
 	return false
 }
@@ -262,7 +264,7 @@ func (t *BstIterative) PreOrderWalk(node interface{}, callback func(binaryTree.B
 			parentNode := curNode.parent
 			parentRightNode := parentNode.right
 			parentNode.right = nil
-			curNode = t.Successor(parentNode).(*BstElement)
+			curNode = t.Successor(parentNode, root).(*BstElement)
 			parentNode.right = parentRightNode
 		}
 		return curNode, false

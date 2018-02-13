@@ -8,16 +8,16 @@ import (
 	"reflect"
 )
 
-func checkGBT(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTreeIf, interface{}) (bool)) {
+func CheckGBT(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTreeIf, interface{}) (bool)) {
 	return func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*GBTElement)
-		if !tree.IsNil(n.left) && n.left.Key >= n.Key {
-			t.Log(fmt.Sprintf("left child ", n.left, "of node:", n, "is more than or equal to n!"))
+		if !tree.IsNil(n.Left) && n.Left.Key >= n.Key {
+			t.Log(fmt.Sprintf("Left child ", n.Left, "of node:", n, "is more than or equal to n!"))
 			t.Fail()
 			return true
 		}
-		if !tree.IsNil(n.right) && n.right.Key <= n.Key {
-			t.Log(fmt.Sprintf("right child ", n.right, "of node:", n, "is less than or equal to n!"))
+		if !tree.IsNil(n.Right) && n.Right.Key <= n.Key {
+			t.Log(fmt.Sprintf("Right child ", n.Right, "of node:", n, "is less than or equal to n!"))
 			t.Fail()
 			return true
 		}
