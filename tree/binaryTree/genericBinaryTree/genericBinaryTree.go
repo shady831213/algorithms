@@ -186,7 +186,10 @@ func (t *GBT) LeftRotate(node interface{})(interface{}) {
 		n.Parent.Right = newNode
 	}
 	n.Parent, newNode.Parent = newNode, n.Parent
-	newNode.Left,newNode.Left.Parent, n.Right = n, n, newNode.Left
+	newNode.Left, n.Right = n, newNode.Left
+	if !t.IsNil(n.Right) {
+		n.Right.Parent = n
+	}
 	return newNode
 }
 
@@ -203,7 +206,10 @@ func (t *GBT) RightRotate(node interface{})(interface{}) {
 		n.Parent.Left = newNode
 	}
 	n.Parent, newNode.Parent = newNode, n.Parent
-	newNode.Right,newNode.Right.Parent, n.Left = n, n, newNode.Right
+	newNode.Right, n.Left = n, newNode.Right
+	if !t.IsNil(n.Left) {
+		n.Left.Parent = n
+	}
 	return newNode
 }
 

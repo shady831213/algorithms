@@ -7,9 +7,9 @@ import (
 	"fmt"
 )
 
-func checkRBT(t *testing.T, rbt *RBT) {
+func checkRBT(t *testing.T, rbt *RBT)(bool) {
 	blackCntQ := make([]int, 0, 0)
-	stop := rbt.InOrderWalk(rbt.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
+	stop := rbt.PreOrderWalk(rbt.Root(), func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		_tree := tree.(*RBT)
 		n := node.(*genericBinaryTree.GBTElement)
 		//root must be black
@@ -58,10 +58,10 @@ func checkRBT(t *testing.T, rbt *RBT) {
 		}
 		return false
 	})
-	if stop {
-		return
-	}
+
 	if len(blackCntQ) == 0 {
 		t.Error("black cnt collect error!")
+		return true
 	}
+	return stop
 }
