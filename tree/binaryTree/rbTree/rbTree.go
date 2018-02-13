@@ -28,11 +28,11 @@ func (t *RBT) Insert(node interface{}) (interface{}) {
 	return n
 }
 
-func (t *RBT) insertFix(node interface{})() {
+func (t *RBT) insertFix(node interface{}) () {
 	n := node.(*genericBinaryTree.GBTElement)
 	//only can violate property 3: both left and right children of red node must be black
 	for !t.color(n.Parent) && !t.color(n) {
-		grandNode := n.Parent.Parent//must be black
+		grandNode := n.Parent.Parent //must be black
 		uncleNode := grandNode.Right
 		if n.Parent == uncleNode {
 			uncleNode = grandNode.Left
@@ -43,9 +43,9 @@ func (t *RBT) insertFix(node interface{})() {
 			t.setColor(grandNode.Left, black)
 			t.setColor(grandNode.Right, black)
 			n = grandNode
-		//case2&3: uncle node is black
+			//case2&3: uncle node is black
 		} else {
-			t.setColor(grandNode,red)
+			t.setColor(grandNode, red)
 			if n.Parent == grandNode.Left {
 				//case 2 n is right child of parent
 				//no matter which side is n, case3 rotation will not violate red black tree propert.
@@ -54,18 +54,63 @@ func (t *RBT) insertFix(node interface{})() {
 					t.LeftRotate(n.Parent)
 				}
 				//case 3 n is left child of parent
-				t.setColor(grandNode.Left,black)
+				t.setColor(grandNode.Left, black)
 				t.RightRotate(grandNode)
 			} else {
 				if n == n.Parent.Left {
 					t.RightRotate(n.Parent)
 				}
-				t.setColor(grandNode.Right,black)
+				t.setColor(grandNode.Right, black)
 				t.LeftRotate(grandNode)
 			}
 		}
 	}
 	t.setColor(t.Root().(*genericBinaryTree.GBTElement), black)
+}
+
+func (t *RBT) Delete(key uint32) (interface{}) {
+	deleteNonCompletedNode := func(node *genericBinaryTree.GBTElement)(deletedNode *genericBinaryTree.GBTElement, nextNode *genericBinaryTree.GBTElement) {
+		var reConnectedNode *genericBinaryTree.GBTElement
+		if t.IsNil(node.Left) {
+			reConnectedNode = node.Right
+		} else {
+			reConnectedNode = node.Left
+		}
+		//mean's another black color
+		reConnectedNode.Parent = node.Parent
+		if t.IsNil(node.Parent) {
+			t.NilNode.Left = reConnectedNode
+			t.NilNode.Right = reConnectedNode
+		} else if node.Parent.Right == node {
+			node.Parent.Right = reConnectedNode
+		} else {
+			node.Parent.Left = reConnectedNode
+		}
+		return node, reConnectedNode
+	}
+	node := t.Search(key).(*genericBinaryTree.GBTElement)
+	if t.IsNil(node) {
+		return node
+	}
+	var deletedNode, reConnectedNode *genericBinaryTree.GBTElement
+	if t.IsNil(node.Left) || t.IsNil(node.Right) {
+		deletedNode, reConnectedNode = deleteNonCompletedNode(node)
+	} else {
+		successor := t.Successor(node, t.Root()).(*genericBinaryTree.GBTElement)
+		_key, _value := successor.Key, successor.Value
+		node.Key, node.Value = _key, _value
+		deletedNode, reConnectedNode =deleteNonCompletedNode(successor)
+	}
+	if t.color(deletedNode) {
+		//Now, reConnectedNode is black-black or black-red
+		t.deleteFix(reConnectedNode)
+	}
+	return node
+}
+
+func (t *RBT) deleteFix(node interface{})(){
+	//n := node.(*genericBinaryTree.GBTElement)
+
 }
 
 func New() *RBT {

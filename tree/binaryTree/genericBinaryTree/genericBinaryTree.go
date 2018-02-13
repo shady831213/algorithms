@@ -10,26 +10,26 @@ type GBTElement struct {
 }
 
 type GBT struct {
-	nilNode *GBTElement //nil node, Left, Right point to the root, Parent point to it self, empty pointer point to th nilNode
+	NilNode *GBTElement //nil node, Left, Right point to the root, Parent point to it self, empty pointer point to th NilNode
 	Object  binaryTree.BinaryTreeIf
 }
 
 func (t *GBT) Init() {
-	t.nilNode = new(GBTElement)
-	t.nilNode.Left = t.nilNode
-	t.nilNode.Right = t.nilNode
-	t.nilNode.Parent = t.nilNode
+	t.NilNode = new(GBTElement)
+	t.NilNode.Left = t.NilNode
+	t.NilNode.Right = t.NilNode
+	t.NilNode.Parent = t.NilNode
 	t.Object = t
 }
 
 
 func (t *GBT) IsNil(n interface{}) (bool) {
-	return n.(*GBTElement) == t.nilNode
+	return n.(*GBTElement) == t.NilNode
 }
 
 
 func (t *GBT) Root() (interface{}) {
-	return t.nilNode.Left
+	return t.NilNode.Left
 }
 
 func (t *GBT) Search(key uint32) (interface{}) {
@@ -42,7 +42,7 @@ func (t *GBT) Search(key uint32) (interface{}) {
 			cur = cur.Right
 		}
 	}
-	return t.nilNode
+	return t.NilNode
 }
 
 func (t *GBT) Insert(node interface{})(interface{}) {
@@ -51,9 +51,9 @@ func (t *GBT) Insert(node interface{})(interface{}) {
 	if !isNode {
 		n = new(GBTElement)
 		n.Key = node.(uint32)
-		n.Left = t.nilNode
-		n.Right = t.nilNode
-		n.Parent = t.nilNode
+		n.Left = t.NilNode
+		n.Right = t.NilNode
+		n.Parent = t.NilNode
 	}
 	for cur := t.Root().(*GBTElement); !t.IsNil(cur); {
 		target = cur
@@ -65,8 +65,8 @@ func (t *GBT) Insert(node interface{})(interface{}) {
 	}
 	n.Parent = target
 	if t.IsNil(target) {
-		t.nilNode.Left = n
-		t.nilNode.Right = n
+		t.NilNode.Left = n
+		t.NilNode.Right = n
 	} else if n.Key < target.Key {
 		target.Left = n
 	} else {
@@ -88,14 +88,13 @@ func (t *GBT) Delete(key uint32)(interface{}) {
 			reConnectedNode.Parent = node.Parent
 		}
 		if t.IsNil(node.Parent) {
-			t.nilNode.Left = reConnectedNode
-			t.nilNode.Right = reConnectedNode
+			t.NilNode.Left = reConnectedNode
+			t.NilNode.Right = reConnectedNode
 		} else if node.Parent.Right == node {
 			node.Parent.Right = reConnectedNode
 		} else {
 			node.Parent.Left = reConnectedNode
 		}
-		node = t.nilNode
 	}
 	node := t.Search(key).(*GBTElement)
 	if t.IsNil(node) {
@@ -106,8 +105,8 @@ func (t *GBT) Delete(key uint32)(interface{}) {
 	} else {
 		successor := t.Successor(node,t.Root()).(*GBTElement)
 		_key, _value := successor.Key, successor.Value
-		deleteNonCompletedNode(successor)
 		node.Key, node.Value = _key, _value
+		deleteNonCompletedNode(successor)
 	}
 	return node
 }
@@ -135,7 +134,7 @@ func (t *GBT) Predecesor(node interface{}, root interface{}) (interface{}) {
 	}
 	n := node.(*GBTElement)
 	if t.IsNil(n) {
-		return t.nilNode
+		return t.NilNode
 	}
 	if !t.IsNil(n.Left) {
 		return t.Max(n.Left)
@@ -145,7 +144,7 @@ func (t *GBT) Predecesor(node interface{}, root interface{}) (interface{}) {
 			cur = cur.Parent
 		}
 		if cur == r {
-			return t.nilNode
+			return t.NilNode
 		}
 		return cur.Parent
 	}
@@ -158,7 +157,7 @@ func (t *GBT) Successor(node interface{}, root interface{}) (interface{}) {
 	}
 	n := node.(*GBTElement)
 	if t.IsNil(n) {
-		return t.nilNode
+		return t.NilNode
 	}
 	if !t.IsNil(n.Right) {
 		return t.Min(n.Right)
@@ -168,7 +167,7 @@ func (t *GBT) Successor(node interface{}, root interface{}) (interface{}) {
 			cur = cur.Parent
 		}
 		if cur == r {
-			return t.nilNode
+			return t.NilNode
 		}
 		return cur.Parent
 	}
@@ -177,7 +176,7 @@ func (t *GBT) Successor(node interface{}, root interface{}) (interface{}) {
 func (t *GBT) LeftRotate(node interface{})(interface{}) {
 	n := node.(*GBTElement)
 	if t.IsNil(n.Right) {
-		return t.nilNode
+		return t.NilNode
 	}
 	newNode := n.Right
 	if n.Parent.Left == n {
@@ -194,7 +193,7 @@ func (t *GBT) LeftRotate(node interface{})(interface{}) {
 func (t *GBT) RightRotate(node interface{})(interface{}) {
 	n := node.(*GBTElement)
 	if t.IsNil(n.Left) {
-		return t.nilNode
+		return t.NilNode
 	}
 	newNode := n.Left
 	if n.Parent.Right == n {
@@ -257,7 +256,7 @@ func (t *GBT) PreOrderWalk(node interface{}, callback func(binaryTree.BinaryTree
 		} else {
 			parentNode := curNode.Parent
 			parentRightNode := parentNode.Right
-			parentNode.Right = t.nilNode
+			parentNode.Right = t.NilNode
 			curNode = t.Successor(parentNode, root).(*GBTElement)
 			parentNode.Right = parentRightNode
 		}
