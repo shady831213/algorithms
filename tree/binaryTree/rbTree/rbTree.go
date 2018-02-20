@@ -133,51 +133,34 @@ func (t *RBT) Delete(key uint32) (interface{}) {
 
 func (t *RBT) deleteFix(node interface{}) () {
 	n := node.(*genericBinaryTree.GBTElement)
-	brotherNode := func(side bool, node *genericBinaryTree.GBTElement) (*genericBinaryTree.GBTElement) {
-		return t.otherSideNode(side, node.Parent)
-	}
-	case1 := func(side bool, node *genericBinaryTree.GBTElement) {
-		t.setColor(node.Parent, red)
-		t.setColor(brotherNode(side, node), black)
-		t.sameDirRotation(side, node.Parent)
-	}
-	case2 := func(side bool, node *genericBinaryTree.GBTElement) (*genericBinaryTree.GBTElement) {
-		t.setColor(brotherNode(side, node), red)
-		return node.Parent
-	}
-	case3 := func(side bool, node *genericBinaryTree.GBTElement) {
-		brother := brotherNode(side, node)
-		t.setColor(brother, red)
-		t.setColor(t.sameSideNode(side, brother), black)
-		t.invDirRotation(side, brother)
-	}
-	case4 := func(side bool, node *genericBinaryTree.GBTElement) (*genericBinaryTree.GBTElement) {
-		brother := brotherNode(side, node)
-		t.setColor(brother, t.color(node.Parent))
-		t.setColor(node.Parent, black)
-		t.setColor(t.otherSideNode(side, brother), black)
-		t.sameDirRotation(side, node.Parent)
-		return t.Root().(*genericBinaryTree.GBTElement)
-	}
 	//n always points to the black-black or black-red node.The purpose is to remove the additional black color,
 	//which means add a black color in the same side or reduce a black color in the other side
 	for n != t.Root() && t.color(n) {
 		side := n == n.Parent.Left
-		brother := brotherNode(side, n)
-		//case 1 brother node is red, so parent must be black.Turn brother node to a black one, convert to case 2,3,4
-		if !t.color(brother) {
-			case1(side, n)
-			//case 2, 3, 4 brother node is black
+		brotherNode := t.otherSideNode(side, n.Parent)
+		//case 1 brotherNode node is red, so parent must be black.Turn brotherNode node to a black one, convert to case 2,3,4
+		if !t.color(brotherNode) {
+			t.setColor(n.Parent, red)
+			t.setColor(brotherNode, black)
+			t.sameDirRotation(side, n.Parent)
+			//case 2, 3, 4 brotherNode node is black
 		} else {
 			//case 2 move black-blcak or blcak-red node up
-			if t.color(brother.Left) && t.color(brother.Right) {
-				n = case2(side, n)
+			if t.color(brotherNode.Left) && t.color(brotherNode.Right) {
+				t.setColor(brotherNode, red)
+				n = n.Parent
 				//case 3 convert to case 4
-			} else if t.color(t.otherSideNode(side, brother)) {
-				case3(side, n)
+			} else if t.color(t.otherSideNode(side, brotherNode)) {
+				t.setColor(brotherNode, red)
+				t.setColor(t.sameSideNode(side, brotherNode), black)
+				t.invDirRotation(side, brotherNode)
 				//case 4 add a black to left, turn black-black or black-red to black or red
 			} else {
-				n = case4(side, n)
+				t.setColor(brotherNode, t.color(n.Parent))
+				t.setColor(n.Parent, black)
+				t.setColor(t.otherSideNode(side, brotherNode), black)
+				t.sameDirRotation(side, n.Parent)
+				n = t.Root().(*genericBinaryTree.GBTElement)
 			}
 		}
 
