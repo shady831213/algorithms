@@ -13,6 +13,7 @@ J.L. Bentley 建议通过只考虑双调旅程(bitonic tours)来简化问题,这
 [代码](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP.go)
 
 [测试](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP_test.go)
+
 --------
 ## 思路：
 建立一个二维数组，维度一代表总共的点数，维度二代表总共这么多点时，每个点到最后的点的最小距离，有最佳子结构：
@@ -37,4 +38,25 @@ D[numPoints][numPoints] = D[numPoints][numPoints-1] + d(p[numPoints-1] - p[numPo
 
 ![](https://github.com/shady831213/algorithms/blob/master/dp/static/ph5.PNG)
 
+
+--------
+# 整齐打印问题
+--------
+## 问题：
+考虑在一个打印机上整齐地打印一段文章的问题。输入的正文是n个长度分别为L1、L2、……、Ln（以字符个数度量）的单词构成的序列。我们希望将这个段落在一些行上整齐地打印出来，每行至多M个字符。“整齐度”的标准如下：如果某一行包含从i到j的单词（i<j），且单词之间只留一个空格，则在行末多余的空格字符个数为 M - (j-i) - (Li+ …… + Lj)，它必须是非负值才能让该行容纳这些单词。我们希望所有行（除最后一行）的行末多余空格字符个数的立方和最小。请给出一个动态规划的算法，来在打印机整齐地打印一段又n个单词的文章。分析所给算法的执行时间和空间需求。
+--------
+[代码](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint.go)
+
+[测试](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint_test.go)
+
+--------
+## 思路：
+该问题和矩阵乘法链问题相似，从i到j的单词，如果超过1行的容量，分裂为子问题，1行以内直接求解：
+M - (j-i) - (Li+...+Lj) >= 0 :
+alignedIdx[i][j] = (M - (j-i) - (Li+...+Lj))^3
+
+M - (j-i) - (Li+...+Lj) < 0 :
+alignedIdx[i][j] = min(alignedIdx[i][k], alignedIdx[k+1][j]) i<=k<j
+
+需要注意，最外层循环要循环长度，即j-i，这样才能从长度0，1...max自底向上构建自问题
 
