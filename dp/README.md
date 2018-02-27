@@ -9,6 +9,7 @@ J.L. Bentley 建议通过只考虑双调旅程(bitonic tours)来简化问题,这
 ![](https://github.com/shady831213/algorithms/blob/master/dp/static/dp1.PNG)
 
 （a）图是最短的闭合旅程，长度为24.89。（b）图是问题经简化后，同样的点集的最短双调闭合旅程，长度为25.58。
+
 --------
 [代码](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP.go)
 
