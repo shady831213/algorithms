@@ -8,9 +8,9 @@ import (
 
 func TestLevenshteinDistance(t *testing.T)  {
 	ldc := newLdc("algorithm","altruistic")
-	ldc.addOp(new(twiddle))
-	ldc.addOp(new(copy))
-	ldc.addOp(new(replace))
+	ldc.addOp(newTwiddle())
+	ldc.addOp(newCopy())
+	ldc.addOp(newReplace())
 	dist,opSeq := ldc.levenshteinDistance()
 	if dist != 24 {
 		t.Log(fmt.Sprintf("dist expect 24, but get %d", dist))

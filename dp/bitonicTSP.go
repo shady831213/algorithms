@@ -16,10 +16,11 @@ func newPoint(x, y float64) *point {
 
 type line struct {
 	p0,p1 *point
+	prevLine *line
 }
 
 func newLine(p0,p1 *point) *line {
-	return &line{p0,p1}
+	return &line{p0,p1, nil}
 }
 
 func (l *line) dist() (float64) {
@@ -53,38 +54,48 @@ func bitonicTSP(points []*point) (float64, []*line) {
 
 	//side data structures
 	dist := make([][]float64, len(sortedPoints), cap(sortedPoints))
-	lines := make([][][]*line, len(sortedPoints), cap(sortedPoints))
+	lines := make([][]*line, len(sortedPoints), cap(sortedPoints))
 	for i := range dist {
 		dist[i] = make([]float64, len(sortedPoints), cap(sortedPoints))
-		lines[i] = make([][]*line, len(sortedPoints), cap(sortedPoints))
+		lines[i] = make([]*line, len(sortedPoints), cap(sortedPoints))
 	}
 
 	for numPoints := 1; numPoints < len(sortedPoints); numPoints++ {
 		//idxPoint < numPoints-1
 		for idxPoint := 0; idxPoint < numPoints-1; idxPoint++ {
 			line := newLine(sortedPoints[numPoints-1], sortedPoints[numPoints])
+			line.prevLine = lines[numPoints-1][idxPoint]
 			dist[numPoints][idxPoint] = dist[numPoints-1][idxPoint] + line.dist()
-			lines[numPoints][idxPoint] = append(lines[numPoints-1][idxPoint], line)
+			lines[numPoints][idxPoint] = line
 		}
 
 		//idxPoint == numPoints-1
 		line := newLine(sortedPoints[0], sortedPoints[numPoints])
+		line.prevLine = lines[numPoints-1][0]
 		dist[numPoints][numPoints-1] = dist[numPoints-1][0] + line.dist()
-		lines[numPoints][numPoints-1] = append(lines[numPoints-1][0],  line)
+		lines[numPoints][numPoints-1] = line
 		for idxPreviousPoint := 0; idxPreviousPoint < numPoints-1; idxPreviousPoint++ {
 			line := newLine(sortedPoints[idxPreviousPoint], sortedPoints[numPoints])
 			temp := dist[numPoints-1][idxPreviousPoint] + line.dist()
 			if temp < dist[numPoints][numPoints-1] {
 				dist[numPoints][numPoints-1] = temp
-				lines[numPoints][numPoints-1] = append(lines[numPoints-1][idxPreviousPoint],  line)
+				line.prevLine = lines[numPoints-1][idxPreviousPoint]
+				lines[numPoints][numPoints-1] = line
 			}
 		}
 
 		//idxPoint == numPoints
 		line = newLine(sortedPoints[numPoints-1], sortedPoints[numPoints])
+		line.prevLine = lines[numPoints][numPoints-1]
 		dist[numPoints][numPoints] = dist[numPoints][numPoints-1] + line.dist()
-		lines[numPoints][numPoints] = append(lines[numPoints][numPoints-1],line)
+		lines[numPoints][numPoints] = line
 	}
 
-	return dist[len(sortedPoints)-1][len(sortedPoints)-1], lines[len(sortedPoints)-1][len(sortedPoints)-1]
+	//track line path
+	linePath := make([]*line, 0, 0)
+	for l := lines[len(sortedPoints)-1][len(sortedPoints)-1]; l != nil;l = l.prevLine {
+		linePath = append([]*line{l}, linePath...)
+	}
+
+	return dist[len(sortedPoints)-1][len(sortedPoints)-1], linePath
 }
