@@ -4,6 +4,7 @@ import (
 	"testing"
 	"fmt"
 	"reflect"
+	"math"
 )
 
 func TestLevenshteinDistance(t *testing.T)  {
@@ -24,7 +25,7 @@ func TestLevenshteinDistance(t *testing.T)  {
 }
 
 func TestGeneAlign(t *testing.T)  {
-	ldc := newLdc("GATCGGCAT","CAATGTGAATC", newDelete(2), newInsert(2), newKill(0))
+	ldc := newLdc("GATCGGCAT","CAATGTGAATC", newDelete(2), newInsert(2), newKill(math.MaxInt32))
 	ldc.addOp(newCopy(-1))
 	ldc.addOp(newReplace(1))
 	dist,opSeq := ldc.levenshteinDistance()
