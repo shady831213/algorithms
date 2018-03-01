@@ -147,3 +147,24 @@ copyObj := newCopy(1)
 var op *lDOperation
 op = &newCopy(1).lDOperation
 ```
+
+
+--------
+# 在棋盘上移动
+--------
+## 问题：
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/棋.gif)
+
+--------
+[代码](https://github.com/shady831213/algorithms/blob/master/dp/chessGame.go)
+
+[测试](https://github.com/shady831213/algorithms/blob/master/dp/chessGame_test.go)
+
+--------
+## 思路：
+
+递归： score[i][j] = max(score[i-1][j-1],score[i-1][j],score[i-1][j+1]) + board[i][j]
+
+边界： 增加两列，左右两端设置为负无穷；第0行起始只初始起始点的值，其他为负无穷
+
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/棋.PNG)
