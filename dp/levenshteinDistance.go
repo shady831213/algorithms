@@ -26,10 +26,10 @@ type copy struct {
 	lDOperation
 }
 
-func (c *copy)init(cost int)(*lDOperation)  {
+func (c *copy)init(cost int)(*copy)  {
 	op:=c.lDOperation.init("copy", cost)
 	op.lDCompute = c
-	return op
+	return c
 }
 
 func (c *copy) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -42,7 +42,7 @@ func (c *copy) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i-1, j-1
 }
 
-func newCopy(cost int)(*lDOperation) {
+func newCopy(cost int)(*copy) {
 	return new(copy).init(cost)
 }
 
@@ -50,10 +50,10 @@ type replace struct {
 	lDOperation
 }
 
-func (r *replace)init(cost int)(*lDOperation)  {
+func (r *replace)init(cost int)(*replace)  {
 	op:=r.lDOperation.init("replace", cost)
 	op.lDCompute = r
-	return op
+	return r
 }
 
 func (r *replace) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -63,7 +63,7 @@ func (r *replace) updateCost(i int, j int, ldc *lDComputor) (int) {
 	return math.MaxInt32
 }
 
-func newReplace(cost int)(*lDOperation) {
+func newReplace(cost int)(*replace) {
 	return new(replace).init(cost)
 }
 
@@ -75,10 +75,10 @@ type insert struct {
 	lDOperation
 }
 
-func (is *insert)init(cost int)(*lDOperation)  {
+func (is *insert)init(cost int)(*insert)  {
 	op:=is.lDOperation.init("insert", cost)
 	op.lDCompute = is
-	return op
+	return is
 }
 
 func (is *insert) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -89,7 +89,7 @@ func (is *insert) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i, j-1
 }
 
-func newInsert(cost int)(*lDOperation) {
+func newInsert(cost int)(*insert) {
 	return new(insert).init(cost)
 }
 
@@ -98,10 +98,10 @@ type delete struct {
 	lDOperation
 }
 
-func (d *delete)init(cost int)(*lDOperation)  {
+func (d *delete)init(cost int)(*delete)  {
 	op:=d.lDOperation.init("delete", cost)
 	op.lDCompute = d
-	return op
+	return d
 }
 
 func (d *delete) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -112,7 +112,7 @@ func (d *delete) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i-1, j
 }
 
-func newDelete(cost int)(*lDOperation) {
+func newDelete(cost int)(*delete) {
 	return new(delete).init(cost)
 }
 
@@ -120,10 +120,10 @@ type twiddle struct {
 	lDOperation
 }
 
-func (t *twiddle)init(cost int)(*lDOperation)  {
+func (t *twiddle)init(cost int)(*twiddle)  {
 	op:=t.lDOperation.init("twiddle", cost)
 	op.lDCompute = t
-	return op
+	return t
 }
 
 func (t *twiddle) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -137,7 +137,7 @@ func (t *twiddle) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i - 2, j - 2
 }
 
-func newTwiddle(cost int)(*lDOperation) {
+func newTwiddle(cost int)(*twiddle) {
 	return new(twiddle).init(cost)
 }
 
@@ -145,10 +145,10 @@ type kill struct {
 	lDOperation
 }
 
-func (k *kill)init(cost int)(*lDOperation)  {
+func (k *kill)init(cost int)(*kill)  {
 	op:=k.lDOperation.init("kill", cost)
 	op.lDCompute = k
-	return op
+	return k
 }
 
 func (t *kill) updateCost(i int, j int, ldc *lDComputor) (int) {
@@ -159,7 +159,7 @@ func (t *kill) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return 0,0
 }
 
-func newKill(cost int)(*lDOperation) {
+func newKill(cost int)(*kill) {
 	return new(kill).init(cost)
 }
 
