@@ -26,8 +26,8 @@ type copy struct {
 	lDOperation
 }
 
-func (c *copy)init()(*lDOperation)  {
-	op:=c.lDOperation.init("copy", 1)
+func (c *copy)init(cost int)(*lDOperation)  {
+	op:=c.lDOperation.init("copy", cost)
 	op.lDCompute = c
 	return op
 }
@@ -42,16 +42,16 @@ func (c *copy) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i-1, j-1
 }
 
-func newCopy()(*lDOperation) {
-	return new(copy).init()
+func newCopy(cost int)(*lDOperation) {
+	return new(copy).init(cost)
 }
 
 type replace struct {
 	lDOperation
 }
 
-func (r *replace)init()(*lDOperation)  {
-	op:=r.lDOperation.init("replace", 4)
+func (r *replace)init(cost int)(*lDOperation)  {
+	op:=r.lDOperation.init("replace", cost)
 	op.lDCompute = r
 	return op
 }
@@ -63,8 +63,8 @@ func (r *replace) updateCost(i int, j int, ldc *lDComputor) (int) {
 	return math.MaxInt32
 }
 
-func newReplace()(*lDOperation) {
-	return new(replace).init()
+func newReplace(cost int)(*lDOperation) {
+	return new(replace).init(cost)
 }
 
 func (r *replace) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
@@ -75,8 +75,8 @@ type insert struct {
 	lDOperation
 }
 
-func (is *insert)init()(*lDOperation)  {
-	op:=is.lDOperation.init("insert", 3)
+func (is *insert)init(cost int)(*lDOperation)  {
+	op:=is.lDOperation.init("insert", cost)
 	op.lDCompute = is
 	return op
 }
@@ -89,8 +89,8 @@ func (is *insert) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i, j-1
 }
 
-func newInsert()(*lDOperation) {
-	return new(insert).init()
+func newInsert(cost int)(*lDOperation) {
+	return new(insert).init(cost)
 }
 
 
@@ -98,8 +98,8 @@ type delete struct {
 	lDOperation
 }
 
-func (d *delete)init()(*lDOperation)  {
-	op:=d.lDOperation.init("delete", 2)
+func (d *delete)init(cost int)(*lDOperation)  {
+	op:=d.lDOperation.init("delete", cost)
 	op.lDCompute = d
 	return op
 }
@@ -112,16 +112,16 @@ func (d *delete) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i-1, j
 }
 
-func newDelete()(*lDOperation) {
-	return new(delete).init()
+func newDelete(cost int)(*lDOperation) {
+	return new(delete).init(cost)
 }
 
 type twiddle struct {
 	lDOperation
 }
 
-func (t *twiddle)init()(*lDOperation)  {
-	op:=t.lDOperation.init("twiddle", 2)
+func (t *twiddle)init(cost int)(*lDOperation)  {
+	op:=t.lDOperation.init("twiddle", cost)
 	op.lDCompute = t
 	return op
 }
@@ -137,16 +137,16 @@ func (t *twiddle) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i - 2, j - 2
 }
 
-func newTwiddle()(*lDOperation) {
-	return new(twiddle).init()
+func newTwiddle(cost int)(*lDOperation) {
+	return new(twiddle).init(cost)
 }
 
 type kill struct {
 	lDOperation
 }
 
-func (k *kill)init()(*lDOperation)  {
-	op:=k.lDOperation.init("kill", 1)
+func (k *kill)init(cost int)(*lDOperation)  {
+	op:=k.lDOperation.init("kill", cost)
 	op.lDCompute = k
 	return op
 }
@@ -159,8 +159,8 @@ func (t *kill) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return 0,0
 }
 
-func newKill()(*lDOperation) {
-	return new(kill).init()
+func newKill(cost int)(*lDOperation) {
+	return new(kill).init(cost)
 }
 
 
@@ -176,14 +176,14 @@ type lDComputor struct {
 }
 
 //init
-func (ldc *lDComputor) init(word0, word1 string) (*lDComputor) {
+func (ldc *lDComputor) init(word0, word1 string, delete, insert, kill*lDOperation) (*lDComputor) {
 	//string to array, and 1 to deal with edge logic
 	ldc.seq0 = append([]byte{0}, ([]byte)(word0)...)
 	ldc.seq1 = append([]byte{0}, ([]byte)(word1)...)
 	ldc.ops = make([]*lDOperation,0,0)
-	ldc.delete = newDelete()
-	ldc.insert = newInsert()
-	ldc.kill = newKill()
+	ldc.delete = delete
+	ldc.insert = insert
+	ldc.kill = kill
 	ldc.ops = append(ldc.ops,[]*lDOperation{ldc.delete,ldc.insert}...)
 	//initialize side datas
 	ldc.cost = make([][]int, len(ldc.seq0), len(ldc.seq0))
@@ -246,6 +246,6 @@ func (ldc *lDComputor) levenshteinDistance() (int, []string) {
 	return minDist, opSeq
 }
 
-func newLdc(word0, word1 string) (*lDComputor) {
-	return new(lDComputor).init(word0, word1)
+func newLdc(word0, word1 string, delete, insert, kill*lDOperation) (*lDComputor) {
+	return new(lDComputor).init(word0, word1,  delete, insert, kill)
 }
