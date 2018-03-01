@@ -177,7 +177,7 @@ type lDComputor struct {
 
 //init
 func (ldc *lDComputor) init(word0, word1 string, delete, insert, kill*lDOperation) (*lDComputor) {
-	//string to array, and 1 to deal with edge logic
+	//string to array, and 1 to deal with boundary
 	ldc.seq0 = append([]byte{0}, ([]byte)(word0)...)
 	ldc.seq1 = append([]byte{0}, ([]byte)(word1)...)
 	ldc.ops = make([]*lDOperation,0,0)
