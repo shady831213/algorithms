@@ -62,3 +62,88 @@ alignedIdx[i][j] = min(alignedIdx[i][k], alignedIdx[k+1][j]) i<=k<j
 
 需要注意，最外层循环要循环长度，即j-i，这样才能从长度0，1...max自底向上构建自问题
 
+
+--------
+# 编辑距离
+--------
+## 问题：
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/编辑距离.gif)
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/编辑距离1.gif)
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/编辑距离2.gif)
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/编辑距离3.gif)
+
+--------
+[代码](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance.go)
+
+[测试](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance_test.go)
+
+--------
+## 思路：
+![](https://github.com/shady831213/algorithms/blob/master/dp/static/编辑距离4.gif)
+最后的操作kill
+c[i][j] = MIN(c[m,n], MIN(c[i,n]+cost(kill)))， 其中0<=i
+
+基因对齐
+copy : -1
+replace : 1
+insert : 2
+delete ： 2
+twiddle : Max
+kill ： Max
+
+边界问题：
+初始化所有的j=0列，表示如果word1为空，则需要删除所有word0的字符，因为问题要求所有的word0的字符都需要被检查
+初始化所有的i=0列，表实如果word0为空，则需要插入所有word1的字符
+
+证明最佳子结构，以copy为例：
+在word0[i] = word1[j]时，假设z为最小值，如果cost[i-1][j-1]不是最小值，则只能选择z = cost[i-1][j]+cost[j-1][i]+cost(insert)+cost(delete),则必然大于cost[i-1][j-1]+cost(copy), 此时z不是最小值，矛盾。
+
+## go的面向对象模式：
+```go
+//base method and data
+type lDCompute interface {
+	updateCost(int, int, *lDComputor) (int)
+	preOpIdx(int, int, *lDComputor) (int, int)
+}
+
+type lDOperation struct {
+	name string
+	cost int
+	lDCompute
+}
+
+func (op *lDOperation)init(name string, cost int)(*lDOperation)  {
+	op.name = name
+	op.cost = cost
+	return op
+}
+
+//operations
+type copy struct {
+	lDOperation//父类
+}
+
+func (c *copy)init(cost int)(*copy)  {
+	op:=c.lDOperation.init("copy", cost)
+	op.lDCompute = c
+	return c
+}
+
+func (c *copy) updateCost(i int, j int, ldc *lDComputor) (int) {
+	//...
+}
+func (c *copy) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
+	//...
+}
+
+func newCopy(cost int)(*copy) {
+	return new(copy).init(cost)
+}
+
+//匹配具体类型
+copyObj := newCopy(1)
+
+//匹配父类
+var op *lDOperation
+op = &newCopy(1).lDOperation
+```
