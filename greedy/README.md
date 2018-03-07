@@ -51,17 +51,25 @@ D.设计一个O(nk)时间的找零算法，适用于任何k种不同面额的硬
 - p为最小值的a, 设am, 必有一个最优解的第一个元素为am
   设最优解A, 第一个元素为ak, 如果ak = am，得证；如果ak != am，am必为 1...n中的一个，设am为第j个元素，此时平均完成时间为
   1/n * (pk + (2pk + pk+1) + (3pk + 2pk+1 + pk+2) +...+(j * pk + (j-1) * pk+1 + ...+ pj-1 + pm) + ...+(n * pk +...+(n-j) * pm +...+pn))
-  = 1/n * ((n * (n-1))/2 * pk + ((n-j) * (n-j-1))/2 * pm + P*) P* 为其余项
-  = 1/n * ((pk+pm) * ((n-j) * (n-j-1))/2 + ((n * (n-1))/2 +  ((n-j) * (n-j-1))/2) * pk + P*) P* 为其余项
+  = 1/n * ((n * (n+1))/2 * pk + ((n-j) * (n-j+1))/2 * pm + P*) P* 为其余项
+  = 1/n * ((pk+pm) * ((n-j) * (n-j+1))/2 + ((n * (n+1))/2 -  ((n-j) * (n-j+1))/2) * pk + P*) P* 为其余项
   构造一个解A'，交换ak和am的顺序得 平均完成时间
-  1/n * ((pm+pk) * ((n-j) * (n-j-1))/2 + ((n * (n-1))/2 + ((n-j) * (n-j-1))/2) * pm + P*) P* 为其余项
+  1/n * ((pm+pk) * ((n-j) * (n-j+1))/2 + ((n * (n+1))/2 - ((n-j) * (n-j+1))/2) * pm + P*) P* 为其余项
   因为pm < pk, 所以A'的时间小于A, 与 A为最优解矛盾，得证
 - 如果选择了最小p的am, 问题可归结为剩余中寻找最小p的元素
   在原集合去掉am，可转化为上面的问题。
 
-时间复杂度：排序 O(nlgn), 仲裁O(n), O(nlgn) + O(n) = O(nlgn)
+时间复杂度：
+  排序 O(nlgn), 仲裁O(n), O(nlgn) + O(n) = O(nlgn)
  
 ### B:
 所有任务从t0开始有效，并ri开始递减，每个单位时间，可运行的task组成一个所有task的子集，子集中选择剩余时间最短的。问题可转化为 A
-时间复杂度：设总时间t = sigma(pi+ri)，O(t * n);使用堆排，调整pi后heapfy和插入为O(lgn), min操作O(1)，为O(t * lgn)
-  
+时间复杂度：
+  - 设总时间t = sigma(pi+ri)，O(t * n);
+  - 使用堆排，建堆O(n), 插入为O(lgn),min操作O(1)，每个单位时间可能有多个任务ri减为0，所以极端情况：
+    ri都不同：O(n + t * lgn)
+    ri都相同：O(n + n * lgn + (t-1))
+
+-------------
+[代码](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch.go)
+[测试]([代码](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch_test.go))
