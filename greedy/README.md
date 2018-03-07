@@ -72,4 +72,5 @@ D.设计一个O(nk)时间的找零算法，适用于任何k种不同面额的硬
 
 -------------
 [代码](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch.go)
-[测试]([代码](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch_test.go))
+
+[测试](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch_test.go)
