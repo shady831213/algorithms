@@ -138,6 +138,8 @@ func (s *scheduler) init(tasks []*task, timeout int) *scheduler {
 }
 
 func (s *scheduler) newTask(t *task) {
+	t.clk = &s.clk
+	t.startTime = s.clk
 	if t.r == 0 {
 		heap.Push(s.runningTasks, t)
 	} else {
@@ -173,9 +175,9 @@ func (s *scheduler) run(input chan *task, output []chan *task) {
 			s.runningTasks.tasks[0].run()
 			output[0] <- s.runningTasks.tasks[0]
 			if s.runningTasks.tasks[0].state() == FINISH {
-				heap.Pop(s.runningTasks)
 				s.finishedCnt++
-				s.totalCompletedTime += s.clk
+				s.totalCompletedTime += s.runningTasks.tasks[0].finishTime - s.runningTasks.tasks[0].startTime
+				heap.Pop(s.runningTasks)
 			}
 		} else {
 			output[0] <- nil
@@ -184,7 +186,6 @@ func (s *scheduler) run(input chan *task, output []chan *task) {
 		s.clk++
 	}
 }
-
 
 func newScheduler(tasks []*task, timeout int) *scheduler {
 	return new(scheduler).init(tasks, timeout)
