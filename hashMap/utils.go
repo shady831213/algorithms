@@ -35,6 +35,12 @@ func TestHashMapResize(t *testing.T, hmap interface{}) {
 		"z":   16,
 		"bcd": 90,
 		"ed":  90,
+		"ab":   1,
+		"ba":   2,
+		"ca":   999,
+		"za":   16,
+		"bcda": 90,
+		"eda":  90,
 	}
 	for i, v := range expMap {
 		hmap.(HashMap).HashInsert(i, v)
@@ -49,6 +55,12 @@ func TestHashMapDelete(t *testing.T, hmap interface{}) {
 		"z":   16,
 		"bcd": 90,
 		"ed":  90,
+		"ab":   1,
+		"ba":   2,
+		"ca":   999,
+		"za":   16,
+		"bcda": 90,
+		"eda":  90,
 	}
 	for i, v := range expMap {
 		hmap.(HashMap).HashInsert(i, v)

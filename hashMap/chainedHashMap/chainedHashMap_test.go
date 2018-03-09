@@ -15,8 +15,8 @@ func Test_ChainedHashMap(t *testing.T) {
 func Test_ChainedHashMapUpScale(t *testing.T) {
 	cmap := New()
 	hashMap.TestHashMapResize(t, cmap)
-	if !reflect.DeepEqual(cmap.Cap, uint32(8)) {
-		t.Log(fmt.Sprintf("expect:", uint32(8)) + fmt.Sprintf("but get:", cmap.Cap))
+	if !reflect.DeepEqual(cmap.Cap, uint32(16)) {
+		t.Log(fmt.Sprintf("expect:", uint32(16)) + fmt.Sprintf("but get:", cmap.Cap))
 		t.Fail()
 	}
 }

@@ -7,7 +7,7 @@ import (
 	"math/big"
 )
 
-const DEFALUTCAP  = 4
+const DEFALUTCAP  = 8
 
 type HashElement struct {
 	Key interface{}
@@ -65,7 +65,7 @@ func (h *HashMapBase) UpScale() {
 }
 
 func (h *HashMapBase) DownScale() {
-	if h.GetAlpha() <= 0.25 {
+	if h.GetAlpha() <= 0.125 {
 		if h.Count == 0 {
 			h.HashMap.Init(0)
 			return
