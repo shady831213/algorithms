@@ -14,18 +14,20 @@ type ChainedHashMap struct {
 
 func (h *ChainedHashMap) Init (cap uint32) {
 	h.HashMapBase.Init(cap)
-	h.backets = make([]*list.List, h.Cap, h.Cap)
+	if cap == 0 {
+		h.backets = nil
+	} else {
+		h.backets = make([]*list.List, h.Cap, h.Cap)
+	}
 }
 
-func (h *ChainedHashMap) resize () {
-	if h.GetAlpha() >= 0.75 {
-		oldBackets := h.backets
-		h.Init(h.Cap + hashMap.DEFALUTCAP)
-		for _, list := range oldBackets {
-			if list != nil {
-				for e := list.Front();e != nil; e = e.Next() {
-					h.HashInsert(e.Value.(hashMap.HashElement).Key, e.Value.(hashMap.HashElement).Value)
-				}
+func (h *ChainedHashMap) Move(cap uint32) {
+	oldBackets := h.backets
+	h.Init(cap)
+	for _, list := range oldBackets {
+		if list != nil {
+			for e := list.Front();e != nil; e = e.Next() {
+				h.HashInsert(e.Value.(hashMap.HashElement).Key, e.Value.(hashMap.HashElement).Value)
 			}
 		}
 	}
@@ -48,6 +50,7 @@ func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Ele
 }
 
 func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
+	h.UpScale()
 	hashKey := h.hash(key)
 	if h.backets[hashKey] == nil{
 		h.backets[hashKey] = list.New()
@@ -59,18 +62,19 @@ func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
 	} else {
 		h.backets[hashKey].PushFront(e)
 		h.Count++
-		h.resize()
 	}
 }
 
 func (h *ChainedHashMap) HashGet(key interface{})(interface{}, bool) {
-	hashKey := h.hash(key)
-	if h.backets[hashKey] == nil {
-		return nil,false
-	}
-	le, exist := h.existInList(key, h.backets[hashKey])
-	if exist {
-		return le.Value.(hashMap.HashElement).Value, true
+	if h.Count != 0 {
+		hashKey := h.hash(key)
+		if h.backets[hashKey] == nil {
+			return nil, false
+		}
+		le, exist := h.existInList(key, h.backets[hashKey])
+		if exist {
+			return le.Value.(hashMap.HashElement).Value, true
+		}
 	}
 	return nil,false
 }
@@ -88,10 +92,12 @@ func (h *ChainedHashMap) HashDelete(key interface{}) {
 		h.backets[hashKey] = nil
 		h.Count--
 	}
+	h.DownScale()
 }
 
-func New(cap uint32)(h hashMap.HashMap) {
-	h = new(ChainedHashMap)
-	h.Init(cap)
-	return
+func New()(*ChainedHashMap) {
+	h := new(ChainedHashMap)
+	h.HashMapBase.HashMap = h
+	h.HashMapBase.ScaleableMap = h
+	return h
 }
