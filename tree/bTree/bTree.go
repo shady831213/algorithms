@@ -44,10 +44,7 @@ func (n *bTreeNode) Less(i, j int) bool {
 	return n.bTreeNodeSort.LessByKey(n.keyValue[i].key, n.keyValue[j].key)
 }
 
-func (n *bTreeNode) getChildOrKeyValue(key interface{}) (interface{}, int) {
-	if len(n.keyValue) == 0 {
-		return nil, -1
-	}
+func (n *bTreeNode) searchKeyIdx(key interface{}) (int) {
 	//binary search
 	i, j := 0, len(n.keyValue)-1
 	for i != j {
@@ -61,6 +58,16 @@ func (n *bTreeNode) getChildOrKeyValue(key interface{}) (interface{}, int) {
 			i = mid + 1
 		}
 	}
+	return i
+}
+
+func (n *bTreeNode) getChildOrKeyValue(key interface{}) (interface{}, int) {
+	if len(n.keyValue) == 0 {
+		return nil, -1
+	}
+
+	i := n.searchKeyIdx(key)
+
 	if key == n.keyValue[i].key {
 		return n.keyValue[i], i
 	} else if n.LessByKey(key, n.keyValue[i].key) {
@@ -74,19 +81,8 @@ func (n *bTreeNode) predecesor(key interface{}) (*keyValue, *bTreeNode, int) {
 	if len(n.keyValue) == 0 {
 		return nil, nil, -1
 	}
-	//binary search
-	i, j := 0, len(n.keyValue)-1
-	for i != j {
-		mid := (j-i)/2 + i
-		if key == n.keyValue[mid].key {
-			i = mid
-			j = mid
-		} else if n.LessByKey(key, n.keyValue[mid].key) {
-			j = mid
-		} else {
-			i = mid + 1
-		}
-	}
+
+	i := n.searchKeyIdx(key)
 
 	if key == n.keyValue[i].key {
 		if i <= 0 {
@@ -107,19 +103,9 @@ func (n *bTreeNode) successor(key interface{}) (*keyValue, *bTreeNode, int) {
 	if len(n.keyValue) == 0 {
 		return nil, nil, -1
 	}
-	//binary search
-	i, j := 0, len(n.keyValue)-1
-	for i != j {
-		mid := (j-i)/2 + i
-		if key == n.keyValue[mid].key {
-			i = mid
-			j = mid
-		} else if n.LessByKey(key, n.keyValue[mid].key) {
-			j = mid
-		} else {
-			i = mid + 1
-		}
-	}
+
+	i := n.searchKeyIdx(key)
+
 	if key == n.keyValue[i].key {
 		if i >= len(n.keyValue)-1 {
 			return nil, nil, -1
@@ -213,60 +199,78 @@ func (bt *bTree) init(t int, self bTreeIf) (*bTree) {
 	return bt
 }
 
-func (bt *bTree) insert(key, value interface{}) {
-	//override value if any node hit the key
-	override := func(key, value interface{}, node *bTreeNode) (*bTreeNode) {
-		n, _ := node.getChildOrKeyValue(key)
-		if keyValue, ok := n.(*keyValue); ok {
-			keyValue.value = value
-			return nil
+func (bt *bTree) split(n *bTreeNode) (int) {
+	//because it is up-down, parent must be not full
+	if !n.isFull() {
+		panic("split when not full!")
+	}
+	n2 := bt.bTreeIf.newNode(bt.t)
+	n2.p = n.p
+	n2.isLeaf = n.isLeaf
+	n2.keyValue = append(make([]*keyValue, 0, 0), n.keyValue[n.t:]...)
+	n2.c = append(make([]*bTreeNode, 0, 0), n.c[n.t:]...)
+	for _, v := range n2.c {
+		if v != nil {
+			v.p = n2
 		}
-		if node.isLeaf {
-			return node
-		}
-		return n.(*bTreeNode)
+	}
+	i := n.p.addKeyValue(n.keyValue[n.t-1].key, n.keyValue[n.t-1].value)
+	n.keyValue = n.keyValue[:n.t-1]
+	n.c = n.c[:n.t]
+	n.p.c[i] = n
+	n.p.c[i+1] = n2
+	return i
+}
+
+func (bt *bTree) insertOrSet(n *bTreeNode, key, value interface{}) *bTreeNode {
+	nodeOrKeyValue, _ := n.getChildOrKeyValue(key)
+	//if node hit the key ,set value
+	if keyValue, ok := nodeOrKeyValue.(*keyValue); ok {
+		keyValue.value = value
+		return nil
 	}
 
+	if n.isFull() {
+		// if node is full, split
+		if n.p == nil {
+			//if node is root , increase hight
+			n.p = bt.bTreeIf.newNode(bt.t)
+			n.p.isLeaf = false
+			bt.root = n.p
+			bt.height ++
+		}
+		p := n.p
+		i := bt.split(n)
+		if p.keyValue[i].key == key {
+			//if hit the middle key, set value
+			p.keyValue[i].value = value
+			return nil
+		} else if p.LessByKey(key, p.keyValue[i].key) {
+			//reture left part
+			return p.c[i]
+		} else {
+			//reture right part
+			return p.c[i+1]
+		}
+	} else if n.isLeaf{
+		// if it is leaf, add key-value
+		n.addKeyValue(key, value)
+		return nil
+	} else {
+		// return child
+		return nodeOrKeyValue.(*bTreeNode)
+	}
+}
+
+func (bt *bTree) insert(key, value interface{}) {
 	//empty tree
 	if bt.root == nil {
 		bt.root = bt.bTreeIf.newNode(bt.t)
 		bt.height++
 	}
 
-	//hit root
-	if override(key, value, bt.root) == nil {
-		return
-	}
-
-	n := bt.root
-
-	//root is full
-	if n.isFull() {
-		bt.root = bt.bTreeIf.newNode(bt.t)
-		bt.root.isLeaf = false
-		n.p = bt.root
-		n = n.splitAndGetChild(bt.bTreeIf.newNode(bt.t), key)
-		bt.height++
-	}
-
-	for !n.isLeaf {
-		c := override(key, value, n)
-		if c == nil {
-			return
-		}
-		//n is full
-		if c.isFull() {
-			if override(key, value, c) == nil {
-				return
-			}
-			n = c.splitAndGetChild(bt.bTreeIf.newNode(bt.t), key)
-		} else {
-			n = c
-		}
-	}
-
-	if override(key, value, n) != nil {
-		n.addKeyValue(key, value)
+	for n := bt.root;n != nil; {
+		n = bt.insertOrSet(n, key, value)
 	}
 
 }
@@ -307,8 +311,8 @@ func (bt *bTree) remove(key interface{}) {
 				k = key
 			}
 		} else if node := nodeOrKeyValue.(*bTreeNode); node.isEmpty() {
-			_,preNode,preKeyValueIdx := n.predecesor(node.keyValue[0].key)
-			_,sucNode,sucKeyValueIdx := n.successor(node.keyValue[0].key)
+			_, preNode, preKeyValueIdx := n.predecesor(node.keyValue[0].key)
+			_, sucNode, sucKeyValueIdx := n.successor(node.keyValue[0].key)
 			if preNode != nil && !preNode.isEmpty() {
 				node.keyValue = append([]*keyValue{n.keyValue[preKeyValueIdx]}, node.keyValue...)
 				node.c = append([]*bTreeNode{preNode.c[preNode.Len()]}, node.c...)
