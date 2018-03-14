@@ -42,16 +42,8 @@ func newTestBTree(t int) (*testBTree) {
 	return new(testBTree).init(t)
 }
 
-func TestBTreeInsert(t *testing.T) {
-	bt := newTestBTree(2)
-	arr := tree.RandomSlice(0, 20, 10)
-	exp := make([]int, len(arr), cap(arr))
+func checkBtree(t *testing.T,exp []int,bt *bTree) {
 	result := make([]int, 0, 0)
-	copy(exp,arr)
-	sort.Ints(exp)
-	for i := range arr {
-		bt.insert(arr[i], arr[i])
-	}
 	bt.inOrderWalk(bt.root,
 		func(btree *bTree, node *bTreeNode, idx int) (bool) {
 			result = append(result, node.keyValue[idx].key.(int))
@@ -81,4 +73,20 @@ func TestBTreeInsert(t *testing.T) {
 		t.Log(result)
 		t.Fail()
 	}
+}
+
+func TestBTreeInsert(t *testing.T) {
+	bt := newTestBTree(2)
+	arr := tree.RandomSlice(0, 20, 10)
+	exp := make([]int, len(arr), cap(arr))
+	copy(exp,arr)
+	sort.Ints(exp)
+	for i := range arr {
+		bt.insert(arr[i], arr[i])
+	}
+	checkBtree(t,exp,&bt.bTree)
+	for i := range arr {
+		bt.insert(arr[i], arr[i])
+	}
+	checkBtree(t,exp,&bt.bTree)
 }

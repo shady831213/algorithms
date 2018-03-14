@@ -2,7 +2,6 @@ package bTree
 
 import (
 	"sort"
-	"reflect"
 )
 
 //Node
@@ -42,7 +41,7 @@ func (n *bTreeNode) Swap(i, j int) {
 }
 
 func (n *bTreeNode) Less(i, j int) bool {
-	return n.bTreeNodeSort.LessByKey(n.keyValue[i].key,n.keyValue[j].key)
+	return n.bTreeNodeSort.LessByKey(n.keyValue[i].key, n.keyValue[j].key)
 }
 
 func (n *bTreeNode) hitOrGetChild(key interface{}) (*bTreeNode, *keyValue) {
@@ -53,7 +52,7 @@ func (n *bTreeNode) hitOrGetChild(key interface{}) (*bTreeNode, *keyValue) {
 	i, j := 0, len(n.keyValue)-1
 	for i != j {
 		mid := (j-i)/2 + i
-		if reflect.DeepEqual(key, n.keyValue[mid].key) {
+		if key == n.keyValue[mid].key {
 			return n, n.keyValue[mid]
 		} else if n.LessByKey(key, n.keyValue[mid].key) {
 			j = mid
@@ -61,7 +60,9 @@ func (n *bTreeNode) hitOrGetChild(key interface{}) (*bTreeNode, *keyValue) {
 			i = mid + 1
 		}
 	}
-	if n.LessByKey(key, n.keyValue[i].key) {
+	if key == n.keyValue[i].key {
+		return n, n.keyValue[i]
+	} else if n.LessByKey(key, n.keyValue[i].key) {
 		return n.c[i], nil
 	} else {
 		return n.c[i+1], nil
@@ -135,6 +136,19 @@ func (bt *bTree) init(t int, self bTreeIf) (*bTree) {
 }
 
 func (bt *bTree) insert(key, value interface{}) {
+	//override value if any node hit the key
+	override := func(key, value interface{}, node *bTreeNode) (*bTreeNode) {
+		c, keyValue := node.hitOrGetChild(key)
+		if keyValue != nil {
+			keyValue.value = value
+			return nil
+		}
+		if node.isLeaf {
+			return node
+		}
+		return c
+	}
+
 	//empty tree
 	if bt.root == nil {
 		bt.root = bt.bTreeIf.newNode(bt.t)
@@ -142,8 +156,7 @@ func (bt *bTree) insert(key, value interface{}) {
 	}
 
 	//hit root
-	if _, keyValue := bt.root.hitOrGetChild(key); keyValue != nil {
-		keyValue.value = value
+	if override(key, value, bt.root) == nil {
 		return
 	}
 
@@ -159,24 +172,25 @@ func (bt *bTree) insert(key, value interface{}) {
 	}
 
 	for !n.isLeaf {
-		c, keyValue := n.hitOrGetChild(key)
-		if keyValue != nil {
-			keyValue.value = value
+		c := override(key, value, n)
+		if c == nil {
 			return
 		}
 		//n is full
 		if c.isFull() {
+			if override(key, value, c) == nil {
+				return
+			}
 			n = c.splitAndGetChild(bt.bTreeIf.newNode(bt.t), key)
 		} else {
 			n = c
 		}
 	}
 
-	if _, keyValue := n.hitOrGetChild(key); keyValue != nil {
-		keyValue.value = value
-	} else {
+	if override(key, value, n) != nil {
 		n.addKeyValue(key, value)
 	}
+
 }
 
 func (bt *bTree) preOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode) (bool)) (bool) {
