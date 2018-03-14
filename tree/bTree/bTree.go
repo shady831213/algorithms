@@ -142,37 +142,6 @@ func (n *bTreeNode) removeKeyValue(key interface{}) () {
 	}
 }
 
-func (n *bTreeNode) split(n2 *bTreeNode) (int) {
-	//because it is up-down, parent must be not full
-	if !n.isFull() {
-		panic("split when not full!")
-	}
-	n2.p = n.p
-	n2.isLeaf = n.isLeaf
-	n2.keyValue = append(make([]*keyValue, 0, 0), n.keyValue[n.t:]...)
-	n2.c = append(make([]*bTreeNode, 0, 0), n.c[n.t:]...)
-	for _, v := range n2.c {
-		if v != nil {
-			v.p = n2
-		}
-	}
-	i := n.p.addKeyValue(n.keyValue[n.t-1].key, n.keyValue[n.t-1].value)
-	n.keyValue = n.keyValue[:n.t-1]
-	n.c = n.c[:n.t]
-	n.p.c[i] = n
-	n.p.c[i+1] = n2
-	return i
-}
-
-func (n *bTreeNode) splitAndGetChild(n2 *bTreeNode, key interface{}) *bTreeNode {
-	i := n.split(n2)
-	if n.LessByKey(key, n.p.keyValue[i].key) {
-		return n
-	} else {
-		return n2
-	}
-}
-
 func (n *bTreeNode) isFull() (bool) {
 	return len(n.keyValue) == 2*n.t-1
 }
