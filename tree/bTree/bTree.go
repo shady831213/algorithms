@@ -77,50 +77,6 @@ func (n *bTreeNode) getChildOrKeyValue(key interface{}) (interface{}, int) {
 	}
 }
 
-func (n *bTreeNode) predecesor(key interface{}) (*keyValue, *bTreeNode, int) {
-	if len(n.keyValue) == 0 {
-		return nil, nil, -1
-	}
-
-	i := n.searchKeyIdx(key)
-
-	if key == n.keyValue[i].key {
-		if i <= 0 {
-			return nil, nil, -1
-		}
-		return n.keyValue[i-1], n.c[i-1], i - 1
-	} else if n.LessByKey(key, n.keyValue[i].key) {
-		if i <= 0 {
-			return nil, nil, -1
-		}
-		return n.keyValue[i-1], n.c[i-1], i - 1
-	} else {
-		return n.keyValue[i], n.c[i], i
-	}
-}
-
-func (n *bTreeNode) successor(key interface{}) (*keyValue, *bTreeNode, int) {
-	if len(n.keyValue) == 0 {
-		return nil, nil, -1
-	}
-
-	i := n.searchKeyIdx(key)
-
-	if key == n.keyValue[i].key {
-		if i >= len(n.keyValue)-1 {
-			return nil, nil, -1
-		}
-		return n.keyValue[i+1], n.c[i+2], i + 1
-	} else if n.LessByKey(n.keyValue[i].key, key) {
-		if i >= len(n.keyValue)-1 {
-			return nil, nil, -1
-		}
-		return n.keyValue[i+1], n.c[i+2], i + 1
-	} else {
-		return n.keyValue[i], n.c[i+1], i
-	}
-}
-
 func (n *bTreeNode) addKeyValue(key, value interface{}) (int) {
 	//insert sort
 	n.keyValue = append(n.keyValue, &keyValue{key, value})
@@ -231,6 +187,41 @@ func (bt *bTree) insertOrSet(n *bTreeNode, key, value interface{}) *bTreeNode {
 	}
 }
 
+func (bt *bTree) leftNode(n *bTreeNode) (*bTreeNode, int) {
+	if n.p == nil {
+		return nil, -1
+	}
+
+	i := n.p.searchKeyIdx(n.keyValue[0].key)
+
+	if n.p.LessByKey(n.keyValue[0].key, n.p.keyValue[i].key) {
+		if i <= 0 {
+			return nil, -1
+		}
+		return n.p.c[i-1], i - 1
+	} else {
+		return n.p.c[i], i
+	}
+}
+
+func (bt *bTree) rightNode(n *bTreeNode) (*bTreeNode, int) {
+	if n.p == nil {
+		return nil, -1
+	}
+
+	i := n.p.searchKeyIdx(n.keyValue[0].key)
+
+	if n.p.LessByKey(n.p.keyValue[i].key, n.keyValue[0].key) {
+		if i >= n.p.Len()-1 {
+			return nil, -1
+		}
+		return n.p.c[i+2], i + 1
+	} else {
+		return n.p.c[i+1], i
+	}
+}
+
+
 func (bt *bTree) insert(key, value interface{}) {
 	//empty tree
 	if bt.root == nil {
@@ -280,60 +271,60 @@ func (bt *bTree) remove(key interface{}) {
 				k = key
 			}
 		} else if node := nodeOrKeyValue.(*bTreeNode); node.isEmpty() {
-			_, preNode, preKeyValueIdx := n.predecesor(node.keyValue[0].key)
-			_, sucNode, sucKeyValueIdx := n.successor(node.keyValue[0].key)
-			if preNode != nil && !preNode.isEmpty() {
-				node.keyValue = append([]*keyValue{n.keyValue[preKeyValueIdx]}, node.keyValue...)
-				node.c = append([]*bTreeNode{preNode.c[preNode.Len()]}, node.c...)
+			leftNode, leftKeyValueIdx := bt.leftNode(node)
+			rightNode, rightKeyValueIdx := bt.rightNode(node)
+			if leftNode != nil && !leftNode.isEmpty() {
+				node.keyValue = append([]*keyValue{n.keyValue[leftKeyValueIdx]}, node.keyValue...)
+				node.c = append([]*bTreeNode{leftNode.c[leftNode.Len()]}, node.c...)
 				if !node.isLeaf {
 					node.c[0].p = node
 				}
-				n.keyValue[preKeyValueIdx] = preNode.keyValue[preNode.Len()-1]
-				preNode.c = preNode.c[:preNode.Len()]
-				preNode.keyValue = preNode.keyValue[:preNode.Len()-1]
+				n.keyValue[leftKeyValueIdx] = leftNode.keyValue[leftNode.Len()-1]
+				leftNode.c = leftNode.c[:leftNode.Len()]
+				leftNode.keyValue = leftNode.keyValue[:leftNode.Len()-1]
 				n = node
-			} else if sucNode != nil && !sucNode.isEmpty() {
-				node.keyValue = append(node.keyValue, n.keyValue[sucKeyValueIdx])
-				node.c = append(node.c, sucNode.c[0])
+			} else if rightNode != nil && !rightNode.isEmpty() {
+				node.keyValue = append(node.keyValue, n.keyValue[rightKeyValueIdx])
+				node.c = append(node.c, rightNode.c[0])
 				if !node.isLeaf {
 					node.c[node.Len()].p = node
 				}
-				n.keyValue[sucKeyValueIdx] = sucNode.keyValue[0]
-				sucNode.keyValue = sucNode.keyValue[1:]
-				sucNode.c = sucNode.c[1:]
+				n.keyValue[rightKeyValueIdx] = rightNode.keyValue[0]
+				rightNode.keyValue = rightNode.keyValue[1:]
+				rightNode.c = rightNode.c[1:]
 				n = node
-			} else if preNode != nil {
-				node.keyValue = append([]*keyValue{n.keyValue[preKeyValueIdx]}, node.keyValue...)
-				node.keyValue = append(preNode.keyValue, node.keyValue...)
-				for _, v := range preNode.c {
+			} else if leftNode != nil {
+				node.keyValue = append([]*keyValue{n.keyValue[leftKeyValueIdx]}, node.keyValue...)
+				node.keyValue = append(leftNode.keyValue, node.keyValue...)
+				for _, v := range leftNode.c {
 					if v != nil {
 						v.p = node
 					}
 				}
-				node.c = append(preNode.c, node.c...)
-				n.removeKeyValue(n.keyValue[preKeyValueIdx].key)
+				node.c = append(leftNode.c, node.c...)
+				n.removeKeyValue(n.keyValue[leftKeyValueIdx].key)
 				if n.Len() == 0 {
 					node.p = n.p
 					bt.root = node
 					bt.height --
 				}
 				n = node
-			} else if sucNode != nil {
-				sucNode.keyValue = append([]*keyValue{n.keyValue[sucKeyValueIdx]}, sucNode.keyValue...)
-				sucNode.keyValue = append(node.keyValue, sucNode.keyValue...)
+			} else if rightNode != nil {
+				rightNode.keyValue = append([]*keyValue{n.keyValue[rightKeyValueIdx]}, rightNode.keyValue...)
+				rightNode.keyValue = append(node.keyValue, rightNode.keyValue...)
 				for _, v := range node.c {
 					if v != nil {
-						v.p = sucNode
+						v.p = rightNode
 					}
 				}
-				sucNode.c = append(node.c, sucNode.c...)
-				n.removeKeyValue(n.keyValue[sucKeyValueIdx].key)
+				rightNode.c = append(node.c, rightNode.c...)
+				n.removeKeyValue(n.keyValue[rightKeyValueIdx].key)
 				if n.Len() == 0 {
-					sucNode.p = n.p
-					bt.root = sucNode
+					rightNode.p = n.p
+					bt.root = rightNode
 					bt.height --
 				}
-				n = sucNode
+				n = rightNode
 			}
 		} else {
 			n = node
