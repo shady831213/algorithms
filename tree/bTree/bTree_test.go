@@ -90,3 +90,44 @@ func TestBTreeInsert(t *testing.T) {
 	}
 	checkBtree(t,exp,&bt.bTree)
 }
+
+func TestBTreeRemove(t *testing.T) {
+	deleteExp := func(arr []int, e int)([]int) {
+		//binary search
+		i, j := 0, len(arr)-1
+		for i != j {
+			mid := (j-i)/2 + i
+			if arr[mid] == e {
+				i = mid
+				j = mid
+			} else if e < arr[mid] {
+				j = mid
+			} else {
+				i = mid + 1
+			}
+		}
+		if len(arr) - 1 == 0{
+			return []int{}
+		}
+		if i == len(arr) - 1 {
+			return arr[:len(arr) - 1]
+		}
+		return append(arr[:i], arr[i+1:]...)
+	}
+
+	bt := newTestBTree(2)
+	arr := tree.RandomSlice(0, 20, 10)
+	removeOrder := tree.RandomSlice(0, 10, 10)
+	exp := make([]int, len(arr), cap(arr))
+	copy(exp,arr)
+	sort.Ints(exp)
+	for i := range arr {
+		bt.insert(arr[i], arr[i])
+	}
+	checkBtree(t,exp,&bt.bTree)
+	for _,v := range removeOrder {
+		bt.remove(arr[v])
+		exp = deleteExp(exp, arr[v])
+		checkBtree(t,exp,&bt.bTree)
+	}
+}
