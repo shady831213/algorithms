@@ -19,21 +19,21 @@ type Memory interface {
 }
 
 type discModel struct {
-	mem map[int][]byte // (id, []byte)
+	mem map[interface{}][]byte // (id, []byte)
 	memory
 }
 
 func (m *discModel) init() *discModel {
-	m.mem = make(map[int][]byte)
+	m.mem = make(map[interface{}][]byte)
 	return m
 }
 
 func (m *discModel) write(id interface{}, data interface{}) {
-	m.mem[id.(int)] = data.([]byte)
+	m.mem[id] = data.([]byte)
 }
 
 func (m *discModel) read(id interface{}) (interface{}, bool) {
-	data, ok := m.mem[id.(int)]
+	data, ok := m.mem[id]
 	return data, ok
 }
 

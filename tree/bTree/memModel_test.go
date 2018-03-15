@@ -31,9 +31,9 @@ type testCacheModel struct {
 	cacheModel
 }
 
-func (m *testCacheModel) init(size int, downStreamModel memory) (*testCacheModel) {
-	m.cacheModel.init(size, downStreamModel, m)
-	return m
+func (c *testCacheModel) init(size int, downStreamModel memory) (*testCacheModel) {
+	c.cacheModel.init(size, downStreamModel, c)
+	return c
 }
 
 func (c *testCacheModel) encIdx(id interface{}) (interface{}) {
