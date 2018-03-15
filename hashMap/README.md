@@ -31,3 +31,7 @@ O(1)
                              = size - (3/16)cap + 1 = 1 + (2/16) - (3/16)cap < 1
                              
 O(1)
+
+
+# golang的性能分析：
+[golang性能分析](http://blog.csdn.net/erlib/article/details/72912662)
