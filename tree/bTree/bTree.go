@@ -147,6 +147,18 @@ func (bt *bTree) split(n *bTreeNode) (int) {
 	return i
 }
 
+func (bt *bTree) merge(leftNode *bTreeNode, rightNode *bTreeNode, mid *keyValue) (*bTreeNode) {
+	leftNode.keyValue = append(leftNode.keyValue, mid)
+	rightNode.keyValue = append(leftNode.keyValue, rightNode.keyValue...)
+	for _, v := range leftNode.c {
+		if v != nil {
+			v.p = rightNode
+		}
+	}
+	rightNode.c = append(leftNode.c, rightNode.c...)
+	return rightNode
+}
+
 func (bt *bTree) insertOrSet(n *bTreeNode, key, value interface{}) *bTreeNode {
 	nodeOrKeyValue, _ := n.getChildOrKeyValue(key)
 	//if node hit the key ,set value
@@ -241,90 +253,64 @@ func (bt *bTree) remove(key interface{}) {
 	for !n.isLeaf {
 		nodeOrKeyValue, keyValueIdx := n.getChildOrKeyValue(k)
 		if _, ok := nodeOrKeyValue.(*keyValue); ok {
+			//non-leaf node and hit the key
 			preChild, postChild := n.c[keyValueIdx], n.c[keyValueIdx+1]
 			if !preChild.isEmpty() {
-				predecesorIdx := preChild.Len() - 1
-				n.keyValue[keyValueIdx] = preChild.keyValue[predecesorIdx]
+				n.keyValue[keyValueIdx] = preChild.keyValue[preChild.Len() - 1]
 				n = preChild
-				k = preChild.keyValue[predecesorIdx].key
+				k = preChild.keyValue[preChild.Len() - 1].key
 			} else if !postChild.isEmpty() {
-				successorIdx := 0
-				n.keyValue[keyValueIdx] = postChild.keyValue[successorIdx]
+				n.keyValue[keyValueIdx] = postChild.keyValue[0]
 				n = postChild
-				k = postChild.keyValue[successorIdx].key
+				k = postChild.keyValue[0].key
 			} else {
-				preChild.keyValue = append(preChild.keyValue, n.keyValue[keyValueIdx])
-				postChild.keyValue = append(preChild.keyValue, postChild.keyValue...)
-				for _, v := range preChild.c {
-					if v != nil {
-						v.p = postChild
-					}
-				}
-				postChild.c = append(preChild.c, postChild.c...)
+				newNode := bt.merge(preChild, postChild, n.keyValue[keyValueIdx])
 				n.removeKeyValue(k)
 				if n.Len() == 0 {
-					postChild.p = n.p
-					bt.root = postChild
+					newNode.p = n.p
+					bt.root = newNode
 					bt.height --
 				}
-				n = postChild
-				k = key
+				n = newNode
 			}
 		} else if node := nodeOrKeyValue.(*bTreeNode); node.isEmpty() {
+			//non-leaf node,and hit child
 			leftNode, leftKeyValueIdx := bt.leftNode(node)
 			rightNode, rightKeyValueIdx := bt.rightNode(node)
-			if leftNode != nil && !leftNode.isEmpty() {
-				node.keyValue = append([]*keyValue{n.keyValue[leftKeyValueIdx]}, node.keyValue...)
-				node.c = append([]*bTreeNode{leftNode.c[leftNode.Len()]}, node.c...)
-				if !node.isLeaf {
-					node.c[0].p = node
+			if leftNode != nil {
+				rightNode, keyValueIdx = node, leftKeyValueIdx
+			} else {
+				leftNode, keyValueIdx = node, rightKeyValueIdx
+			}
+			if !leftNode.isEmpty() {
+				rightNode.keyValue = append([]*keyValue{n.keyValue[keyValueIdx]}, rightNode.keyValue...)
+				if !leftNode.isLeaf {
+					leftNode.c[leftNode.Len()].p = rightNode
 				}
-				n.keyValue[leftKeyValueIdx] = leftNode.keyValue[leftNode.Len()-1]
+				rightNode.c = append([]*bTreeNode{leftNode.c[leftNode.Len()]}, rightNode.c...)
+				n.keyValue[keyValueIdx] = leftNode.keyValue[leftNode.Len()-1]
 				leftNode.c = leftNode.c[:leftNode.Len()]
 				leftNode.keyValue = leftNode.keyValue[:leftNode.Len()-1]
-				n = node
-			} else if rightNode != nil && !rightNode.isEmpty() {
-				node.keyValue = append(node.keyValue, n.keyValue[rightKeyValueIdx])
-				node.c = append(node.c, rightNode.c[0])
-				if !node.isLeaf {
-					node.c[node.Len()].p = node
+				n = rightNode
+			} else if !rightNode.isEmpty() {
+				leftNode.keyValue = append(leftNode.keyValue, n.keyValue[keyValueIdx])
+				if !rightNode.isLeaf {
+					rightNode.c[0].p = leftNode
 				}
-				n.keyValue[rightKeyValueIdx] = rightNode.keyValue[0]
+				leftNode.c = append(leftNode.c, rightNode.c[0])
+				n.keyValue[keyValueIdx] = rightNode.keyValue[0]
 				rightNode.keyValue = rightNode.keyValue[1:]
 				rightNode.c = rightNode.c[1:]
-				n = node
-			} else if leftNode != nil {
-				node.keyValue = append([]*keyValue{n.keyValue[leftKeyValueIdx]}, node.keyValue...)
-				node.keyValue = append(leftNode.keyValue, node.keyValue...)
-				for _, v := range leftNode.c {
-					if v != nil {
-						v.p = node
-					}
-				}
-				node.c = append(leftNode.c, node.c...)
-				n.removeKeyValue(n.keyValue[leftKeyValueIdx].key)
+				n = leftNode
+			} else {
+				newNode := bt.merge(leftNode, rightNode, n.keyValue[keyValueIdx])
+				n.removeKeyValue(n.keyValue[keyValueIdx].key)
 				if n.Len() == 0 {
-					node.p = n.p
-					bt.root = node
+					newNode.p = n.p
+					bt.root = newNode
 					bt.height --
 				}
-				n = node
-			} else if rightNode != nil {
-				rightNode.keyValue = append([]*keyValue{n.keyValue[rightKeyValueIdx]}, rightNode.keyValue...)
-				rightNode.keyValue = append(node.keyValue, rightNode.keyValue...)
-				for _, v := range node.c {
-					if v != nil {
-						v.p = rightNode
-					}
-				}
-				rightNode.c = append(node.c, rightNode.c...)
-				n.removeKeyValue(n.keyValue[rightKeyValueIdx].key)
-				if n.Len() == 0 {
-					rightNode.p = n.p
-					bt.root = rightNode
-					bt.height --
-				}
-				n = rightNode
+				n = newNode
 			}
 		} else {
 			n = node
