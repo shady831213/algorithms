@@ -137,7 +137,7 @@ func NewFabHeapElementList(p *fibHeapElement) *fibHeapElementList {
 
 //heap
 type fibHeapIf interface {
-	Less(*fibHeapElement, *fibHeapElement) bool
+	LessKey(interface{}, interface{}) bool
 }
 
 type fibHeap struct {
@@ -164,7 +164,11 @@ func (h *fibHeap) Less(n1, n2 *fibHeapElement) bool {
 	} else if n2 == nil {
 		return true
 	}
-	return n1.key.(int) > n2.key.(int)
+	return h.fibHeapIf.LessKey(n1.key, n2.key)
+}
+
+func (h *fibHeap) LessKey(key1, key2 interface{}) bool {
+	return key1.(int) > key2.(int)
 }
 
 //floor(lg n)
@@ -182,7 +186,7 @@ func (h *fibHeap) Degree() int {
 func (h *fibHeap) Insert(key, value interface{}) *fibHeapElement {
 	n := NewFabHeapElement(key, value)
 	h.root.PushRight(n)
-	if h.fibHeapIf.Less(n, h.min) {
+	if h.Less(n, h.min) {
 		h.min = n
 	}
 	h.n ++
@@ -191,7 +195,7 @@ func (h *fibHeap) Insert(key, value interface{}) *fibHeapElement {
 
 func (h *fibHeap) Union(h1 *fibHeap) *fibHeap {
 	h.root = h.root.MergeRightList(h1.root)
-	if h.fibHeapIf.Less(h1.min, h.min) {
+	if h.Less(h1.min, h.min) {
 		h.min = h1.min
 	}
 	h.n += h1.n
@@ -245,6 +249,36 @@ func (h *fibHeap) ExtractMin() *fibHeapElement {
 		h.n--
 	}
 	return n
+}
+
+func (h *fibHeap) cascadingCut(n *fibHeapElement) {
+	if n.p != nil {
+		if n.mark {
+			n.p.c.Remove(n)
+			h.root.PushLeft(n)
+			n.mark = false
+			h.cascadingCut(n.p)
+		} else {
+			n.mark = true
+		}
+	}
+}
+
+func (h *fibHeap) ModifyNode(n *fibHeapElement, key, value interface{}) {
+	if h.fibHeapIf.LessKey(n.key, key) {
+		panic("key violated")
+	}
+	n.key = key
+	n.value = value
+	if n.p != nil && h.Less(n, n.p) {
+		n.p.c.Remove(n)
+		h.root.PushLeft(n)
+		n.mark = false
+		h.cascadingCut(n.p)
+	}
+	if h.Less(n, h.min) {
+		h.min = n
+	}
 }
 
 func NewFibHeap() *fibHeap {
