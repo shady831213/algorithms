@@ -10,13 +10,27 @@ type fibHeapElement struct {
 
 func (e *fibHeapElement) Init(key, value interface{}) *fibHeapElement {
 	e.p = nil
-	e.l = e
-	e.r = e
+	e.l = nil
+	e.r = nil
 	e.c = NewFabHeapElementList(e)
 	e.mark = false
 	e.key = key
 	e.value = value
 	return e
+}
+
+func (e *fibHeapElement) Right() *fibHeapElement {
+	if p := e.r; e.list != nil && p != &e.list.leftist {
+		return p
+	}
+	return nil
+}
+
+func (e *fibHeapElement) Left() *fibHeapElement {
+	if p := e.l; e.list != nil && p != &e.list.leftist {
+		return p
+	}
+	return nil
 }
 
 func (e *fibHeapElement) Degree() int {
@@ -34,11 +48,14 @@ func NewFabHeapElement(key, value interface{}) *fibHeapElement {
 
 //list container
 type fibHeapElementList struct {
-	p, leftist *fibHeapElement
-	len        int
+	p       *fibHeapElement
+	leftist fibHeapElement
+	len     int
 }
 
 func (l *fibHeapElementList) Init(p *fibHeapElement) *fibHeapElementList {
+	l.leftist.l = &l.leftist
+	l.leftist.r = &l.leftist
 	l.p = p
 	l.len = 0
 	return l
@@ -55,41 +72,36 @@ func (l *fibHeapElementList) insert(e, at *fibHeapElement) *fibHeapElement {
 	e.r = n
 	n.l = e
 	e.p = l.p
+	e.list = l
 	l.len++
 	return e
 }
 
 func (l *fibHeapElementList) Remove(e *fibHeapElement) {
-	if e.p == l.p {
+	if e.list == l {
 		e.l.r = e.r
 		e.r.l = e.l
+		e.r = nil // avoid memory leaks
+		e.l = nil // avoid memory leaks
+		e.list = nil
+		e.p = nil
 		l.len--
 	}
 }
 
 func (l *fibHeapElementList) PushLeft(e *fibHeapElement) {
-	if l.leftist == nil {
-		l.leftist = e
-		l.len++
-	} else {
-		l.insert(e, l.leftist)
-	}
+	l.insert(e, &l.leftist)
 }
 
 func (l *fibHeapElementList) PushRight(e *fibHeapElement) {
-	if l.leftist == nil {
-		l.leftist = e
-		l.len++
-	} else {
-		l.insert(e, l.leftist.l)
-	}
+	l.insert(e, l.leftist.l)
 }
 
 func (l *fibHeapElementList) Leftist() *fibHeapElement {
 	if l.len == 0 {
 		return nil
 	}
-	return l.leftist
+	return l.leftist.r
 }
 
 func (l *fibHeapElementList) Rightist() *fibHeapElement {
@@ -100,15 +112,15 @@ func (l *fibHeapElementList) Rightist() *fibHeapElement {
 }
 
 func (l *fibHeapElementList) MergeRightList(other *fibHeapElementList) *fibHeapElementList {
-	for i, e := other.Len(), other.Leftist(); i > 0; i, e = i-1, e.r {
+	for i, e := other.Len(), other.Leftist(); i > 0; i, e = i-1, e.Right() {
 		l.insert(e, l.leftist.l)
 	}
 	return l
 }
 
 func (l *fibHeapElementList) MergeLeftList(other *fibHeapElementList) *fibHeapElementList {
-	for i, e := other.Len(), other.Rightist(); i > 0; i, e = i-1, e.l {
-		l.insert(e, l.leftist)
+	for i, e := other.Len(), other.Rightist(); i > 0; i, e = i-1, e.Left() {
+		l.insert(e, l.leftist.r)
 	}
 	return l
 }
@@ -120,27 +132,24 @@ func NewFabHeapElementList(p *fibHeapElement) *fibHeapElementList {
 //heap
 type fibHeapIf interface {
 	Less(*fibHeapElement, *fibHeapElement) bool
-	Swap(*fibHeapElement, *fibHeapElement)
 }
 
 type fibHeap struct {
-	root      *fibHeapElementList
-	min       *fibHeapElement
-	maxDegree int
-	n         int
+	root *fibHeapElementList
+	min  *fibHeapElement
+	n    int
 	fibHeapIf
 }
 
 func (h *fibHeap) Init(self fibHeapIf) *fibHeap {
 	h.root = NewFabHeapElementList(nil)
 	h.min = nil
-	h.maxDegree = 0
 	h.n = 0
 	h.fibHeapIf = self
 	return h
 }
 
-//default Less function
+//default Less function, max heap
 func (h *fibHeap) Less(n1, n2 *fibHeapElement) bool {
 	if n1 == nil && n2 == nil {
 		panic("both nodes are nil!")
@@ -149,12 +158,24 @@ func (h *fibHeap) Less(n1, n2 *fibHeapElement) bool {
 	} else if n2 == nil {
 		return true
 	}
-	return n1.key.(int) < n2.key.(int)
+	return n1.key.(int) > n2.key.(int)
+}
+
+//floor(lg n)
+func (h *fibHeap) Degree() int {
+	if h.n == 0 {
+		return 0
+	}
+	i := 1
+	for diff := h.n; diff != 1; i++ {
+		diff = h.n >> uint32(i)
+	}
+	return i - 1
 }
 
 func (h *fibHeap) Insert(key, value interface{}) *fibHeapElement {
 	n := NewFabHeapElement(key, value)
-	h.root.PushRight(NewFabHeapElement(key, value))
+	h.root.PushRight(n)
 	if h.fibHeapIf.Less(n, h.min) {
 		h.min = n
 	}
@@ -169,32 +190,60 @@ func (h *fibHeap) Union(h1 *fibHeap) *fibHeap {
 		h.min = h1.min
 	}
 	h1.min = nil
-	if h.maxDegree < h1.maxDegree {
-		h.maxDegree = h1.maxDegree
-	}
 	h.n += h1.n
 	h1 = nil
 	return h
 }
 
 func (h *fibHeap) consolidate() {
-
+	degreeArray := make([]*fibHeapElement, h.Degree()+1, h.Degree()+1)
+	for i, e := h.root.Len(), h.root.Leftist(); i > 0; i = i - 1 {
+		nextE := e.Right()
+		for e1 := degreeArray[e.Degree()]; e1 != nil && e.Degree() <= h.Degree(); e1 = degreeArray[e.Degree()] {
+			degreeArray[e.Degree()] = nil
+			if h.Less(e1, e) {
+				e, e1 = e1, e
+			}
+			e1.mark = false
+			h.root.Remove(e1)
+			e.c.PushRight(e1)
+		}
+		degreeArray[e.Degree()] = e
+		e = nextE
+	}
+	h.min = nil
+	h.root = NewFabHeapElementList(nil)
+	for i := range degreeArray {
+		if degreeArray[i] != nil {
+			h.root.PushRight(degreeArray[i])
+			if h.Less(degreeArray[i], h.min) {
+				h.min = degreeArray[i]
+			}
+		}
+	}
 }
 
 func (h *fibHeap) ExtractMin() *fibHeapElement {
 	n := h.min
 	if n != nil {
-		for i, e := n.Degree(), n.c.Leftist(); i > 0; i, e = i-1, e.r {
+		for i, e := n.Degree(), n.c.Leftist(); i > 0; i = i - 1 {
+			nextE := e.Right()
 			h.root.PushLeft(e)
+			e = nextE
 		}
 		h.root.Remove(n)
-		if n == n.r {
+		if n == n.Right() {
 			h.min = nil
 		} else {
-			h.min = n.r
+			h.min = n.Right()
 			h.consolidate()
 		}
 		h.n--
 	}
 	return n
+}
+
+func NewFibHeap() *fibHeap {
+	h := new(fibHeap)
+	return h.Init(h)
 }
