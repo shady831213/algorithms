@@ -12,6 +12,7 @@ CLRS study. Codes are written with golang.
   - [数组二叉堆](https://github.com/shady831213/algorithms/tree/master/heap/arrayHeap)
   - [链表二叉堆](https://github.com/shady831213/algorithms/tree/master/heap/linkedHeap)
   - [左偏堆](https://github.com/shady831213/algorithms/tree/master/heap/leftistHeap)
+  - [斐波那契堆](https://github.com/shady831213/algorithms/tree/master/heap/fibHeap)
   
 - [树](https://github.com/shady831213/algorithms/tree/master/tree)
   - [bst](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/binarySearchTree)
