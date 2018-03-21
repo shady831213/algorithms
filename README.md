@@ -1,6 +1,12 @@
 # algorithms
 CLRS study. Codes are written with golang.
 
+----------------
+
+go version: = 1.9.2
+
+----------------
+
 - [排序](https://github.com/shady831213/algorithms/tree/master/sort) 
   - [计数排序](https://github.com/shady831213/algorithms/blob/master/sort/countingSort.go)
   - [堆排](https://github.com/shady831213/algorithms/blob/master/sort/heapSort.go)
