@@ -21,30 +21,29 @@ func newRsVEBTreeMinMax(key, value interface{}) *rsVEBTreeMinMax {
 	return new(rsVEBTreeMinMax).init(key, value)
 }
 
-type rsVEBTreeElement struct {
-	u,summaryU,clusterU       int
-	min     *rsVEBTreeMinMax
-	max     *rsVEBTreeMinMax
-	summary *rsVEBTreeElement
-	cluster map[interface{}]*rsVEBTreeElement
-	Less    func(interface{}, interface{}) bool
-	High    func(int, interface{}) interface{}
-	Low     func(int, interface{}) interface{}
+type rsVEBTreeUtils interface {
+	Less(interface{}, interface{}) bool
+	High(int, interface{}) interface{}
+	Low(int, interface{}) interface{}
 }
 
-func (e *rsVEBTreeElement) init(u int,
-	Less func(interface{}, interface{}) bool,
-	High func(int, interface{}) interface{},
-	Low func(int, interface{}) interface{}) *rsVEBTreeElement {
+type rsVEBTreeElement struct {
+	u, summaryU, clusterU int
+	min                   *rsVEBTreeMinMax
+	max                   *rsVEBTreeMinMax
+	summary               *rsVEBTreeElement
+	cluster               map[interface{}]*rsVEBTreeElement
+	utils                 rsVEBTreeUtils
+}
+
+func (e *rsVEBTreeElement) init(u int, utils rsVEBTreeUtils) *rsVEBTreeElement {
 	e.u = u
-	e.Less = Less
-	e.High = High
-	e.Low = Low
+	e.utils = utils
 	e.cluster = make(map[interface{}]*rsVEBTreeElement)
 	if e.u > 2 {
 		e.summaryU = int(math.Ceil(math.Sqrt(float64(u))))
 		e.clusterU = int(math.Floor(math.Sqrt(float64(e.u))))
-		e.summary = newRsVEBTreeElement(e.summaryU, Less, High, Low)
+		e.summary = newRsVEBTreeElement(e.summaryU, e.utils)
 	} else {
 		e.summaryU = 0
 		e.clusterU = 0
@@ -54,7 +53,7 @@ func (e *rsVEBTreeElement) init(u int,
 
 func (e *rsVEBTreeElement) addCluster(key interface{}) {
 	if e.u > 2 {
-		e.cluster[key] = newRsVEBTreeElement(e.clusterU, e.Less, e.High, e.Low)
+		e.cluster[key] = newRsVEBTreeElement(e.clusterU, e.utils)
 	}
 }
 
@@ -70,7 +69,7 @@ func (e *rsVEBTreeElement) insert(key, value interface{}) {
 		e.min.value.PushBack(value)
 	} else {
 		_key, _value := key, value
-		if e.Less(_key, e.min.key) {
+		if e.utils.Less(_key, e.min.key) {
 			_key, _value, e.min = e.min.key, e.min.value, newRsVEBTreeMinMax(_key, _value)
 		}
 
@@ -79,16 +78,13 @@ func (e *rsVEBTreeElement) insert(key, value interface{}) {
 
 		if _key == e.max.key {
 			e.max.value.PushBack(_value)
-		} else if e.Less(e.max.key, _key) {
+		} else if e.utils.Less(e.max.key, _key) {
 			e.max = newRsVEBTreeMinMax(_key, _value)
 		}
 
 	}
 }
 
-func newRsVEBTreeElement(u int,
-	Less func(interface{}, interface{}) bool,
-	High func(int, interface{}) interface{},
-	Low func(int, interface{}) interface{}) *rsVEBTreeElement {
-	return new(rsVEBTreeElement).init(u, Less, High, Low)
+func newRsVEBTreeElement(u int,utils rsVEBTreeUtils) *rsVEBTreeElement {
+	return new(rsVEBTreeElement).init(u, utils)
 }
