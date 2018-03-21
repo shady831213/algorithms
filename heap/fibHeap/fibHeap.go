@@ -206,7 +206,7 @@ func (h *fibHeap) consolidate() {
 	degreeArray := make([]*fibHeapElement, h.Degree()+1, h.Degree()+1)
 	for i, e := h.root.Len(), h.root.Leftist(); i > 0; i = i - 1 {
 		nextE := e.Right()
-		for e1 := degreeArray[e.Degree()]; e1 != nil && e.Degree() <= h.Degree(); e1 = degreeArray[e.Degree()] {
+		for e1 := degreeArray[e.Degree()]; e1 != nil && e.Degree() < h.Degree(); e1 = degreeArray[e.Degree()] {
 			degreeArray[e.Degree()] = nil
 			if h.Less(e1, e) {
 				e, e1 = e1, e
@@ -252,12 +252,12 @@ func (h *fibHeap) ExtractMin() *fibHeapElement {
 }
 
 func (h *fibHeap) cascadingCut(n *fibHeapElement) {
-	if n.p != nil {
+	if p := n.p;p != nil {
 		if n.mark {
-			n.p.c.Remove(n)
+			p.c.Remove(n)
 			h.root.PushLeft(n)
 			n.mark = false
-			h.cascadingCut(n.p)
+			h.cascadingCut(p)
 		} else {
 			n.mark = true
 		}
@@ -270,11 +270,11 @@ func (h *fibHeap) ModifyNode(n *fibHeapElement, key, value interface{}) {
 	}
 	n.key = key
 	n.value = value
-	if n.p != nil && h.Less(n, n.p) {
-		n.p.c.Remove(n)
+	if p := n.p;n.p != nil && h.Less(n, n.p) {
+		p.c.Remove(n)
 		h.root.PushLeft(n)
 		n.mark = false
-		h.cascadingCut(n.p)
+		h.cascadingCut(p)
 	}
 	if h.Less(n, h.min) {
 		h.min = n

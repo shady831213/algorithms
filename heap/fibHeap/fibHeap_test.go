@@ -90,6 +90,7 @@ func TestFibHeap_ModifyNode(t *testing.T) {
 		n := h.Insert(v, v)
 		nodeArr = append(nodeArr, n)
 	}
+	h.consolidate()
 	for i := range nodeArr {
 		arr[i] += rand.Intn(50) + 50
 		h.ModifyNode(nodeArr[i], arr[i], arr[i])
@@ -140,6 +141,7 @@ func BenchmarkFibHeap_ModifyNode(b *testing.B) {
 		nodeArr = append(nodeArr,h.Insert(n, n))
 		arr = append(arr, n+rand.Intn(50)+50)
 	}
+	h.consolidate()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		h.ModifyNode(nodeArr[i], arr[i], arr[i])
@@ -156,6 +158,7 @@ func BenchmarkFibHeap_ExtractMinAfterModifyNode(b *testing.B) {
 		nodeArr = append(nodeArr,h.Insert(n, n))
 		arr = append(arr, n+rand.Intn(50)+50)
 	}
+	h.consolidate()
 	for i := 0; i < b.N; i++ {
 		h.ModifyNode(nodeArr[i], arr[i], arr[i])
 	}
