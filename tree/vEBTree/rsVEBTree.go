@@ -52,7 +52,7 @@ func copyRsVEBTreeItem(i *rsVEBTreeItem) *rsVEBTreeItem {
 }
 
 type rsVEBTreeMixin interface {
-	Less(interface{}, interface{}) bool
+	Less(int, interface{}, interface{}) bool
 	High(int, interface{}) interface{}
 	Low(int, interface{}) interface{}
 	Index(int, interface{}, interface{}) interface{}
@@ -121,10 +121,10 @@ func (e *rsVEBTreeElement) Successor(key interface{}) *rsVEBTreeItem {
 		} else {
 			return nil
 		}
-	} else if e.min != nil && e.mixin.Less(key, e.min.key) {
+	} else if e.min != nil && e.mixin.Less(e.u, key, e.min.key) {
 		return copyRsVEBTreeItem(e.min)
 	} else {
-		if maxLow := e.cluster[e.mixin.High(e.u, key)].Max(); maxLow != nil && e.mixin.Less(e.mixin.Low(e.u, key), maxLow.key) {
+		if maxLow := e.cluster[e.mixin.High(e.u, key)].Max(); maxLow != nil && e.mixin.Less(e.u, e.mixin.Low(e.u, key), maxLow.key) {
 			successor := e.cluster[e.mixin.High(e.u, key)].Successor(e.mixin.Low(e.u, key))
 			successor.key = e.mixin.Index(e.u, e.mixin.High(e.u, key), successor.key)
 			return successor
@@ -146,10 +146,10 @@ func (e *rsVEBTreeElement) Predecessor(key interface{}) *rsVEBTreeItem {
 		} else {
 			return nil
 		}
-	} else if e.max != nil && e.mixin.Less(e.max.key, key) {
+	} else if e.max != nil && e.mixin.Less(e.u, e.max.key, key) {
 		return copyRsVEBTreeItem(e.max)
 	} else {
-		if minLow := e.cluster[e.mixin.High(e.u, key)].Min(); minLow != nil && e.mixin.Less(minLow.key, e.mixin.Low(e.u, key)) {
+		if minLow := e.cluster[e.mixin.High(e.u, key)].Min(); minLow != nil && e.mixin.Less(e.u, minLow.key, e.mixin.Low(e.u, key)) {
 			predecessor := e.cluster[e.mixin.High(e.u, key)].Predecessor(e.mixin.Low(e.u, key))
 			predecessor.key = e.mixin.Index(e.u, e.mixin.High(e.u, key), predecessor.key)
 			return predecessor
@@ -216,7 +216,7 @@ func (e *rsVEBTreeElement) Insert(key, value interface{}) {
 		e.min.value.PushBack(value)
 	} else {
 		_key, _value := key, value
-		if e.mixin.Less(_key, e.min.key) {
+		if e.mixin.Less(e.u, _key, e.min.key) {
 			_key, _value, e.min = e.min.key, e.min.value, newRsVEBTreeItem(_key, _value)
 		}
 
@@ -232,13 +232,12 @@ func (e *rsVEBTreeElement) Insert(key, value interface{}) {
 
 		if _key == e.max.key {
 			e.max.value.PushBack(_value)
-		} else if e.mixin.Less(e.max.key, _key) {
+		} else if e.mixin.Less(e.u, e.max.key, _key) {
 			e.max = newRsVEBTreeItem(_key, _value)
 		}
 	}
 }
 
-
 func newRsVEBTreeUint32(u int) *rsVEBTreeElement {
-	return new(rsVEBTreeElement).init(u,new(rsVEBTreeUInt32Mixin))
+	return new(rsVEBTreeElement).init(u, new(rsVEBTreeUInt32Mixin))
 }
