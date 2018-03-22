@@ -67,9 +67,9 @@ type rsVEBTreeElement struct {
 	mixin                 rsVEBTreeMixin
 }
 
-func (e *rsVEBTreeElement) init(u int, utils rsVEBTreeMixin) *rsVEBTreeElement {
+func (e *rsVEBTreeElement) init(u int, mixin rsVEBTreeMixin) *rsVEBTreeElement {
 	e.u = u
-	e.mixin = utils
+	e.mixin = mixin
 	e.cluster = make(map[interface{}]*rsVEBTreeElement)
 	if e.u > 2 {
 		e.summaryU = int(math.Ceil(math.Sqrt(float64(u))))
@@ -236,4 +236,9 @@ func (e *rsVEBTreeElement) Insert(key, value interface{}) {
 			e.max = newRsVEBTreeItem(_key, _value)
 		}
 	}
+}
+
+
+func newRsVEBTreeUint32(u int) *rsVEBTreeElement {
+	return new(rsVEBTreeElement).init(u,new(rsVEBTreeUInt32Mixin))
 }
