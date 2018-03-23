@@ -79,4 +79,35 @@ func TestRsVEBTreeElement_InsertMember(t *testing.T) {
 	}
 }
 
+func TestRsVEBTreeElement_InsertDelete(t *testing.T) {
+	lgu, datas := basicData()
+	vEBT := newRsVEBTreeUint32(lgu)
+	insertData(vEBT,datas)
+	//check
+	for i := range datas {
+		for j := range datas[i] {
+			vEBT.Delete(i, datas[i][j])
+			member := vEBT.Member(i)
+			if j == len(datas[i]) - 1 {
+				if member != nil {
+					t.Log(fmt.Sprintf("member @ %0d expect empty!", i))
+					t.Fail()
+				}
+			} else {
+				if member.key != i {
+					t.Log(fmt.Sprintf("key error! exp = %0d, result = %0d", i, member.key))
+					t.Fail()
+				}
+				e := member.value.Front()
+				if e.Value != datas[i][j+1] {
+					t.Log(fmt.Sprintf("value error @ key %0d ! exp = %0d, result = %0d", i, datas[i][j+1], e.Value))
+					t.Fail()
+				}
+				e = e.Next()
+			}
+		}
 
+		//delete
+
+	}
+}

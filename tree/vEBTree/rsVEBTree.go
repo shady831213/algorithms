@@ -2,6 +2,7 @@ package vEBTree
 
 import (
 	"container/list"
+	"fmt"
 )
 
 type rsVEBTreeItem struct {
@@ -95,6 +96,8 @@ func (e *rsVEBTreeElement) init(lgu int, mixin rsVEBTreeMixin) *rsVEBTreeElement
 func (e *rsVEBTreeElement) addCluster(key interface{}) *rsVEBTreeElement {
 	if e.lgu > 1 {
 		e.cluster[key] = new(rsVEBTreeElement).init(e.clusterLgu, e.mixin)
+		fmt.Println("addCluster")
+		fmt.Println(e.cluster[key])
 		return e.cluster[key]
 	}
 	return nil
@@ -113,16 +116,20 @@ func (e *rsVEBTreeElement) Max() *rsVEBTreeItem {
 }
 
 func (e *rsVEBTreeElement) Member(key interface{}) *rsVEBTreeItem {
-	if key == e.min.key {
+	if e.IsEmpty() {
+		return nil
+	} else if key == e.min.key {
 		return copyRsVEBTreeItem(e.min)
 	} else if key == e.max.key {
 		return copyRsVEBTreeItem(e.max)
 	} else if e.lgu == 1 {
 		return nil
 	} else {
-		if m := e.cluster[e.mixin.High(e.lgu, key)].Member(e.mixin.Low(e.lgu, key)); m != nil {
-			m.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), m.key)
-			return m
+		if cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]; ok {
+			if m := cluster.Member(e.mixin.Low(e.lgu, key)); m != nil {
+				m.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), m.key)
+				return m
+			}
 		}
 		return nil
 	}
@@ -181,8 +188,12 @@ func (e *rsVEBTreeElement) Predecessor(key interface{}) *rsVEBTreeItem {
 
 func (e *rsVEBTreeElement) Delete(key, value interface{}) {
 	_key, _value := key, value
+	fmt.Println("point3")
+	fmt.Println(_key, _value, e, e.min, e.max)
 	if e.min == e.max {
 		if e.min.removeByValue(_value) == 0 {
+			fmt.Println("point6")
+			fmt.Println(_key, _value, e, e.min, e.max, e.min.value)
 			e.min = nil
 			e.max = nil
 		}
@@ -193,16 +204,24 @@ func (e *rsVEBTreeElement) Delete(key, value interface{}) {
 			e.min = e.max
 		}
 	} else {
-		if _key == e.min.key && e.min.removeByValue(_value) == 0 {
-			cluster := e.summary.Min()
-			e.min = e.cluster[cluster.key].Min()
-			e.min.key = e.mixin.Index(e.lgu, cluster.key, e.min.key)
-			_key, _value = e.min.key, nil
+		if _key == e.min.key {
+			if e.min.removeByValue(_value) == 0 {
+				fmt.Println("point1")
+				cluster := e.summary.Min()
+				e.min = e.cluster[cluster.key].Min()
+				e.min.key = e.mixin.Index(e.lgu, cluster.key, e.min.key)
+				_key, _value = e.min.key, nil
+				fmt.Println(_key, _value, e.summary, e.summary.min, e.summary.max,cluster,e.cluster[cluster.key].Min(), e.min, e.max)
+			} else {
+				return
+			}
 		}
-
+		fmt.Println("point0")
+		fmt.Println(_key, _value, e, e.min, e.max)
 		e.cluster[e.mixin.High(e.lgu, _key)].Delete(e.mixin.Low(e.lgu, _key), _value)
 		e.summary.Delete(e.mixin.High(e.lgu, _key), _value)
 		if e.cluster[e.mixin.High(e.lgu, _key)].Min() == nil {
+			fmt.Println("point4")
 			delete(e.cluster, e.mixin.High(e.lgu, _key))
 			if _key == e.max.key && e.max.removeByValue(_value) == 0 {
 				if summaryMax := e.summary.Max(); summaryMax == nil {
@@ -212,9 +231,12 @@ func (e *rsVEBTreeElement) Delete(key, value interface{}) {
 					e.max.key = e.mixin.Index(e.lgu, summaryMax.key, e.max.key)
 				}
 			}
+			fmt.Println(_key, _value, e, e.min, e.max)
 		} else if _key == e.max.key && e.max.removeByValue(_value) == 0 {
+			fmt.Println("point5")
 			e.max = e.cluster[e.mixin.High(e.lgu, _key)].Max()
 			e.max.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, _key), e.max.key)
+			fmt.Println(_key, _value, e, e.min, e.max)
 		}
 	}
 }
@@ -234,17 +256,13 @@ func (e *rsVEBTreeElement) Insert(key, value interface{}) {
 		if e.mixin.Less(e.lgu, _key, e.min.key) {
 			_key, _value, e.min = e.min.key, e.min.value, newRsVEBTreeItem(_key, _value)
 		}
-
 		if e.lgu > 1 {
-			if cluster, ok := e.cluster[e.mixin.High(e.lgu, _key)]; !ok {
-				cluster = e.addCluster(e.mixin.High(e.lgu, _key))
-				e.summary.Insert(e.mixin.High(e.lgu, _key), _value)
-				cluster.Insert(e.mixin.Low(e.lgu, _key), _value)
-			} else {
-				cluster.Insert(e.mixin.Low(e.lgu, _key), _value)
+			if _, ok := e.cluster[e.mixin.High(e.lgu, _key)]; !ok {
+				e.addCluster(e.mixin.High(e.lgu, _key))
 			}
+			e.summary.Insert(e.mixin.High(e.lgu, _key), _value)
+			e.cluster[e.mixin.High(e.lgu, _key)].Insert(e.mixin.Low(e.lgu, _key), _value)
 		}
-
 		if _key == e.max.key {
 			e.max.addValue(_value)
 		} else if e.mixin.Less(e.lgu, e.max.key, _key) {
