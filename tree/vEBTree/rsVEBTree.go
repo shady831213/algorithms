@@ -2,7 +2,6 @@ package vEBTree
 
 import (
 	"container/list"
-	"fmt"
 )
 
 type rsVEBTreeItem struct {
@@ -28,9 +27,7 @@ func (m *rsVEBTreeItem) getListElement(value interface{}) *list.Element {
 
 func (m *rsVEBTreeItem) addValue(value interface{}) {
 	if _value, isList := value.(*list.List); isList {
-		if m.value != _value {
-			m.value = _value
-		}
+		m.value = _value
 	} else {
 		m.value.PushBack(value)
 	}
@@ -96,147 +93,127 @@ func (e *rsVEBTreeElement) init(lgu int, mixin rsVEBTreeMixin) *rsVEBTreeElement
 func (e *rsVEBTreeElement) addCluster(key interface{}) *rsVEBTreeElement {
 	if e.lgu > 1 {
 		e.cluster[key] = new(rsVEBTreeElement).init(e.clusterLgu, e.mixin)
-		fmt.Println("addCluster")
-		fmt.Println(e.cluster[key])
 		return e.cluster[key]
 	}
 	return nil
 }
 
-func (e *rsVEBTreeElement) IsEmpty() bool {
-	return e.min == nil
+
+func (e *rsVEBTreeElement) Min() (interface{}, *list.List) {
+	if e.min == nil {
+		return nil, nil
+	}
+	return e.min.key, e.min.value
 }
 
-func (e *rsVEBTreeElement) Min() *rsVEBTreeItem {
-	return copyRsVEBTreeItem(e.min)
+func (e *rsVEBTreeElement) Max() (interface{}, *list.List) {
+	if e.max == nil {
+		return nil, nil
+	}
+	return e.max.key, e.max.value
 }
 
-func (e *rsVEBTreeElement) Max() *rsVEBTreeItem {
-	return copyRsVEBTreeItem(e.max)
-}
-
-func (e *rsVEBTreeElement) Member(key interface{}) *rsVEBTreeItem {
-	if e.IsEmpty() {
+func (e *rsVEBTreeElement) Member(key interface{}) *list.List {
+	if e.min == nil {
 		return nil
 	} else if key == e.min.key {
-		return copyRsVEBTreeItem(e.min)
+		return e.min.value
 	} else if key == e.max.key {
-		return copyRsVEBTreeItem(e.max)
+		return e.max.value
 	} else if e.lgu == 1 {
 		return nil
 	} else {
 		if cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]; ok {
-			if m := cluster.Member(e.mixin.Low(e.lgu, key)); m != nil {
-				m.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), m.key)
-				return m
-			}
+			return cluster.Member(e.mixin.Low(e.lgu, key))
 		}
 		return nil
 	}
 
 }
 
-func (e *rsVEBTreeElement) Successor(key interface{}) *rsVEBTreeItem {
+func (e *rsVEBTreeElement) Successor(key interface{}) (interface{}, *list.List) {
 	if e.lgu == 1 {
-		if key == e.min.key && e.max != nil {
-			return copyRsVEBTreeItem(e.max)
+		if key == e.min.key && key != e.max.key {
+			return e.Max()
 		} else {
-			return nil
+			return nil, nil
 		}
 	} else if e.min != nil && e.mixin.Less(e.lgu, key, e.min.key) {
-		return copyRsVEBTreeItem(e.min)
+		return e.Min()
 	} else {
-		if maxLow := e.cluster[e.mixin.High(e.lgu, key)].Max(); maxLow != nil && e.mixin.Less(e.lgu, e.mixin.Low(e.lgu, key), maxLow.key) {
-			successor := e.cluster[e.mixin.High(e.lgu, key)].Successor(e.mixin.Low(e.lgu, key))
-			successor.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), successor.key)
-			return successor
+		if maxLow, _ := e.cluster[e.mixin.High(e.lgu, key)].Max(); maxLow != nil && e.mixin.Less(e.lgu, e.mixin.Low(e.lgu, key), maxLow) {
+			successorK, successorV := e.cluster[e.mixin.High(e.lgu, key)].Successor(e.mixin.Low(e.lgu, key))
+			successorK = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), successorK)
+			return successorK, successorV
 		} else {
-			if clusterItem := e.summary.Successor(e.mixin.High(e.lgu, key)); clusterItem != nil {
-				successor := e.cluster[clusterItem.key].Min()
-				successor.key = e.mixin.Index(e.lgu, clusterItem.key, successor.key)
-				return successor
+			if summaryK, _ := e.summary.Successor(e.mixin.High(e.lgu, key)); summaryK != nil {
+				successorK, successorV := e.cluster[summaryK].Min()
+				successorK = e.mixin.Index(e.lgu, summaryK, successorK)
+				return successorK, successorV
 			}
-			return nil
+			return nil, nil
 		}
 	}
 }
 
-func (e *rsVEBTreeElement) Predecessor(key interface{}) *rsVEBTreeItem {
+func (e *rsVEBTreeElement) Predecessor(key interface{}) (interface{}, *list.List) {
 	if e.lgu == 1 {
 		if key == e.max.key && key != e.min.key {
-			return copyRsVEBTreeItem(e.min)
+			return e.Min()
 		} else {
-			return nil
+			return nil, nil
 		}
 	} else if e.max != nil && e.mixin.Less(e.lgu, e.max.key, key) {
-		return copyRsVEBTreeItem(e.max)
+		return e.Max()
 	} else {
-		if minLow := e.cluster[e.mixin.High(e.lgu, key)].Min(); minLow != nil && e.mixin.Less(e.lgu, minLow.key, e.mixin.Low(e.lgu, key)) {
-			predecessor := e.cluster[e.mixin.High(e.lgu, key)].Predecessor(e.mixin.Low(e.lgu, key))
-			predecessor.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), predecessor.key)
-			return predecessor
+		if minLow, _ := e.cluster[e.mixin.High(e.lgu, key)].Min(); minLow != nil && e.mixin.Less(e.lgu, minLow, e.mixin.Low(e.lgu, key)) {
+			predecessorK, predecessorV := e.cluster[e.mixin.High(e.lgu, key)].Predecessor(e.mixin.Low(e.lgu, key))
+			predecessorK = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), predecessorK)
+			return predecessorK, predecessorV
 		} else {
-			if clusterItem := e.summary.Predecessor(e.mixin.High(e.lgu, key)); clusterItem != nil {
-				predecessor := e.cluster[clusterItem.key].Max()
-				predecessor.key = e.mixin.Index(e.lgu, clusterItem.key, predecessor.key)
-				return predecessor
+			if summaryK, _ := e.summary.Predecessor(e.mixin.High(e.lgu, key)); summaryK != nil {
+				predecessorK, predecessorV := e.cluster[summaryK].Max()
+				predecessorK = e.mixin.Index(e.lgu, summaryK, predecessorK)
+				return predecessorK, predecessorV
 			}
-			return nil
+			return nil, nil
 		}
 	}
 }
 
-func (e *rsVEBTreeElement) Delete(key, value interface{}) {
-	_key, _value := key, value
-	fmt.Println("point3")
-	fmt.Println(_key, _value, e, e.min, e.max)
+func (e *rsVEBTreeElement) Delete(key interface{}) {
+	_key := key
 	if e.min == e.max {
-		if e.min.removeByValue(_value) == 0 {
-			fmt.Println("point6")
-			fmt.Println(_key, _value, e, e.min, e.max, e.min.value)
-			e.min = nil
-			e.max = nil
-		}
+		e.min = nil
+		e.max = nil
 	} else if e.lgu == 1 {
-		if _key == e.max.key && e.max.removeByValue(_value) == 0 {
+		if _key == e.max.key {
 			e.max = e.min
-		} else if _key == e.min.key && e.min.removeByValue(_value) == 0 {
+		} else if _key == e.min.key {
 			e.min = e.max
 		}
 	} else {
 		if _key == e.min.key {
-			if e.min.removeByValue(_value) == 0 {
-				fmt.Println("point1")
-				cluster := e.summary.Min()
-				e.min = e.cluster[cluster.key].Min()
-				e.min.key = e.mixin.Index(e.lgu, cluster.key, e.min.key)
-				_key, _value = e.min.key, nil
-				fmt.Println(_key, _value, e.summary, e.summary.min, e.summary.max,cluster,e.cluster[cluster.key].Min(), e.min, e.max)
-			} else {
-				return
-			}
+			clusterK, _ := e.summary.Min()
+			e.min.key, e.min.value = e.cluster[clusterK].Min()
+			e.min.key = e.mixin.Index(e.lgu, clusterK, e.min.key)
+			_key = e.min.key
 		}
-		fmt.Println("point0")
-		fmt.Println(_key, _value, e, e.min, e.max)
-		e.cluster[e.mixin.High(e.lgu, _key)].Delete(e.mixin.Low(e.lgu, _key), _value)
-		e.summary.Delete(e.mixin.High(e.lgu, _key), _value)
-		if e.cluster[e.mixin.High(e.lgu, _key)].Min() == nil {
-			fmt.Println("point4")
+		e.cluster[e.mixin.High(e.lgu, _key)].Delete(e.mixin.Low(e.lgu, _key))
+		if lowMin, _ := e.cluster[e.mixin.High(e.lgu, _key)].Min(); lowMin == nil {
+			e.summary.Delete(e.mixin.High(e.lgu, _key))
 			delete(e.cluster, e.mixin.High(e.lgu, _key))
-			if _key == e.max.key && e.max.removeByValue(_value) == 0 {
-				if summaryMax := e.summary.Max(); summaryMax == nil {
+			if _key == e.max.key {
+				if summaryMax, _ := e.summary.Max(); summaryMax == nil {
 					e.max = e.min
 				} else {
-					e.max = e.cluster[summaryMax.key].Max()
-					e.max.key = e.mixin.Index(e.lgu, summaryMax.key, e.max.key)
+					e.max.key, e.max.value = e.cluster[summaryMax].Max()
+					e.max.key = e.mixin.Index(e.lgu, summaryMax, e.max.key)
 				}
 			}
-			fmt.Println(_key, _value, e, e.min, e.max)
-		} else if _key == e.max.key && e.max.removeByValue(_value) == 0 {
-			fmt.Println("point5")
-			e.max = e.cluster[e.mixin.High(e.lgu, _key)].Max()
+		} else if _key == e.max.key {
+			e.max.key, e.max.value = e.cluster[e.mixin.High(e.lgu, _key)].Max()
 			e.max.key = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, _key), e.max.key)
-			fmt.Println(_key, _value, e, e.min, e.max)
 		}
 	}
 }

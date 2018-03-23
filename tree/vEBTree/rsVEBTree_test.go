@@ -8,12 +8,12 @@ import (
 )
 
 func basicData() (int, map[uint32][]int) {
-	return 8, map[uint32][]int{1: {1},
+	return 4, map[uint32][]int{1: {1},
 		2: {2, 3},
-		100: {60, 70},
-		9: {8, 9},
-		111: {79, 86},
-		47: {31, 2}}
+		4: {60, 70},
+		7: {8, 9},
+		11: {79, 86},
+		15: {31, 2}}
 }
 
 func randData() (int, map[uint32][]int) {
@@ -38,15 +38,11 @@ func insertData(vEBT *rsVEBTreeElement, datas map[uint32][]int) {
 func TestRsVEBTreeElement_InsertMemberBasic(t *testing.T) {
 	lgu, datas := basicData()
 	vEBT := newRsVEBTreeUint32(lgu)
-	insertData(vEBT,datas)
+	insertData(vEBT, datas)
 	//check
 	for i := range datas {
 		member := vEBT.Member(i)
-		if member.key != i {
-			t.Log(fmt.Sprintf("key error! exp = %0d, result = %0d", i, member.key))
-			t.Fail()
-		}
-		e := member.value.Front()
+		e := member.Front()
 		for j := range datas[i] {
 			if e.Value != datas[i][j] {
 				t.Log(fmt.Sprintf("value error @ key %0d ! exp = %0d, result = %0d", i, datas[i][j], e.Value))
@@ -60,15 +56,11 @@ func TestRsVEBTreeElement_InsertMemberBasic(t *testing.T) {
 func TestRsVEBTreeElement_InsertMember(t *testing.T) {
 	lgu, datas := randData()
 	vEBT := newRsVEBTreeUint32(lgu)
-	insertData(vEBT,datas)
+	insertData(vEBT, datas)
 	//check
 	for i := range datas {
 		member := vEBT.Member(i)
-		if member.key != i {
-			t.Log(fmt.Sprintf("key error! exp = %0d, result = %0d", i, member.key))
-			t.Fail()
-		}
-		e := member.value.Front()
+		e := member.Front()
 		for j := range datas[i] {
 			if e.Value != datas[i][j] {
 				t.Log(fmt.Sprintf("value error @ key %0d ! exp = %0d, result = %0d", i, datas[i][j], e.Value))
@@ -80,34 +72,35 @@ func TestRsVEBTreeElement_InsertMember(t *testing.T) {
 }
 
 func TestRsVEBTreeElement_InsertDelete(t *testing.T) {
-	lgu, datas := basicData()
-	vEBT := newRsVEBTreeUint32(lgu)
-	insertData(vEBT,datas)
-	//check
-	for i := range datas {
-		for j := range datas[i] {
-			vEBT.Delete(i, datas[i][j])
-			member := vEBT.Member(i)
-			if j == len(datas[i]) - 1 {
-				if member != nil {
-					t.Log(fmt.Sprintf("member @ %0d expect empty!", i))
-					t.Fail()
-				}
-			} else {
-				if member.key != i {
-					t.Log(fmt.Sprintf("key error! exp = %0d, result = %0d", i, member.key))
-					t.Fail()
-				}
-				e := member.value.Front()
-				if e.Value != datas[i][j+1] {
-					t.Log(fmt.Sprintf("value error @ key %0d ! exp = %0d, result = %0d", i, datas[i][j+1], e.Value))
-					t.Fail()
-				}
-				e = e.Next()
-			}
+	for repeat:=0;repeat < 5;repeat++ {
+		lgu, datas := basicData()
+		if repeat%2 == 1 {
+			lgu, datas = randData()
 		}
-
-		//delete
-
+		vEBT := newRsVEBTreeUint32(lgu)
+		insertData(vEBT, datas)
+		//check
+		for i := range datas {
+			vEBT.Delete(i)
+			for k := range datas {
+				member := vEBT.Member(k)
+				if k == i {
+					if member != nil {
+						t.Log(fmt.Sprintf("member @ %0d expect empty!", i))
+						t.Fail()
+					}
+				} else {
+					e := member.Front()
+					for j := range datas[k] {
+						if e.Value != datas[k][j] {
+							t.Log(fmt.Sprintf("value error @ key %0d ! exp = %0d, result = %0d", k, datas[k][j], e.Value))
+							t.Fail()
+						}
+						e = e.Next()
+					}
+				}
+			}
+			delete(datas, i)
+		}
 	}
 }
