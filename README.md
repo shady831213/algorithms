@@ -32,8 +32,8 @@ go version: = 1.9.2
   
 - [DynamicProgramming](https://github.com/shady831213/algorithms/tree/master/dp) (Including OOP pattern of golang)
   - [Double adjustable Euclidean traveling salesman](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP.go)
-  - [Pretty Print](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint.go)
-  - [Levenshtein Distance](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance.go)
+  - [Pretty Print](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint.go)
+  - [Levenshtein Distance](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance.go)
   - [Chess Game](https://github.com/shady831213/algorithms/blob/master/dp/chessGame.go)
   
 - [GreedyAlgorithm](https://github.com/shady831213/algorithms/tree/master/greedy)
