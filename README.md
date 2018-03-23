@@ -27,7 +27,7 @@ go version: = 1.9.2
   - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
-  - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
+  - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
   - [LinkedListHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/chainedHashMap)
   
 - [DynamicProgramming](https://github.com/shady831213/algorithms/tree/master/dp) (Including OOP pattern of golang)
