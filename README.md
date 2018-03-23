@@ -15,7 +15,7 @@ go version: = 1.9.2
   - [QuickSort](https://github.com/shady831213/algorithms/blob/master/sort/quickSort.go)
   
 - [Heap](https://github.com/shady831213/algorithms/tree/master/heap)
-  - [BinaryHeap on array](https://github.com/shady831213/algorithms/tree/master/heap/arrayHeap)
+  - [BinaryHeap on array](https://github.com/shady831213/algorithms/tree/master/heap/arrayHeap)
   - [BinaryHeap on linkedlist](https://github.com/shady831213/algorithms/tree/master/heap/linkedHeap)
   - [LeftistHeap](https://github.com/shady831213/algorithms/tree/master/heap/leftistHeap)
   - [FibonacciHeap](https://github.com/shady831213/algorithms/tree/master/heap/fibHeap)
