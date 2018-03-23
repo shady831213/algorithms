@@ -22,9 +22,9 @@ go version: = 1.9.2
   
 - [Tree](https://github.com/shady831213/algorithms/tree/master/tree)
   - [BST](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/binarySearchTree)
-  - [RedBlackTree](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/rbTree)
+  - [RedBlackTree](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/rbTree)
   - [B-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)
-  - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
+  - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
