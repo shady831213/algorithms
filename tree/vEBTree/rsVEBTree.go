@@ -2,6 +2,7 @@ package vEBTree
 
 import (
 	"container/list"
+	"fmt"
 )
 
 type rsVEBTreeItem struct {
@@ -98,7 +99,6 @@ func (e *rsVEBTreeElement) addCluster(key interface{}) *rsVEBTreeElement {
 	return nil
 }
 
-
 func (e *rsVEBTreeElement) Min() (interface{}, *list.List) {
 	if e.min == nil {
 		return nil, nil
@@ -132,52 +132,60 @@ func (e *rsVEBTreeElement) Member(key interface{}) *list.List {
 }
 
 func (e *rsVEBTreeElement) Successor(key interface{}) (interface{}, *list.List) {
-	if e.lgu == 1 {
-		if key == e.min.key && key != e.max.key {
+	if e.min != nil && e.mixin.Less(e.lgu, key, e.min.key) {
+		return e.Min()
+	} else if e.lgu == 1 {
+		if e.min != nil && key == e.min.key && key != e.max.key {
 			return e.Max()
 		} else {
 			return nil, nil
 		}
-	} else if e.min != nil && e.mixin.Less(e.lgu, key, e.min.key) {
-		return e.Min()
 	} else {
-		if maxLow, _ := e.cluster[e.mixin.High(e.lgu, key)].Max(); maxLow != nil && e.mixin.Less(e.lgu, e.mixin.Low(e.lgu, key), maxLow) {
-			successorK, successorV := e.cluster[e.mixin.High(e.lgu, key)].Successor(e.mixin.Low(e.lgu, key))
+		var maxLow interface{}
+		cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]
+		if ok {
+			maxLow, _ = cluster.Max()
+		}
+		if ok && e.mixin.Less(e.lgu, e.mixin.Low(e.lgu, key), maxLow) {
+			successorK, successorV := cluster.Successor(e.mixin.Low(e.lgu, key))
 			successorK = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), successorK)
 			return successorK, successorV
-		} else {
-			if summaryK, _ := e.summary.Successor(e.mixin.High(e.lgu, key)); summaryK != nil {
-				successorK, successorV := e.cluster[summaryK].Min()
-				successorK = e.mixin.Index(e.lgu, summaryK, successorK)
-				return successorK, successorV
-			}
-			return nil, nil
+		} else if summaryK, _ := e.summary.Successor(e.mixin.High(e.lgu, key)); summaryK != nil {
+			successorK, successorV := e.cluster[summaryK].Min()
+			successorK = e.mixin.Index(e.lgu, summaryK, successorK)
+			return successorK, successorV
 		}
+		return nil, nil
 	}
 }
 
 func (e *rsVEBTreeElement) Predecessor(key interface{}) (interface{}, *list.List) {
-	if e.lgu == 1 {
-		if key == e.max.key && key != e.min.key {
+	if e.max != nil && e.mixin.Less(e.lgu, e.max.key, key) {
+		return e.Max()
+	} else if e.lgu == 1 {
+		if e.max != nil && key == e.max.key && key != e.min.key {
 			return e.Min()
 		} else {
 			return nil, nil
 		}
-	} else if e.max != nil && e.mixin.Less(e.lgu, e.max.key, key) {
-		return e.Max()
 	} else {
-		if minLow, _ := e.cluster[e.mixin.High(e.lgu, key)].Min(); minLow != nil && e.mixin.Less(e.lgu, minLow, e.mixin.Low(e.lgu, key)) {
-			predecessorK, predecessorV := e.cluster[e.mixin.High(e.lgu, key)].Predecessor(e.mixin.Low(e.lgu, key))
+		var minLow interface{}
+		cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]
+		if ok {
+			minLow, _ = cluster.Min()
+		}
+		if ok && e.mixin.Less(e.lgu, minLow, e.mixin.Low(e.lgu, key)) {
+			predecessorK, predecessorV := cluster.Predecessor(e.mixin.Low(e.lgu, key))
 			predecessorK = e.mixin.Index(e.lgu, e.mixin.High(e.lgu, key), predecessorK)
 			return predecessorK, predecessorV
-		} else {
-			if summaryK, _ := e.summary.Predecessor(e.mixin.High(e.lgu, key)); summaryK != nil {
-				predecessorK, predecessorV := e.cluster[summaryK].Max()
-				predecessorK = e.mixin.Index(e.lgu, summaryK, predecessorK)
-				return predecessorK, predecessorV
-			}
-			return nil, nil
+		} else if summaryK, _ := e.summary.Predecessor(e.mixin.High(e.lgu, key)); summaryK != nil {
+			predecessorK, predecessorV := e.cluster[summaryK].Max()
+			predecessorK = e.mixin.Index(e.lgu, summaryK, predecessorK)
+			return predecessorK, predecessorV
+		} else if minLow == e.mixin.Low(e.lgu, key) {
+			return e.Min()
 		}
+		return nil, nil
 	}
 }
 
@@ -250,5 +258,8 @@ func (e *rsVEBTreeElement) Insert(key, value interface{}) {
 }
 
 func newRsVEBTreeUint32(lgu int) *rsVEBTreeElement {
+	if lgu < 1 || lgu > 32 {
+		panic(fmt.Sprintf("%0d is out of range!lgu must be in range from 1 to 32!", lgu))
+	}
 	return new(rsVEBTreeElement).init(lgu, new(rsVEBTreeUInt32Mixin))
 }
