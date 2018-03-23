@@ -7,19 +7,38 @@ import (
 	"math/rand"
 )
 
-func TestRsVEBTreeElement_InsertMemberBasic(t *testing.T) {
-	datas := map[uint32][]uint32{1: {1},
+func basicData() (int, map[uint32][]int) {
+	return 8, map[uint32][]int{1: {1},
 		2: {2, 3},
 		100: {60, 70},
 		9: {8, 9},
 		111: {79, 86},
 		47: {31, 2}}
-	vEBT := newRsVEBTreeUint32(8)
+}
+
+func randData() (int, map[uint32][]int) {
+	lgu := rand.Intn(31) + 7
+	datasKey := tree.RandomSlice(1, (1<<uint32(lgu))-1, rand.Intn((1<<7)-1)+1)
+	datas := make(map[uint32][]int)
+	for _, v := range datasKey {
+		arr := tree.RandomSlice(0, 64, rand.Intn(10)+1)
+		datas[uint32(v)] = arr
+	}
+	return lgu, datas
+}
+
+func insertData(vEBT *rsVEBTreeElement, datas map[uint32][]int) {
 	for i := range datas {
 		for j := range datas[i] {
 			vEBT.Insert(i, datas[i][j])
 		}
 	}
+}
+
+func TestRsVEBTreeElement_InsertMemberBasic(t *testing.T) {
+	lgu, datas := basicData()
+	vEBT := newRsVEBTreeUint32(lgu)
+	insertData(vEBT,datas)
 	//check
 	for i := range datas {
 		member := vEBT.Member(i)
@@ -39,19 +58,9 @@ func TestRsVEBTreeElement_InsertMemberBasic(t *testing.T) {
 }
 
 func TestRsVEBTreeElement_InsertMember(t *testing.T) {
-	lgu := rand.Intn(31) + 7
-	datasKey := tree.RandomSlice(1, (1<<uint32(lgu))-1, rand.Intn((1<<7)-1)+1)
-	datas := make(map[uint32][]int)
-	for _, v := range datasKey {
-		arr := tree.RandomSlice(0, 64, rand.Intn(10)+1)
-		datas[uint32(v)] = arr
-	}
+	lgu, datas := randData()
 	vEBT := newRsVEBTreeUint32(lgu)
-	for i := range datas {
-		for j := range datas[i] {
-			vEBT.Insert(i, datas[i][j])
-		}
-	}
+	insertData(vEBT,datas)
 	//check
 	for i := range datas {
 		member := vEBT.Member(i)
@@ -69,3 +78,5 @@ func TestRsVEBTreeElement_InsertMember(t *testing.T) {
 		}
 	}
 }
+
+
