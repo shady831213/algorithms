@@ -18,8 +18,11 @@ map一般用rbtree实现，可排序，插入删除查找时间复杂度O(lgn)�
 
 # 关于reduced-space van Emde Boas Tree
 用list存储value,支持重复的key。在Insert操作考虑重复key的情况。
+
 用hashtable 存储 summary和cluster，减小存储空间。cluster的创建采用lazy方式，在Insert和Delete操作时考虑cluster的创建。
+
 对于u，直接存储bit数，即lgu，这样的话，最小单元为lgu=1的单元，操作可以转化为位操作。
+
 对于key的类型问题，通过mixin的方式，剥离和key的类型相关的操作。
 
 [代码](https://github.com/shady831213/algorithms/blob/master/tree/vEBTree/rsVEBTree.go)
