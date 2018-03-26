@@ -49,17 +49,6 @@ func newRsVEBTreeItem(key, value interface{}) *rsVEBTreeItem {
 	return new(rsVEBTreeItem).init(key, value)
 }
 
-func copyRsVEBTreeItem(i *rsVEBTreeItem) *rsVEBTreeItem {
-	if i == nil {
-		return nil
-	}
-	newI := new(rsVEBTreeItem)
-	newI.key = i.key
-	newI.value = list.New()
-	newI.value.PushBackList(i.value)
-	return newI
-}
-
 type rsVEBTreeMixin interface {
 	Less(int, interface{}, interface{}) bool
 	High(int, interface{}) interface{}
