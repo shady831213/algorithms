@@ -15,7 +15,7 @@ func Test_OpenHashMapResize(t *testing.T) {
 	cmap := New()
 	hashMap.TestHashMapResize(t, cmap)
 	if !reflect.DeepEqual(cmap.Cap, uint32(16)) {
-		t.Log(fmt.Sprintf("expect:", uint32(16)) + fmt.Sprintf("but get:", cmap.Cap))
+		t.Log(fmt.Sprintf("expect: %0d ", uint32(16)) + fmt.Sprintf("but get: %0d ", cmap.Cap))
 		t.Fail()
 	}
 }
@@ -25,11 +25,11 @@ func Test_OpenHashMapDelete(t *testing.T) {
 	for i:=0;i<4; {
 		hashMap.TestHashMapDelete(t, cmap)
 		if !reflect.DeepEqual(cmap.Count, uint32(0)) {
-			t.Log(fmt.Sprintf("expect:", 0) + fmt.Sprintf("but get:", cmap.Count))
+			t.Log(fmt.Sprintf("expect: %0d ", 0) + fmt.Sprintf("but get:%0d ", cmap.Count))
 			t.Fail()
 		}
 		if !reflect.DeepEqual(cmap.Cap, uint32(0)) {
-			t.Log(fmt.Sprintf("expect:", 0) + fmt.Sprintf("but get:", cmap.Cap))
+			t.Log(fmt.Sprintf("expect: %0d ", 0) + fmt.Sprintf("but get:%0d ", cmap.Cap))
 			t.Fail()
 		}
 		i++

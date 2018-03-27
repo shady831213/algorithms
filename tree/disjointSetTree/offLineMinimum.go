@@ -1,6 +1,5 @@
 package disjointSetTree
 
-import "fmt"
 
 const OFFLINEMINIMUM_EXTRACT = -1
 
@@ -38,7 +37,6 @@ func offLineMinimum(seq []int) []int {
 	for i := 1; i < n; i ++ {
 		j := FindSet(values[i]).Value.(int)
 		if j != m {
-			fmt.Println(i,j,m)
 			extractSeq[j] = i
 			for l := j + 1; l <= m; l ++ {
 				if insertSets[l] != nil {

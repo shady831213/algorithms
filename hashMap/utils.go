@@ -22,7 +22,7 @@ func BasicTestHashMap(t *testing.T, hmap HashMap) {
 		actMap[i] = value.(int)
 	}
 	if !reflect.DeepEqual(actMap, expMap) {
-		t.Log(fmt.Sprintf("expect:%m", expMap) + fmt.Sprintf("but get:%m", actMap))
+		t.Log(fmt.Sprintf("expect:%+v", expMap) + fmt.Sprintf("but get:%+v", actMap))
 		t.Fail()
 	}
 }

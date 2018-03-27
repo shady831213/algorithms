@@ -15,7 +15,7 @@ func checkRBT(t *testing.T, rbt *RBT)(bool) {
 		//root must be black
 		if n == _tree.Root() {
 			if !_tree.color(n) {
-				t.Log(fmt.Sprintf("root node  ", n, "is not black!"))
+				t.Log(fmt.Sprintf("root node  %+v is not black!", n))
 				t.Fail()
 				return true
 			}
@@ -23,12 +23,12 @@ func checkRBT(t *testing.T, rbt *RBT)(bool) {
 		//children of red node must be both black
 		if !_tree.color(n) {
 			if !_tree.IsNil(n.Left) && !_tree.color(n.Left) {
-				t.Log(fmt.Sprintf("left node  ", n.Left, "of a red node", n, "is not black!"))
+				t.Log(fmt.Sprintf("left node  %+v of a red node %+v is not black!", n.Left, n))
 				t.Fail()
 				return true
 			}
 			if !_tree.IsNil(n.Right) && !_tree.color(n.Right) {
-				t.Log(fmt.Sprintf("right node  ", n.Right, "of a red node", n, "is not black!"))
+				t.Log(fmt.Sprintf("right node  %+v of a red node %+v is not black!", n.Right, n))
 				t.Fail()
 				return true
 			}
@@ -43,13 +43,13 @@ func checkRBT(t *testing.T, rbt *RBT)(bool) {
 			}
 			if len(blackCntQ) != 0 {
 				if blackCnt != blackCntQ[0] {
-					t.Log(fmt.Sprintf("black cnt", blackCnt, " in the path from node  ", n, " to root does not equal to the previous black cnt ", blackCntQ[0]))
+					t.Log(fmt.Sprintf("black cnt %0d in the path from node  %+v to root does not equal to the previous black cnt %0d", blackCnt, n, blackCntQ[0]))
 					t.Fail()
 					return true
 				}
 			} else {
 				if blackCnt == 0 {
-					t.Log(fmt.Sprintf("black cnt in the path from node  ", n, " to root is 0!"))
+					t.Log(fmt.Sprintf("black cnt in the path from node  %0d  to root is 0!", n))
 					t.Fail()
 					return true
 				}

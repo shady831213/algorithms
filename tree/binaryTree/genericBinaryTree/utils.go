@@ -12,12 +12,12 @@ func CheckGBT(t *testing.T, nodeCnt *int, debug bool) (func(binaryTree.BinaryTre
 	return func(tree binaryTree.BinaryTreeIf, node interface{}) bool {
 		n := node.(*GBTElement)
 		if !tree.IsNil(n.Left) && n.Left.Key >= n.Key {
-			t.Log(fmt.Sprintf("Left child ", n.Left, "of node:", n, "is more than or equal to n!"))
+			t.Log(fmt.Sprintf("Left child %+v of node: %+v is more than or equal to n!", n.Left, n))
 			t.Fail()
 			return true
 		}
 		if !tree.IsNil(n.Right) && n.Right.Key <= n.Key {
-			t.Log(fmt.Sprintf("Right child ", n.Right, "of node:", n, "is less than or equal to n!"))
+			t.Log(fmt.Sprintf("Right child %+v of node: %+v is less than or equal to n!", n.Right, n))
 			t.Fail()
 			return true
 		}
