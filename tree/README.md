@@ -28,3 +28,21 @@ map一般用rbtree实现，可排序，插入删除查找时间复杂度O(lgn)�
 [代码](https://github.com/shady831213/algorithms/blob/master/tree/vEBTree/rsVEBTree.go)
 
 [测试](https://github.com/shady831213/algorithms/blob/master/tree/vEBTree/rsVEBTree_test.go)
+
+# 关于disjointSet
+
+## 离线最小值问题
+
+### 问题
+![](https://github.com/shady831213/algorithms/blob/master/tree/statics/offlineMinimum.PNG)
+![](https://github.com/shady831213/algorithms/blob/master/tree/statics/offlineMinimum1.PNG)
+
+[代码](https://github.com/shady831213/algorithms/blob/master/tree/disjointSetTree/offLineMinimum.go)
+
+[测试](https://github.com/shady831213/algorithms/blob/master/tree/disjointSetTree/offLineMinimum_test.go)
+
+--------
+### 复杂度
+  初始化: n + m个MakeSet + m个Union = O(2m+n)
+  
+  offLineMinimum: n 个 FindSet + sigma(k)(k = 1...m)个Union = O(n + m^2)
