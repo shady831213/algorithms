@@ -32,16 +32,29 @@ func checkGrap(t *testing.T, g Graph) {
 	sort.Slice(vertexes, func(i, j int) bool {
 		return vertexes[i].(int) < vertexes[j].(int)
 	})
+	connectedVertexes := make([][]interface{}, len(vertexes), cap(vertexes))
+	for i := range vertexes {
+		connectedVertexes[i] = g.AllConnectedVertexes(vertexes[i])
+		sort.Slice(connectedVertexes[i], func(k, j int) bool {
+			return connectedVertexes[i][k].(int) < connectedVertexes[i][j].(int)
+		})
+	}
 	expEdges := []Edge{Edge{1,2},Edge{2,1},Edge{2,4},Edge{4,6},Edge{6,4},Edge{8,7}}
 	expVertexes := []interface{}{1,2,4,6,7,8}
+	expConnetedVertexes := [][]interface{}{[]interface{}{2}, []interface{}{1, 4}, []interface{}{6}, []interface{}{4}, []interface{}{}, []interface{}{7}}
 	if !reflect.DeepEqual(edges, expEdges) {
-		t.Log(fmt.Sprintf("expect:%+v;but get:%+v", expEdges,edges))
+		t.Log(fmt.Sprintf("get edges error!expect:%+v;but get:%+v", expEdges,edges))
 		t.Fail()
 	}
 	if !reflect.DeepEqual(vertexes, expVertexes) {
-		t.Log(fmt.Sprintf("expect:%+v;but get:%+v", expVertexes,vertexes))
+		t.Log(fmt.Sprintf("get vertexes error!expect:%+v;but get:%+v", expVertexes,vertexes))
 		t.Fail()
 	}
+	if !reflect.DeepEqual(connectedVertexes, expConnetedVertexes) {
+		t.Log(fmt.Sprintf("get connectedVertexes error!expect:%+v;but get:%+v", expConnetedVertexes,connectedVertexes))
+		t.Fail()
+	}
+
 }
 
 func testGraph(t *testing.T, g Graph) {

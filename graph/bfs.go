@@ -1,0 +1,60 @@
+package graph
+
+import (
+	"container/list"
+	"math"
+)
+
+type BFSElement struct {
+	Color int
+	Dist  int
+	P     *BFSElement
+	V     interface{}
+}
+
+func (e *BFSElement) Init(v interface{}) *BFSElement {
+	e.V = v
+	e.Color = WHITE
+	e.Dist = math.MaxInt32
+	e.P = nil
+	return e
+}
+
+func NewBFSElement(v interface{}) *BFSElement {
+	return new(BFSElement).Init(v)
+}
+
+func BFS(g Graph, s interface{}) (bfsGraph Graph) {
+	if _, isList := g.GetGraph().(*AdjacencyList); isList {
+		bfsGraph = NewAdjacencyList()
+	} else {
+		bfsGraph = NewAdjacencyMatrix()
+	}
+
+	elements := make(map[interface{}]*BFSElement)
+	queue := list.New()
+	for _, v := range g.AllVertexes() {
+		elements[v] = NewBFSElement(v)
+		bfsGraph.AddVertex(elements[v])
+	}
+
+	elements[s].Color = GRAY
+	elements[s].Dist = 0
+	queue.PushBack(s)
+
+	for queue.Len() != 0 {
+		qe := queue.Front()
+		for _, v := range g.AllConnectedVertexes(qe.Value) {
+			if elements[v].Color == WHITE {
+				elements[v].Color = GRAY
+				elements[v].Dist = elements[qe.Value].Dist + 1
+				elements[v].P = elements[qe.Value]
+				bfsGraph.AddEdge(Edge{elements[v], elements[qe.Value]})
+				queue.PushBack(v)
+			}
+		}
+		elements[qe.Value].Color = BLACK
+		queue.Remove(qe)
+	}
+	return
+}

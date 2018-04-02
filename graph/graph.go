@@ -4,6 +4,12 @@ import (
 	"container/list"
 )
 
+const (
+	WHITE = 0
+	GRAY  = 1
+	BLACK = 2
+)
+
 type Edge struct {
 	Start, End interface{}
 }
@@ -14,6 +20,7 @@ type Graph interface {
 	AddEdgeBi(Edge)
 	AllVertexes() []interface{}
 	AllEdges() []Edge
+	AllConnectedVertexes(interface{}) []interface{}
 	GetGraph() (interface{})
 }
 
@@ -64,6 +71,16 @@ func (g *AdjacencyMatrix) AllEdges() []Edge {
 	return edges
 }
 
+func (g *AdjacencyMatrix) AllConnectedVertexes(v interface{}) []interface{} {
+	keys := make([]interface{}, 0, 0)
+	if vetexes, ok := g.Matrix[v]; ok {
+		for v := range vetexes {
+			keys = append(keys, v)
+		}
+	}
+	return keys
+}
+
 func (g *AdjacencyMatrix) GetGraph() interface{} {
 	return g
 }
@@ -110,8 +127,14 @@ func (g *AdjacencyList) AllVertexes() []interface{} {
 	return keys
 }
 
-func (g *AdjacencyList) GetGraph() interface{} {
-	return g
+func (g *AdjacencyList) AllConnectedVertexes(v interface{}) []interface{} {
+	value := make([]interface{}, 0, 0)
+	if vetexes, ok := g.List[v]; ok {
+		for e := vetexes.Front(); e != nil; e = e.Next() {
+			value = append(value, e.Value)
+		}
+	}
+	return value
 }
 
 func (g *AdjacencyList) AllEdges() []Edge {
@@ -123,6 +146,12 @@ func (g *AdjacencyList) AllEdges() []Edge {
 	}
 	return edges
 }
+
+
+func (g *AdjacencyList) GetGraph() interface{} {
+	return g
+}
+
 
 func NewAdjacencyList() *AdjacencyList {
 	return new(AdjacencyList).Init()
