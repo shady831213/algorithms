@@ -27,6 +27,10 @@ go version: >= 1.9.3
   - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/vEBTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
   - [Disjoint-Set-Tree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
   
+- [Graph](https://github.com/shady831213/algorithms/tree/master/graph) 
+  - [AdjacencyMatrix and AdjacencyList](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
+  - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
+  
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
   - [LinkedListHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/chainedHashMap)
