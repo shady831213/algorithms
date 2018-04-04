@@ -18,9 +18,9 @@ type Graph interface {
 	AddVertex(interface{})
 	AddEdge(Edge)
 	AddEdgeBi(Edge)
-	AllVertexes() []interface{}
+	AllVertices() []interface{}
 	AllEdges() []Edge
-	AllConnectedVertexes(interface{}) []interface{}
+	AllConnectedVertices(interface{}) []interface{}
 	GetGraph() (interface{})
 }
 
@@ -53,7 +53,7 @@ func (g *AdjacencyMatrix) AddEdgeBi(e Edge) {
 	g.Matrix[e.End][e.Start] = true
 }
 
-func (g *AdjacencyMatrix) AllVertexes() []interface{} {
+func (g *AdjacencyMatrix) AllVertices() []interface{} {
 	keys := make([]interface{}, 0, 0)
 	for v := range g.Matrix {
 		keys = append(keys, v)
@@ -71,7 +71,7 @@ func (g *AdjacencyMatrix) AllEdges() []Edge {
 	return edges
 }
 
-func (g *AdjacencyMatrix) AllConnectedVertexes(v interface{}) []interface{} {
+func (g *AdjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 	keys := make([]interface{}, 0, 0)
 	if vetexes, ok := g.Matrix[v]; ok {
 		for v := range vetexes {
@@ -119,7 +119,7 @@ func (g *AdjacencyList) AddEdgeBi(e Edge) {
 }
 
 
-func (g *AdjacencyList) AllVertexes() []interface{} {
+func (g *AdjacencyList) AllVertices() []interface{} {
 	keys := make([]interface{}, 0, 0)
 	for v := range g.List {
 		keys = append(keys, v)
@@ -127,7 +127,7 @@ func (g *AdjacencyList) AllVertexes() []interface{} {
 	return keys
 }
 
-func (g *AdjacencyList) AllConnectedVertexes(v interface{}) []interface{} {
+func (g *AdjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 	value := make([]interface{}, 0, 0)
 	if vetexes, ok := g.List[v]; ok {
 		for e := vetexes.Front(); e != nil; e = e.Next() {

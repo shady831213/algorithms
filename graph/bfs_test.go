@@ -78,7 +78,7 @@ func bfsGolden(g Graph)(bfsGraph Graph) {
 
 func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()
-	vertexes := g.AllVertexes()
+	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
 		if edges[i].Start == edges[j].Start {
 			return edges[i].End.(*BFSElement).V.(string) < edges[j].End.(*BFSElement).V.(string)
@@ -90,7 +90,7 @@ func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
 	})
 
 	expEdges := gGloden.AllEdges()
-	expVertexes := gGloden.AllVertexes()
+	expVertices := gGloden.AllVertices()
 
 	sort.Slice(expEdges, func(i, j int) bool {
 		if expEdges[i].Start == expEdges[j].Start {
@@ -98,8 +98,8 @@ func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
 		}
 		return expEdges[i].Start.(*BFSElement).V.(string) < expEdges[j].Start.(*BFSElement).V.(string)
 	})
-	sort.Slice(expVertexes, func(i, j int) bool {
-		return expVertexes[i].(*BFSElement).V.(string) < expVertexes[j].(*BFSElement).V.(string)
+	sort.Slice(expVertices, func(i, j int) bool {
+		return expVertices[i].(*BFSElement).V.(string) < expVertices[j].(*BFSElement).V.(string)
 	})
 
 	if !reflect.DeepEqual(edges, expEdges) {
@@ -119,12 +119,12 @@ func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
 
 		t.Fail()
 	}
-	if !reflect.DeepEqual(vertexes, expVertexes) {
+	if !reflect.DeepEqual(vertexes, expVertices) {
 		t.Log("get vertexes error!")
-		for i := range expVertexes {
-			if !reflect.DeepEqual(expVertexes[i], vertexes[i]) {
+		for i := range expVertices {
+			if !reflect.DeepEqual(expVertices[i], vertexes[i]) {
 				t.Log("expect:")
-				t.Log(expVertexes[i])
+				t.Log(expVertices[i])
 				t.Log("but get:")
 				t.Log(vertexes[i])
 			}

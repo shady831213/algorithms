@@ -33,7 +33,7 @@ func BFS(g Graph, s interface{}) (bfsGraph Graph) {
 
 	elements := make(map[interface{}]*BFSElement)
 	queue := list.New()
-	for _, v := range g.AllVertexes() {
+	for _, v := range g.AllVertices() {
 		elements[v] = NewBFSElement(v)
 		bfsGraph.AddVertex(elements[v])
 	}
@@ -44,7 +44,7 @@ func BFS(g Graph, s interface{}) (bfsGraph Graph) {
 
 	for queue.Len() != 0 {
 		qe := queue.Front()
-		for _, v := range g.AllConnectedVertexes(qe.Value) {
+		for _, v := range g.AllConnectedVertices(qe.Value) {
 			if elements[v].Color == WHITE {
 				elements[v].Color = GRAY
 				elements[v].Dist = elements[qe.Value].Dist + 1
