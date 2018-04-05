@@ -24,11 +24,7 @@ func dfsSetupGraph(g Graph) {
 }
 
 func dfsGolden(g Graph) (dfsGraph Graph) {
-	if _, isList := g.GetGraph().(*AdjacencyList); isList {
-		dfsGraph = NewAdjacencyList()
-	} else {
-		dfsGraph = NewAdjacencyMatrix()
-	}
+	dfsGraph = CreateGraphByType(g)
 	vertexes := make(map[interface{}]*DFSElement)
 
 	vertexes["u"] = NewDFSElement("u")
@@ -132,7 +128,11 @@ func checkDFSGraph(t *testing.T, g Graph, gGloden Graph) {
 func TestDFS(t *testing.T) {
 	g := NewAdjacencyList()
 	dfsSetupGraph(g)
-	dfsGraph := DFS(g)
+	dfsGraph := DFS(g, func(vertices []interface{}) {
+		sort.Slice(vertices, func(i, j int) bool {
+			return vertices[i].(string) < vertices[j].(string)
+		})
+	})
 	expDfsGraph := dfsGolden(g)
 	checkDFSGraph(t, dfsGraph, expDfsGraph)
 }

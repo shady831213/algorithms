@@ -13,9 +13,9 @@ func offLineMinimum(seq []int) []int {
 		panic("first item must be insert!")
 	}
 	//insert set, value is index by m
-	insertSets := make([]*disjointSet, 0, 0)
+	insertSets := make([]*DisjointSet, 0, 0)
 	//value set, value is insert value
-	values := make([]*disjointSet, len(seq), cap(seq))
+	values := make([]*DisjointSet, len(seq), cap(seq))
 	n, m := 1, 0
 	insertSets = append(insertSets, MakeSet(0))
 	for i := range seq {

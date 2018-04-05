@@ -28,11 +28,7 @@ func bfsSetupGraph(g Graph) {
 }
 
 func bfsGolden(g Graph)(bfsGraph Graph) {
-	if _, isList := g.GetGraph().(*AdjacencyList); isList {
-		bfsGraph = NewAdjacencyList()
-	} else {
-		bfsGraph = NewAdjacencyMatrix()
-	}
+	bfsGraph = CreateGraphByType(g)
 	vertexes := make(map[interface{}]*BFSElement)
 	vertexes["s"] = NewBFSElement("s")
 	vertexes["s"].Dist = 0

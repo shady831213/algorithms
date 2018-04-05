@@ -20,23 +20,36 @@ func (e *DFSElement) Init(v interface{}) *DFSElement {
 	return e
 }
 
+//path compression, inspiration from disjoint-set
+func (e *DFSElement) FindRoot() *DFSElement{
+	_e := e
+	for _e.P != nil {
+		if _e.P.P != nil {
+			_e.P = _e.P.P
+		}
+		_e = _e.P
+	}
+	return _e
+
+}
+
 func NewDFSElement(v interface{}) *DFSElement {
 	return new(DFSElement).Init(v)
 }
 
-func DFS(g Graph) (dfsGraph Graph) {
-	if _, isList := g.GetGraph().(*AdjacencyList); isList {
-		dfsGraph = NewAdjacencyList()
-	} else {
-		dfsGraph = NewAdjacencyMatrix()
-	}
+func DFS(g Graph, sorter func([]interface{})) (dfsGraph Graph) {
+	dfsGraph = CreateGraphByType(g)
 
 	timer := 0
 	stack := list.New()
 	//to keep vertices order
 	elements := new(linkedMap).init()
 	//init
-	for _, v := range g.AllVertices() {
+	vertices := g.AllVertices()
+	if sorter != nil {
+		sorter(vertices)
+	}
+	for _, v := range vertices {
 		elements.add(v,NewDFSElement(v))
 	}
 	for v := elements.frontKey();v!=nil;v = elements.nextKey(v) {

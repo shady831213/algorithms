@@ -21,6 +21,7 @@ type Graph interface {
 	AllVertices() []interface{}
 	AllEdges() []Edge
 	AllConnectedVertices(interface{}) []interface{}
+	Transpose()Graph
 	GetGraph() (interface{})
 }
 
@@ -144,6 +145,14 @@ func (g *AdjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 	return keys
 }
 
+func (g *AdjacencyMatrix) Transpose() Graph {
+	gt := NewAdjacencyMatrix()
+	for _, e := range g.AllEdges() {
+		gt.AddEdge(Edge{e.End,e.Start})
+	}
+	return gt
+}
+
 func (g *AdjacencyMatrix) GetGraph() interface{} {
 	return g
 }
@@ -153,37 +162,37 @@ func NewAdjacencyMatrix() *AdjacencyMatrix {
 }
 
 type AdjacencyList struct {
-	list linkedMap
+	matrix linkedMap
 	Graph
 }
 
 func (g *AdjacencyList) Init() *AdjacencyList {
-	g.list = *new(linkedMap).init()
+	g.matrix = *new(linkedMap).init()
 	return g
 }
 
 func (g *AdjacencyList) AddVertex(vertex interface{}) {
-	if !g.list.exist(vertex){
-		g.list.add(vertex,list.New())
+	if !g.matrix.exist(vertex){
+		g.matrix.add(vertex,list.New())
 	}
 }
 
 func (g *AdjacencyList) AddEdge(e Edge) {
 	g.AddVertex(e.Start)
 	g.AddVertex(e.End)
-	g.list.get(e.Start).(*list.List).PushBack(e.End)
+	g.matrix.get(e.Start).(*list.List).PushBack(e.End)
 }
 
 func (g *AdjacencyList) AddEdgeBi(e Edge) {
 	g.AddVertex(e.Start)
 	g.AddVertex(e.End)
-	g.list.get(e.Start).(*list.List).PushBack(e.End)
-	g.list.get(e.End).(*list.List).PushBack(e.Start)
+	g.matrix.get(e.Start).(*list.List).PushBack(e.End)
+	g.matrix.get(e.End).(*list.List).PushBack(e.Start)
 }
 
 func (g *AdjacencyList) AllVertices() []interface{} {
 	keys := make([]interface{}, 0, 0)
-	for v := g.list.frontKey(); v != nil; v = g.list.nextKey(v) {
+	for v := g.matrix.frontKey(); v != nil; v = g.matrix.nextKey(v) {
 		keys = append(keys, v)
 	}
 	return keys
@@ -191,8 +200,8 @@ func (g *AdjacencyList) AllVertices() []interface{} {
 
 func (g *AdjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 	value := make([]interface{}, 0, 0)
-	if g.list.exist(v) {
-		for e := g.list.get(v).(*list.List).Front(); e != nil; e = e.Next() {
+	if g.matrix.exist(v) {
+		for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
 			value = append(value, e.Value)
 		}
 	}
@@ -201,13 +210,23 @@ func (g *AdjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 
 func (g *AdjacencyList) AllEdges() []Edge {
 	edges := make([]Edge, 0, 0)
-	for v := g.list.frontKey(); v != nil; v = g.list.nextKey(v) {
-		for e := g.list.get(v).(*list.List).Front(); e != nil; e = e.Next() {
+	for v := g.matrix.frontKey(); v != nil; v = g.matrix.nextKey(v) {
+		for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
 			edges = append(edges, Edge{v, e.Value})
 		}
 	}
 	return edges
 }
+
+
+func (g *AdjacencyList) Transpose() Graph {
+	gt := NewAdjacencyList()
+	for _, e := range g.AllEdges() {
+		gt.AddEdge(Edge{e.End,e.Start})
+	}
+	return gt
+}
+
 
 func (g *AdjacencyList) GetGraph() interface{} {
 	return g
@@ -219,8 +238,8 @@ func NewAdjacencyList() *AdjacencyList {
 
 func AdjacencyList2AdjacencyMatrix(l *AdjacencyList) *AdjacencyMatrix {
 	m := NewAdjacencyMatrix()
-	for v := l.list.frontKey(); v != nil; v = l.list.nextKey(v) {
-		for e := l.list.get(v).(*list.List).Front(); e != nil; e = e.Next() {
+	for v := l.matrix.frontKey(); v != nil; v = l.matrix.nextKey(v) {
+		for e := l.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
 			m.AddEdge(Edge{v, e.Value})
 		}
 	}
@@ -235,4 +254,13 @@ func AdjacencyMatrix2AdjacencyList(m *AdjacencyMatrix) *AdjacencyList {
 		}
 	}
 	return l
+}
+
+func CreateGraphByType(g Graph) (newG Graph) {
+	if _, isList := g.GetGraph().(*AdjacencyList); isList {
+		newG = NewAdjacencyList()
+	} else {
+		newG = NewAdjacencyMatrix()
+	}
+	return
 }

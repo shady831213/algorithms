@@ -25,11 +25,7 @@ func NewBFSElement(v interface{}) *BFSElement {
 }
 
 func BFS(g Graph, s interface{}) (bfsGraph Graph) {
-	if _, isList := g.GetGraph().(*AdjacencyList); isList {
-		bfsGraph = NewAdjacencyList()
-	} else {
-		bfsGraph = NewAdjacencyMatrix()
-	}
+	bfsGraph = CreateGraphByType(g)
 
 	elements := make(map[interface{}]*BFSElement)
 	queue := list.New()
