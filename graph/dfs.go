@@ -38,7 +38,6 @@ func DFS(g Graph) (dfsGraph Graph) {
 	//init
 	for _, v := range g.AllVertices() {
 		elements.add(v,NewDFSElement(v))
-		dfsGraph.AddVertex(elements.get(v))
 	}
 	for v := elements.frontKey();v!=nil;v = elements.nextKey(v) {
 		if elements.get(v).(*DFSElement).Color == WHITE {
@@ -52,10 +51,6 @@ func DFS(g Graph) (dfsGraph Graph) {
 				} else {
 					//white or gray
 					if e.Color == WHITE {
-						//tree edge definition. First time visit
-						if e.P != nil {
-							dfsGraph.AddEdge(Edge{e, e.P})
-						}
 						e.Color = GRAY
 						timer ++
 						e.D = timer
@@ -74,6 +69,11 @@ func DFS(g Graph) (dfsGraph Graph) {
 						timer ++
 						e.F = timer
 						stack.Remove(stack.Back())
+						dfsGraph.AddVertex(e)
+						//tree edge definition. First time visit
+						if e.P != nil {
+							dfsGraph.AddEdge(Edge{e, e.P})
+						}
 					}
 					// else if the stack grew, update pointer to the top of stack and visit it
 				}

@@ -74,15 +74,13 @@ func dfsGolden(g Graph) (dfsGraph Graph) {
 
 func checkDFSGraph(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()
+	//finish time increase order
 	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
 		if edges[i].Start == edges[j].Start {
 			return edges[i].End.(*DFSElement).V.(string) < edges[j].End.(*DFSElement).V.(string)
 		}
 		return edges[i].Start.(*DFSElement).V.(string) < edges[j].Start.(*DFSElement).V.(string)
-	})
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].(*DFSElement).V.(string) < vertexes[j].(*DFSElement).V.(string)
 	})
 
 	expEdges := gGloden.AllEdges()
@@ -94,8 +92,9 @@ func checkDFSGraph(t *testing.T, g Graph, gGloden Graph) {
 		}
 		return expEdges[i].Start.(*DFSElement).V.(string) < expEdges[j].Start.(*DFSElement).V.(string)
 	})
+	//finish time increase order
 	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(*DFSElement).V.(string) < expVertices[j].(*DFSElement).V.(string)
+		return expVertices[i].(*DFSElement).F < expVertices[j].(*DFSElement).F
 	})
 
 	if !reflect.DeepEqual(edges, expEdges) {
