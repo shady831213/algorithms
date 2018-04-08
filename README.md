@@ -31,6 +31,7 @@ go version: >= 1.9.3
   - [AdjacencyMatrix and AdjacencyList](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
   - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
   - [DFS](https://github.com/shady831213/algorithms/blob/master/graph/dfs.go)(use stack)
+  - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
