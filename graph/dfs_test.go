@@ -36,20 +36,20 @@ func dfsGolden(g Graph) (dfsGraph map[string]Graph) {
 	vertexes["u"].F = 8
 	vertexes["u"].P = nil
 
-	vertexes["x"] = NewDFSElement("x")
-	vertexes["x"].D = 2
-	vertexes["x"].F = 7
-	vertexes["x"].P = vertexes["u"]
-
 	vertexes["v"] = NewDFSElement("v")
-	vertexes["v"].D = 3
-	vertexes["v"].F = 6
-	vertexes["v"].P = vertexes["x"]
+	vertexes["v"].D = 2
+	vertexes["v"].F = 7
+	vertexes["v"].P = vertexes["u"]
 
 	vertexes["y"] = NewDFSElement("y")
-	vertexes["y"].D = 4
-	vertexes["y"].F = 5
+	vertexes["y"].D = 3
+	vertexes["y"].F = 6
 	vertexes["y"].P = vertexes["v"]
+
+	vertexes["x"] = NewDFSElement("x")
+	vertexes["x"].D = 4
+	vertexes["x"].F = 5
+	vertexes["x"].P = vertexes["y"]
 
 	vertexes["w"] = NewDFSElement("w")
 	vertexes["w"].D = 9
@@ -74,10 +74,10 @@ func dfsGolden(g Graph) (dfsGraph map[string]Graph) {
 		}
 	}
 
-	dfsGraph["dfsBackEdges"].AddEdge(Edge{vertexes["y"], vertexes["x"]})
+	dfsGraph["dfsBackEdges"].AddEdge(Edge{vertexes["x"], vertexes["v"]})
 	dfsGraph["dfsBackEdges"].AddEdge(Edge{vertexes["z"], vertexes["z"]})
 
-	dfsGraph["dfsForwardEdges"].AddEdge(Edge{vertexes["u"], vertexes["v"]})
+	dfsGraph["dfsForwardEdges"].AddEdge(Edge{vertexes["u"], vertexes["x"]})
 
 	dfsGraph["dfsCrossEdges"].AddEdge(Edge{vertexes["w"], vertexes["y"]})
 	return
@@ -93,9 +93,9 @@ func compareDFSGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
 				t.Log(eExp[i].Start)
 				t.Log(eExp[i].End)
 				t.Log("but get:")
-				t.Log(eExp[i])
-				t.Log(eExp[i].Start)
-				t.Log(eExp[i].End)
+				t.Log(e[i])
+				t.Log(e[i].Start)
+				t.Log(e[i].End)
 			}
 		}
 
@@ -116,36 +116,7 @@ func compareDFSGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
 	}
 }
 
-//dfs Forest keep vertices order
-func checkDFSForestGraph(t *testing.T, g Graph, gGloden Graph) {
-	edges := g.AllEdges()
-	//finish time increase order
-	vertexes := g.AllVertices()
-	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].Start == edges[j].Start {
-			return edges[i].End.(*DFSElement).V.(string) < edges[j].End.(*DFSElement).V.(string)
-		}
-		return edges[i].Start.(*DFSElement).V.(string) < edges[j].Start.(*DFSElement).V.(string)
-	})
-
-	expEdges := gGloden.AllEdges()
-	expVertices := gGloden.AllVertices()
-
-	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].Start == expEdges[j].Start {
-			return expEdges[i].End.(*DFSElement).V.(string) < expEdges[j].End.(*DFSElement).V.(string)
-		}
-		return expEdges[i].Start.(*DFSElement).V.(string) < expEdges[j].Start.(*DFSElement).V.(string)
-	})
-	//finish time increase order
-	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(*DFSElement).F < expVertices[j].(*DFSElement).F
-	})
-	compareDFSGraph(t, vertexes,expVertices,edges,expEdges)
-}
-
-//Edges graphs do not keep vertices order
-func checkDFSEdgesGraph(t *testing.T, g Graph, gGloden Graph) {
+func checkDFSGraph(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
@@ -174,7 +145,7 @@ func checkDFSEdgesGraph(t *testing.T, g Graph, gGloden Graph) {
 		return expVertices[i].(*DFSElement).V.(string) < expVertices[j].(*DFSElement).V.(string)
 	})
 
-	compareDFSGraph(t, vertexes,expVertices,edges,expEdges)
+	compareDFSGraph(t, vertexes, expVertices, edges, expEdges)
 }
 
 func TestDFS(t *testing.T) {
@@ -187,10 +158,6 @@ func TestDFS(t *testing.T) {
 	})
 	expDfsGraph := dfsGolden(g)
 	for i := range dfsGraph {
-		if i == "dfsForest" {
-			checkDFSForestGraph(t, dfsGraph[i], expDfsGraph[i])
-		} else {
-			checkDFSEdgesGraph(t, dfsGraph[i], expDfsGraph[i])
-		}
+		checkDFSGraph(t, dfsGraph[i], expDfsGraph[i])
 	}
 }

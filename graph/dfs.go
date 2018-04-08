@@ -59,52 +59,47 @@ func DFS(g Graph, sorter func([]interface{})) (dfsGraph map[string]Graph) {
 	for v := elements.frontKey(); v != nil; v = elements.nextKey(v) {
 		if elements.get(v).(*DFSElement).Color == WHITE {
 			//push root vertex to stack
+			elements.get(v).(*DFSElement).Color = GRAY
+			timer ++
+			elements.get(v).(*DFSElement).D = timer
+			for i := range dfsGraph {
+				dfsGraph[i].AddVertex(elements.get(v).(*DFSElement))
+			}
 			stack.PushBack(elements.get(v).(*DFSElement))
+
 			for stack.Len() != 0 {
 				e := stack.Back().Value.(*DFSElement);
-				if e.Color == BLACK {
-					//if is black, it must be deeper in stack, and has be visited through deeper path
-					stack.Remove(stack.Back())
-				} else {
-					//white or gray
-					if e.Color == WHITE {
-						e.Color = GRAY
+				for _, c := range g.AllConnectedVertices(e.V) {
+					if elements.get(c).(*DFSElement).Color == WHITE {
+						// parent in deeper path always override that in shallower
+						elements.get(c).(*DFSElement).Color = GRAY
 						timer ++
-						e.D = timer
-						//add all children has not been visited to stack
-						for _, c := range g.AllConnectedVertices(e.V) {
-							if elements.get(c).(*DFSElement).Color == WHITE {
-								// parent in deeper path always override that in shallower
-								if elements.get(c).(*DFSElement).P != nil {
-									//if it is shallower in the dfs tree and it is white, it's parent will be override,and it's a forward edge
-									dfsGraph["dfsForwardEdges"].AddEdge(Edge{elements.get(c).(*DFSElement).P, elements.get(c).(*DFSElement)})
-								}
-								elements.get(c).(*DFSElement).P = e
-								stack.PushBack(elements.get(c).(*DFSElement))
-							} else if elements.get(c).(*DFSElement).Color == GRAY {
-								// if color is already gray, it's a flip edge
-								dfsGraph["dfsBackEdges"].AddEdge(Edge{e,elements.get(c).(*DFSElement)})
-							} else {
-								// if color is already black, it's a cross edge,d(e) > d(elements.get(c).(*DFSElement))
-								dfsGraph["dfsCrossEdges"].AddEdge(Edge{e,elements.get(c).(*DFSElement)})
-							}
-						}
-					}
-					if e == stack.Back().Value.(*DFSElement) {
-						// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
-						e.Color = BLACK
-						timer ++
-						e.F = timer
-						stack.Remove(stack.Back())
+						elements.get(c).(*DFSElement).D = timer
+						elements.get(c).(*DFSElement).P = e
 						for i := range dfsGraph {
-							dfsGraph[i].AddVertex(e)
+							dfsGraph[i].AddVertex(elements.get(c).(*DFSElement))
 						}
 						//tree edge definition. First time visit
-						if e.P != nil {
-							dfsGraph["dfsForest"].AddEdge(Edge{e.P, e})
-						}
+						dfsGraph["dfsForest"].AddEdge(Edge{e, elements.get(c).(*DFSElement)})
+						stack.PushBack(elements.get(c).(*DFSElement))
+						break
+					} else if elements.get(c).(*DFSElement).Color == GRAY {
+						// if color is already gray, it's a back edge
+						dfsGraph["dfsBackEdges"].AddEdge(Edge{e, elements.get(c).(*DFSElement)})
+					} else if e.D > elements.get(c).(*DFSElement).D {
+						// if color is already black, it's a cross edge,d(e) > d(elements.get(c).(*DFSElement))
+						dfsGraph["dfsCrossEdges"].AddEdge(Edge{e, elements.get(c).(*DFSElement)})
+					} else if elements.get(c).(*DFSElement).D - e.D > 1{
+						// if color is already black, it's a cross edge,d(e) < d(elements.get(c).(*DFSElement)) - 1
+						dfsGraph["dfsForwardEdges"].AddEdge(Edge{e, elements.get(c).(*DFSElement)})
 					}
-					// else if the stack grew, update pointer to the top of stack and visit it
+				}
+				if e == stack.Back().Value.(*DFSElement) {
+					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
+					e.Color = BLACK
+					timer ++
+					e.F = timer
+					stack.Remove(stack.Back())
 				}
 			}
 		}
