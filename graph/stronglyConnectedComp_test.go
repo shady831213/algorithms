@@ -32,10 +32,21 @@ func sccSetupGraph(g Graph) {
 
 func sccGolden(g Graph) (scc Graph) {
 	scc = CreateGraphByType(g)
-	scc.AddVertex(&[]interface{}{"b", "e", "a"})
-	scc.AddVertex(&[]interface{}{"c", "d"})
-	scc.AddVertex(&[]interface{}{"g", "f"})
-	scc.AddVertex(&[]interface{}{"h"})
+	bea := []interface{}{"b", "e", "a"}
+	scc.AddVertex(&bea)
+	cd := []interface{}{"c", "d"}
+	scc.AddVertex(&cd)
+	gf := []interface{}{"g", "f"}
+	scc.AddVertex(&gf)
+	h := []interface{}{"h"}
+	scc.AddVertex(&h)
+
+	scc.AddEdge(Edge{&bea, &cd})
+	scc.AddEdge(Edge{&bea, &gf})
+	scc.AddEdge(Edge{&cd, &gf})
+	scc.AddEdge(Edge{&cd, &h})
+	scc.AddEdge(Edge{&gf, &h})
+
 	return
 }
 

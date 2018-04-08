@@ -180,14 +180,17 @@ func (g *AdjacencyList) AddVertex(vertex interface{}) {
 func (g *AdjacencyList) AddEdge(e Edge) {
 	g.AddVertex(e.Start)
 	g.AddVertex(e.End)
+	for le := g.matrix.get(e.Start).(*list.List).Front(); le != nil; le = le.Next() {
+		if le.Value == e.End {
+			return
+		}
+	}
 	g.matrix.get(e.Start).(*list.List).PushBack(e.End)
 }
 
 func (g *AdjacencyList) AddEdgeBi(e Edge) {
-	g.AddVertex(e.Start)
-	g.AddVertex(e.End)
-	g.matrix.get(e.Start).(*list.List).PushBack(e.End)
-	g.matrix.get(e.End).(*list.List).PushBack(e.Start)
+	g.AddEdge(e)
+	g.AddEdge(Edge{e.End,e.Start})
 }
 
 func (g *AdjacencyList) AllVertices() []interface{} {
