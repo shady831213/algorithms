@@ -45,7 +45,7 @@ func BFS(g Graph, s interface{}) (bfsGraph Graph) {
 				elements[v].Color = GRAY
 				elements[v].Dist = elements[qe.Value].Dist + 1
 				elements[v].P = elements[qe.Value]
-				bfsGraph.AddEdge(Edge{elements[v], elements[qe.Value]})
+				bfsGraph.AddEdge(Edge{elements[qe.Value],elements[v]})
 				queue.PushBack(v)
 			}
 		}

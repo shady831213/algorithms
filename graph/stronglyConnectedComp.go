@@ -5,12 +5,12 @@ func SCC(g Graph) (scc Graph) {
 
 	dfsGraph, gT := DFS(g, nil), g.Transpose()
 	dfsGraphOfT := DFS(gT, func(vertices []interface{}) {
-		for i, v := range dfsGraph.AllVertices() {
+		for i, v := range dfsGraph["dfsForest"].AllVertices() {
 			vertices[len(vertices)-1-i] = v.(*DFSElement).V
 		}
 	})
 	forest := make(map[*DFSElement]*[]interface{})
-	vertices := dfsGraphOfT.AllVertices()
+	vertices := dfsGraphOfT["dfsForest"].AllVertices()
 	for i := range vertices {
 		root := vertices[i].(*DFSElement).FindRoot()
 		if _, ok := forest[root]; !ok {
