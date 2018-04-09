@@ -117,7 +117,9 @@ func GetDFSComponent(dfsGraph Graph)(map[*DFSElement]Graph) {
 		}
 		forest[root].AddVertex(v)
 		for _, e := range dfsGraph.AllConnectedVertices(v) {
-			forest[root].AddEdge(Edge{v, e})
+			if e.(*DFSElement).FindRoot() == root {
+				forest[root].AddEdge(Edge{v, e})
+			}
 		}
 	}
 	return forest
