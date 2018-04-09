@@ -37,11 +37,18 @@ func SCC(g Graph) (scc Graph) {
 					components[i].AddEdge(Edge{e.(*DFSElement).V, v.(*DFSElement).V})
 				}
 			}
+			for _, e := range dfsGraphOfT["dfsCrossEdges"].AllConnectedVertices(v) {
+				if e.(*DFSElement).FindRoot() == i {
+					components[i].AddEdge(Edge{e.(*DFSElement).V, v.(*DFSElement).V})
+				}
+			}
 		}
 	}
 	//keep all cross edges
 	for _,e := range dfsGraphOfT["dfsCrossEdges"].AllEdges() {
-		scc.AddEdge(Edge{components[e.End.(*DFSElement).FindRoot()], components[e.Start.(*DFSElement).FindRoot()]})
+		if e.End.(*DFSElement).FindRoot() != e.Start.(*DFSElement).FindRoot() {
+			scc.AddEdge(Edge{components[e.End.(*DFSElement).FindRoot()], components[e.Start.(*DFSElement).FindRoot()]})
+		}
 	}
 
 	return
