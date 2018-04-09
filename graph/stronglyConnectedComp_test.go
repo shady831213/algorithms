@@ -2,7 +2,6 @@ package graph
 
 import (
 	"testing"
-	"reflect"
 )
 
 func sccSetupGraph(g Graph) {
@@ -66,49 +65,10 @@ func sccGolden(g Graph) (scc Graph) {
 	return
 }
 
-func checkSCCGraph(t *testing.T, g Graph, gGloden Graph) {
-	edges := g.AllEdges()
-	vertexes := g.AllVertices()
-
-	expEdges := gGloden.AllEdges()
-	expVertices := gGloden.AllVertices()
-
-	if !reflect.DeepEqual(edges, expEdges) {
-		t.Log("get edges error!")
-		for i := range expEdges {
-			if !reflect.DeepEqual(expEdges[i], edges[i]) {
-				t.Log("expect:")
-				t.Log(expEdges[i])
-				t.Log(expEdges[i].Start)
-				t.Log(expEdges[i].End)
-				t.Log("but get:")
-				t.Log(edges[i])
-				t.Log(edges[i].Start)
-				t.Log(edges[i].End)
-			}
-		}
-
-		t.Fail()
-	}
-	if !reflect.DeepEqual(vertexes, expVertices) {
-		t.Log("get vertexes error!")
-		for i := range expVertices {
-			if !reflect.DeepEqual(expVertices[i], vertexes[i]) {
-				t.Log("expect:")
-				t.Log(expVertices[i])
-				t.Log("but get:")
-				t.Log(vertexes[i])
-			}
-
-		}
-		t.Fail()
-	}
-}
-
 func TestSCC(t *testing.T) {
 	g := NewAdjacencyList()
 	sccSetupGraph(g)
 	scc := SCC(g)
 	expScc := sccGolden(g)
-	checkSCCGraph(t, scc, expScc)
+	checkGraphInOrder(t, scc, expScc)
 }

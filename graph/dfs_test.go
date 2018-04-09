@@ -2,7 +2,6 @@ package graph
 
 import (
 	"testing"
-	"reflect"
 	"sort"
 )
 
@@ -83,71 +82,6 @@ func dfsGolden(g Graph) (*DFSForest) {
 	return dfsForest
 }
 
-func compareDFSGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
-	if !reflect.DeepEqual(e, eExp) {
-		t.Log("get edges error!")
-		for i := range eExp {
-			if !reflect.DeepEqual(eExp[i], e[i]) {
-				t.Log("expect:")
-				t.Log(eExp[i])
-				t.Log(eExp[i].Start)
-				t.Log(eExp[i].End)
-				t.Log("but get:")
-				t.Log(e[i])
-				t.Log(e[i].Start)
-				t.Log(e[i].End)
-			}
-		}
-
-		t.Fail()
-	}
-	if !reflect.DeepEqual(v, vExp) {
-		t.Log("get vertexes error!")
-		for i := range vExp {
-			if !reflect.DeepEqual(vExp[i], v[i]) {
-				t.Log("expect:")
-				t.Log(vExp[i])
-				t.Log("but get:")
-				t.Log(v[i])
-			}
-
-		}
-		t.Fail()
-	}
-}
-
-func checkDFSGraph(t *testing.T, g Graph, gGloden Graph) {
-	edges := g.AllEdges()
-	//finish time increase order
-	vertexes := g.AllVertices()
-	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].Start == edges[j].Start {
-			return edges[i].End.(*DFSElement).V.(string) < edges[j].End.(*DFSElement).V.(string)
-		}
-		return edges[i].Start.(*DFSElement).V.(string) < edges[j].Start.(*DFSElement).V.(string)
-	})
-
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].(*DFSElement).V.(string) < vertexes[j].(*DFSElement).V.(string)
-	})
-
-	expEdges := gGloden.AllEdges()
-	expVertices := gGloden.AllVertices()
-
-	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].Start == expEdges[j].Start {
-			return expEdges[i].End.(*DFSElement).V.(string) < expEdges[j].End.(*DFSElement).V.(string)
-		}
-		return expEdges[i].Start.(*DFSElement).V.(string) < expEdges[j].Start.(*DFSElement).V.(string)
-	})
-
-	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(*DFSElement).V.(string) < expVertices[j].(*DFSElement).V.(string)
-	})
-
-	compareDFSGraph(t, vertexes, expVertices, edges, expEdges)
-}
-
 func TestDFS(t *testing.T) {
 	g := NewAdjacencyList()
 	dfsSetupGraph(g)
@@ -157,8 +91,8 @@ func TestDFS(t *testing.T) {
 		})
 	})
 	expDfsGraph := dfsGolden(g)
-	checkDFSGraph(t, dfsGraph.Trees, expDfsGraph.Trees)
-	checkDFSGraph(t, dfsGraph.BackEdges, expDfsGraph.BackEdges)
-	checkDFSGraph(t, dfsGraph.ForwardEdges, expDfsGraph.ForwardEdges)
-	checkDFSGraph(t, dfsGraph.CrossEdges, expDfsGraph.CrossEdges)
+	checkDFSGraphOutOfOrder(t, dfsGraph.Trees, expDfsGraph.Trees)
+	checkDFSGraphOutOfOrder(t, dfsGraph.BackEdges, expDfsGraph.BackEdges)
+	checkDFSGraphOutOfOrder(t, dfsGraph.ForwardEdges, expDfsGraph.ForwardEdges)
+	checkDFSGraphOutOfOrder(t, dfsGraph.CrossEdges, expDfsGraph.CrossEdges)
 }

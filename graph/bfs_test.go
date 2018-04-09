@@ -2,7 +2,6 @@ package graph
 
 import (
 	"testing"
-	"reflect"
 	"sort"
 )
 
@@ -27,7 +26,7 @@ func bfsSetupGraph(g Graph) {
 	g.AddEdgeBi(Edge{"u", "y"})
 }
 
-func bfsGolden(g Graph)(bfsGraph Graph) {
+func bfsGolden(g Graph) (bfsGraph Graph) {
 	bfsGraph = CreateGraphByType(g)
 	vertexes := make(map[interface{}]*BFSElement)
 	vertexes["s"] = NewBFSElement("s")
@@ -37,10 +36,6 @@ func bfsGolden(g Graph)(bfsGraph Graph) {
 	vertexes["r"].Dist = 1
 	vertexes["r"].P = vertexes["s"]
 
-	vertexes["v"] = NewBFSElement("v")
-	vertexes["v"].Dist = 2
-	vertexes["v"].P = vertexes["r"]
-
 	vertexes["w"] = NewBFSElement("w")
 	vertexes["w"].Dist = 1
 	vertexes["w"].P = vertexes["s"]
@@ -48,6 +43,10 @@ func bfsGolden(g Graph)(bfsGraph Graph) {
 	vertexes["t"] = NewBFSElement("t")
 	vertexes["t"].Dist = 2
 	vertexes["t"].P = vertexes["w"]
+
+	vertexes["v"] = NewBFSElement("v")
+	vertexes["v"].Dist = 2
+	vertexes["v"].P = vertexes["r"]
 
 	vertexes["x"] = NewBFSElement("x")
 	vertexes["x"].Dist = 2
@@ -65,22 +64,21 @@ func bfsGolden(g Graph)(bfsGraph Graph) {
 		vertexes[v].Color = BLACK
 		bfsGraph.AddVertex(vertexes[v])
 		if vertexes[v].P != nil {
-			bfsGraph.AddEdge(Edge{ vertexes[v].P,vertexes[v]})
+			bfsGraph.AddEdge(Edge{vertexes[v].P, vertexes[v]})
 		}
 	}
 
 	return
 }
 
-func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
+func checkBFSGraphOutOfOrder(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()
+	//finish time increase order
 	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].Start == edges[j].Start {
-			return edges[i].End.(*BFSElement).V.(string) < edges[j].End.(*BFSElement).V.(string)
-		}
-		return edges[i].Start.(*BFSElement).V.(string) < edges[j].Start.(*BFSElement).V.(string)
+		return edges[i].End.(*BFSElement).V.(string) < edges[j].End.(*BFSElement).V.(string)
 	})
+
 	sort.Slice(vertexes, func(i, j int) bool {
 		return vertexes[i].(*BFSElement).V.(string) < vertexes[j].(*BFSElement).V.(string)
 	})
@@ -89,45 +87,14 @@ func checkBFSGraph(t *testing.T, g Graph, gGloden Graph) {
 	expVertices := gGloden.AllVertices()
 
 	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].Start == expEdges[j].Start {
-			return expEdges[i].End.(*BFSElement).V.(string) < expEdges[j].End.(*BFSElement).V.(string)
-		}
-		return expEdges[i].Start.(*BFSElement).V.(string) < expEdges[j].Start.(*BFSElement).V.(string)
+		return expEdges[i].End.(*BFSElement).V.(string) < expEdges[j].End.(*BFSElement).V.(string)
 	})
+
 	sort.Slice(expVertices, func(i, j int) bool {
 		return expVertices[i].(*BFSElement).V.(string) < expVertices[j].(*BFSElement).V.(string)
 	})
 
-	if !reflect.DeepEqual(edges, expEdges) {
-		t.Log("get edges error!")
-		for i := range expEdges {
-			if !reflect.DeepEqual(expEdges[i], edges[i]) {
-				t.Log("expect:")
-				t.Log(expEdges[i])
-				t.Log(expEdges[i].Start)
-				t.Log(expEdges[i].End)
-				t.Log("but get:")
-				t.Log(edges[i])
-				t.Log(edges[i].Start)
-				t.Log(edges[i].End)
-			}
-		}
-
-		t.Fail()
-	}
-	if !reflect.DeepEqual(vertexes, expVertices) {
-		t.Log("get vertexes error!")
-		for i := range expVertices {
-			if !reflect.DeepEqual(expVertices[i], vertexes[i]) {
-				t.Log("expect:")
-				t.Log(expVertices[i])
-				t.Log("but get:")
-				t.Log(vertexes[i])
-			}
-
-		}
-		t.Fail()
-	}
+	compareGraph(t, vertexes, expVertices, edges, expEdges)
 }
 
 func TestBFS(t *testing.T) {
@@ -135,5 +102,5 @@ func TestBFS(t *testing.T) {
 	bfsSetupGraph(g)
 	bfsGraph := BFS(g, "s")
 	expBfsGraph := bfsGolden(g)
-	checkBFSGraph(t, bfsGraph, expBfsGraph)
+	checkBFSGraphOutOfOrder(t, bfsGraph, expBfsGraph)
 }

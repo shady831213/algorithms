@@ -20,7 +20,8 @@ func setupGraph(g Graph) {
 	g.AddEdge(Edge{8,7})
 }
 
-func checkGrap(t *testing.T, g Graph) {
+
+func checkGraph(t *testing.T, g Graph) {
 	edges := g.AllEdges()
 	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
@@ -59,7 +60,7 @@ func checkGrap(t *testing.T, g Graph) {
 
 func testGraph(t *testing.T, g Graph) {
 	setupGraph(g)
-	checkGrap(t,g)
+	checkGraph(t,g)
 }
 
 func TestNewAdjacencyList(t *testing.T) {
@@ -73,11 +74,11 @@ func TestNewAdjacencyMatrix(t *testing.T) {
 func TestAdjacencyList2AdjacencyMatrix(t *testing.T) {
 	l := NewAdjacencyList()
 	setupGraph(l)
-	checkGrap(t, AdjacencyList2AdjacencyMatrix(l))
+	checkGraph(t, AdjacencyList2AdjacencyMatrix(l))
 }
 
 func TestAdjacencyMatrix2AdjacencyList(t *testing.T) {
 	m := NewAdjacencyMatrix()
 	setupGraph(m)
-	checkGrap(t, AdjacencyMatrix2AdjacencyList(m))
+	checkGraph(t, AdjacencyMatrix2AdjacencyList(m))
 }
