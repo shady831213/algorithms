@@ -8,7 +8,7 @@ func SCC(g Graph) (scc Graph) {
 	//DFS and get forest
 	dfsGraph, gT := DFS(g, nil), g.Transpose()
 	//DFS of transpose in order of decreasing finish time
-	dfsVertices := dfsGraph["dfsForest"].AllVertices()
+	dfsVertices := dfsGraph.AllVertices()
 	sort.Slice(dfsVertices, func(i, j int) bool {
 		return dfsVertices[i].(*DFSElement).F > dfsVertices[j].(*DFSElement).F
 	})
@@ -18,28 +18,22 @@ func SCC(g Graph) (scc Graph) {
 		}
 	})
 	//shrink all vertices, according to the root(disjoint-set)
-	dfsForest := make(map[string]map[*DFSElement]Graph)
-	for i := range dfsGraphOfT {
-		dfsForest[i] = GetDFSComponent(dfsGraphOfT[i])
-	}
 	components := make(map[*DFSElement]Graph)
-	//add all sub vertices
-	for i := range dfsForest["dfsForest"] {
+
+	for i := range dfsGraphOfT.Comps {
 		components[i] = CreateGraphByType(g)
-		for _,v := range dfsForest["dfsForest"][i].AllVertices() {
+		//add all sub vertices
+		for _,v := range dfsGraphOfT.Comps[i].AllVertices() {
 			components[i].AddVertex(v.(*DFSElement).V)
 		}
-	}
-	//add all sub edges
-	for i := range dfsForest {
-		for j := range dfsForest[i] {
-			for _,e := range dfsForest[i][j].AllEdges() {
-				components[j].AddEdge(Edge{e.End.(*DFSElement).V,e.Start.(*DFSElement).V})
-			}
+		//add all sub edges
+		for _, e := range dfsGraphOfT.Comps[i].AllEdges() {
+			components[i].AddEdge(Edge{e.End.(*DFSElement).V,e.Start.(*DFSElement).V})
 		}
 	}
+
 	//keep all cross edges which cross components
-	for _,e := range dfsGraphOfT["dfsCrossEdges"].AllEdges() {
+	for _,e := range dfsGraphOfT.AllCrossEdges() {
 		if e.End.(*DFSElement).FindRoot() != e.Start.(*DFSElement).FindRoot() {
 			scc.AddEdge(Edge{components[e.End.(*DFSElement).FindRoot()], components[e.Start.(*DFSElement).FindRoot()]})
 		}

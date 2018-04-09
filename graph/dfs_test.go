@@ -23,64 +23,64 @@ func dfsSetupGraph(g Graph) {
 	g.AddEdge(Edge{"z", "z"})
 }
 
-func dfsGolden(g Graph) (dfsGraph map[string]Graph) {
-	dfsGraph = make(map[string]Graph)
-	dfsGraph["dfsForest"] = CreateGraphByType(g)
-	dfsGraph["dfsBackEdges"] = CreateGraphByType(g)
-	dfsGraph["dfsForwardEdges"] = CreateGraphByType(g)
-	dfsGraph["dfsCrossEdges"] = CreateGraphByType(g)
+func dfsGolden(g Graph) (*DFSForest) {
+	dfsForest := NewDFSForest(g)
 	vertexes := make(map[interface{}]*DFSElement)
 
 	vertexes["u"] = NewDFSElement("u")
 	vertexes["u"].D = 1
 	vertexes["u"].F = 8
 	vertexes["u"].P = nil
+	vertexes["u"].Root = vertexes["u"]
 
 	vertexes["v"] = NewDFSElement("v")
 	vertexes["v"].D = 2
 	vertexes["v"].F = 7
 	vertexes["v"].P = vertexes["u"]
+	vertexes["v"].Root = vertexes["u"]
 
 	vertexes["y"] = NewDFSElement("y")
 	vertexes["y"].D = 3
 	vertexes["y"].F = 6
 	vertexes["y"].P = vertexes["v"]
+	vertexes["y"].Root = vertexes["u"]
 
 	vertexes["x"] = NewDFSElement("x")
 	vertexes["x"].D = 4
 	vertexes["x"].F = 5
 	vertexes["x"].P = vertexes["y"]
+	vertexes["x"].Root = vertexes["u"]
 
 	vertexes["w"] = NewDFSElement("w")
 	vertexes["w"].D = 9
 	vertexes["w"].F = 12
 	vertexes["w"].P = nil
+	vertexes["w"].Root = vertexes["w"]
 
 	vertexes["z"] = NewDFSElement("z")
 	vertexes["z"].D = 10
 	vertexes["z"].F = 11
 	vertexes["z"].P = vertexes["w"]
+	vertexes["z"].Root = vertexes["w"]
 
 	for v := range vertexes {
 		vertexes[v].Color = BLACK
-		for i := range dfsGraph {
-			dfsGraph[i].AddVertex(vertexes[v])
-		}
+		dfsForest.AddVertex(vertexes[v])
 	}
 
 	for v := range vertexes {
 		if vertexes[v].P != nil {
-			dfsGraph["dfsForest"].AddEdge(Edge{vertexes[v].P, vertexes[v]})
+			dfsForest.AddTreeEdge(Edge{vertexes[v].P, vertexes[v]})
 		}
 	}
 
-	dfsGraph["dfsBackEdges"].AddEdge(Edge{vertexes["x"], vertexes["v"]})
-	dfsGraph["dfsBackEdges"].AddEdge(Edge{vertexes["z"], vertexes["z"]})
+	dfsForest.AddBackEdge(Edge{vertexes["x"], vertexes["v"]})
+	dfsForest.AddBackEdge(Edge{vertexes["z"], vertexes["z"]})
 
-	dfsGraph["dfsForwardEdges"].AddEdge(Edge{vertexes["u"], vertexes["x"]})
+	dfsForest.AddForwardEdge(Edge{vertexes["u"], vertexes["x"]})
 
-	dfsGraph["dfsCrossEdges"].AddEdge(Edge{vertexes["w"], vertexes["y"]})
-	return
+	dfsForest.AddCrossEdge(Edge{vertexes["w"], vertexes["y"]})
+	return dfsForest
 }
 
 func compareDFSGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
@@ -157,7 +157,8 @@ func TestDFS(t *testing.T) {
 		})
 	})
 	expDfsGraph := dfsGolden(g)
-	for i := range dfsGraph {
-		checkDFSGraph(t, dfsGraph[i], expDfsGraph[i])
-	}
+	checkDFSGraph(t, dfsGraph.Trees, expDfsGraph.Trees)
+	checkDFSGraph(t, dfsGraph.BackEdges, expDfsGraph.BackEdges)
+	checkDFSGraph(t, dfsGraph.ForwardEdges, expDfsGraph.ForwardEdges)
+	checkDFSGraph(t, dfsGraph.CrossEdges, expDfsGraph.CrossEdges)
 }

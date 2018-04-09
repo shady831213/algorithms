@@ -2,7 +2,7 @@ package graph
 
 import "sort"
 
-func getCutsAndBridges(dfsGraphs map[string]Graph)(cutsAndBridges Graph) {
+func getCutsAndBridgesFromComponent(dfsGraphs map[string]Graph)(cutsAndBridges Graph) {
 	cutsAndBridges = CreateGraphByType(dfsGraphs["dfsForest"])
 	vertices := dfsGraphs["dfsForest"].AllVertices()
 	lows := make([]int, len(vertices), cap(vertices))
