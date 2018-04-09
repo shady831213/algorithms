@@ -18,21 +18,30 @@ func SCC(g Graph) (scc Graph) {
 		}
 	})
 	//shrink all vertices, according to the root(disjoint-set)
-	forest := make(map[*DFSElement]*[]interface{})
-	vertices := dfsGraphOfT["dfsForest"].AllVertices()
-	for i := range vertices {
-		root := vertices[i].(*DFSElement).FindRoot()
-		if _, ok := forest[root]; !ok {
-			v := []interface{}{vertices[i].(*DFSElement).V}
-			forest[root] = &v
-			scc.AddVertex(&v)
-		} else {
-			*forest[root] = append(*forest[root], vertices[i].(*DFSElement).V)
+	dfsForest := GetDFSComponent(dfsGraphOfT["dfsForest"])
+	components := make(map[*DFSElement]Graph)
+	for i := range dfsForest {
+		components[i] = CreateGraphByType(g)
+		for _,v := range dfsForest[i].AllVertices() {
+			components[i].AddVertex(v.(*DFSElement).V)
+			for _, e := range dfsForest[i].AllConnectedVertices(v) {
+				components[i].AddEdge(Edge{e.(*DFSElement).V, v.(*DFSElement).V})
+			}
+			for _, e := range dfsGraphOfT["dfsForwardEdges"].AllConnectedVertices(v) {
+				if e.(*DFSElement).FindRoot() == i {
+					components[i].AddEdge(Edge{e.(*DFSElement).V, v.(*DFSElement).V})
+				}
+			}
+			for _, e := range dfsGraphOfT["dfsBackEdges"].AllConnectedVertices(v) {
+				if e.(*DFSElement).FindRoot() == i {
+					components[i].AddEdge(Edge{e.(*DFSElement).V, v.(*DFSElement).V})
+				}
+			}
 		}
 	}
 	//keep all cross edges
 	for _,e := range dfsGraphOfT["dfsCrossEdges"].AllEdges() {
-		scc.AddEdge(Edge{forest[e.End.(*DFSElement).FindRoot()], forest[e.Start.(*DFSElement).FindRoot()]})
+		scc.AddEdge(Edge{components[e.End.(*DFSElement).FindRoot()], components[e.Start.(*DFSElement).FindRoot()]})
 	}
 
 	return

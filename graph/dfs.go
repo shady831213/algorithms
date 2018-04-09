@@ -37,6 +37,7 @@ func NewDFSElement(v interface{}) *DFSElement {
 	return new(DFSElement).Init(v)
 }
 
+
 func DFS(g Graph, sorter func([]interface{})) (dfsGraph map[string]Graph) {
 	dfsGraph = make(map[string]Graph)
 	dfsGraph["dfsForest"] = CreateGraphByType(g)
@@ -105,4 +106,19 @@ func DFS(g Graph, sorter func([]interface{})) (dfsGraph map[string]Graph) {
 		}
 	}
 	return
+}
+
+func GetDFSComponent(dfsGraph Graph)(map[*DFSElement]Graph) {
+	forest := make(map[*DFSElement]Graph)
+	for _, v := range dfsGraph.AllVertices() {
+		root := v.(*DFSElement).FindRoot()
+		if _,ok := forest[root];!ok {
+			forest[root] = CreateGraphByType(dfsGraph)
+		}
+		forest[root].AddVertex(v)
+		for _, e := range dfsGraph.AllConnectedVertices(v) {
+			forest[root].AddEdge(Edge{v, e})
+		}
+	}
+	return forest
 }

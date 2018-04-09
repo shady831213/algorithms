@@ -32,20 +32,36 @@ func sccSetupGraph(g Graph) {
 
 func sccGolden(g Graph) (scc Graph) {
 	scc = CreateGraphByType(g)
-	bea := []interface{}{"a", "e", "b"}
-	scc.AddVertex(&bea)
-	cd := []interface{}{"c", "d"}
-	scc.AddVertex(&cd)
-	gf := []interface{}{"f", "g"}
-	scc.AddVertex(&gf)
-	h := []interface{}{"h"}
-	scc.AddVertex(&h)
+	bea := CreateGraphByType(g)
+	bea.AddVertex("a")
+	bea.AddVertex("e")
+	bea.AddVertex("b")
+	bea.AddEdge(Edge{"a", "b"})
+	bea.AddEdge(Edge{"b", "e"})
+	bea.AddEdge(Edge{"e", "a"})
+	scc.AddVertex(bea)
+	cd := CreateGraphByType(g)
+	cd.AddVertex("c")
+	cd.AddVertex("d")
+	cd.AddEdge(Edge{"c", "d"})
+	cd.AddEdge(Edge{"d", "c"})
+	scc.AddVertex(cd)
+	gf := CreateGraphByType(g)
+	gf.AddVertex("f")
+	gf.AddVertex("g")
+	gf.AddEdge(Edge{"f", "g"})
+	gf.AddEdge(Edge{"g", "f"})
+	scc.AddVertex(gf)
+	h := CreateGraphByType(g)
+	h.AddVertex("h")
+	h.AddEdge(Edge{"h", "h"})
+	scc.AddVertex(h)
 
-	scc.AddEdge(Edge{&bea, &cd})
-	scc.AddEdge(Edge{&bea, &gf})
-	scc.AddEdge(Edge{&cd, &gf})
-	scc.AddEdge(Edge{&cd, &h})
-	scc.AddEdge(Edge{&gf, &h})
+	scc.AddEdge(Edge{bea, cd})
+	scc.AddEdge(Edge{bea, gf})
+	scc.AddEdge(Edge{cd, gf})
+	scc.AddEdge(Edge{cd, h})
+	scc.AddEdge(Edge{gf, h})
 
 	return
 }
