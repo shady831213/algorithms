@@ -95,14 +95,13 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 							cuts.AddVertex(next)
 						}
 						comps = append(comps, CreateGraphByType(g))
-						for edgeStack.Len() != 0 {
-							e := edgeStack.Back().Value
+						curEdge := Edge{next, top}
+						comps[len(comps)-1].AddEdgeBi(curEdge)
+						for e := edgeStack.Back().Value; e != curEdge; e = edgeStack.Back().Value {
 							edgeStack.Remove(edgeStack.Back())
 							comps[len(comps)-1].AddEdgeBi(e.(Edge))
-							if e.(Edge).Start == next && e.(Edge).End == top {
-								break
-							}
 						}
+						edgeStack.Remove(edgeStack.Back())
 					}
 				}
 			}
@@ -152,22 +151,21 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 					if lows[top] < lows[next] {
 						lows[next] = lows[top]
 					}
-					if lows[top] > disc[next] {
-						bridges.AddEdgeBi(Edge{next, top})
-					}
+
 					if lows[top] >= disc[next] {
 						comp := CreateGraphByType(g)
-						for edgeStack.Len() != 0 {
-							e := edgeStack.Back().Value
-							edgeStack.Remove(edgeStack.Back())
+						curEdge := Edge{next, top}
+						if lows[top] > disc[next] {
+							bridges.AddEdgeBi(curEdge)
+						} else {
 							//excluding bridge
-							if lows[top] == disc[next] || e.(Edge).Start != next || e.(Edge).End != top {
-								comp.AddEdgeBi(e.(Edge))
-							}
-							if e.(Edge).Start == next && e.(Edge).End == top {
-								break
-							}
+							comp.AddEdgeBi(curEdge)
 						}
+						for e := edgeStack.Back().Value; e != curEdge; e = edgeStack.Back().Value {
+							edgeStack.Remove(edgeStack.Back())
+							comp.AddEdgeBi(e.(Edge))
+						}
+						edgeStack.Remove(edgeStack.Back())
 						//if component is not empty, push it to the slice
 						if len(comp.AllVertices()) != 0 {
 							comps = append(comps, comp)
