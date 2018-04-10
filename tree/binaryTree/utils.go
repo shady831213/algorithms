@@ -202,53 +202,56 @@ func checkGBTPostOrder(t *testing.T, tree BinaryTreeIf, data []int) {
 
 func checkRBT(t *testing.T, rbt *RBT) bool {
 	blackCntQ := make([]int, 0, 0)
-	stop := rbt.PreOrderWalk(rbt.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		_tree := tree.(*RBT)
-		n := node.(*GBTElement)
+	rootMustBeBlack := func(tree *RBT, n *GBTElement) {
 		//root must be black
-		if n == _tree.Root() {
-			if !_tree.color(n) {
+		if n == tree.Root() {
+			if !tree.color(n) {
 				t.Log(fmt.Sprintf("root node  %+v is not black!", n))
-				t.Fail()
-				return true
+				t.FailNow()
 			}
 		}
+	}
+	redNodeCheck := func(tree *RBT, n *GBTElement) {
 		//children of red node must be both black
-		if !_tree.color(n) {
-			if !_tree.IsNil(n.Left) && !_tree.color(n.Left) {
+		if !tree.color(n) {
+			if !tree.IsNil(n.Left) && !tree.color(n.Left) {
 				t.Log(fmt.Sprintf("left node  %+v of a red node %+v is not black!", n.Left, n))
-				t.Fail()
-				return true
+				t.FailNow()
 			}
-			if !_tree.IsNil(n.Right) && !_tree.color(n.Right) {
+			if !tree.IsNil(n.Right) && !tree.color(n.Right) {
 				t.Log(fmt.Sprintf("right node  %+v of a red node %+v is not black!", n.Right, n))
-				t.Fail()
-				return true
+				t.FailNow()
 			}
 		}
+	}
+	collectBlackPath := func(tree *RBT, n *GBTElement) {
 		//check blackcnt, leaves to root path must be the same
 		blackCnt := 0
-		if _tree.IsNil(n.Right) && _tree.IsNil(n.Left) {
-			for curNode := n; !_tree.IsNil(curNode); curNode = curNode.Parent {
-				if _tree.color(curNode) {
+		if tree.IsNil(n.Right) && tree.IsNil(n.Left) {
+			for curNode := n; !tree.IsNil(curNode); curNode = curNode.Parent {
+				if tree.color(curNode) {
 					blackCnt++
 				}
 			}
 			if len(blackCntQ) != 0 {
 				if blackCnt != blackCntQ[0] {
 					t.Log(fmt.Sprintf("black cnt %0d in the path from node  %+v to root does not equal to the previous black cnt %0d", blackCnt, n, blackCntQ[0]))
-					t.Fail()
-					return true
+					t.FailNow()
 				}
 			} else {
 				if blackCnt == 0 {
 					t.Log(fmt.Sprintf("black cnt in the path from node  %0d  to root is 0!", n))
-					t.Fail()
-					return true
+					t.FailNow()
 				}
 				blackCntQ = append(blackCntQ, blackCnt)
 			}
 		}
+	}
+
+	stop := rbt.PreOrderWalk(rbt.Root(), func(tree BinaryTreeIf, node interface{}) bool {
+		rootMustBeBlack(tree.(*RBT), node.(*GBTElement))
+		redNodeCheck(tree.(*RBT), node.(*GBTElement))
+		collectBlackPath(tree.(*RBT), node.(*GBTElement))
 		return false
 	})
 
