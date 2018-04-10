@@ -1,0 +1,11 @@
+{
+	"ImportPath": "algorithms/sort",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "algorithms/heap",
+			"Rev": "eae8eee1323984c98a7706f3274db28d915e74f2"
+		}
+	]
+}
