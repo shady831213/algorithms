@@ -1,8 +1,8 @@
 # 关于BST的非递归非栈的前中后序遍历
 ## 网上很多都不是真正的非递归非栈遍历
 ----------------------------
-完整的代码见[binarySearchTree.go](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/binarySearchTree/binarySearchTree.go)
-test见[binarySearchTree_test.go](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/binarySearchTree/binarySearchTree_test.go)
+完整的代码见[binarySearchTree.go](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/binarySearchTree.go)
+test见[binarySearchTree_test.go](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/binarySearchTree_test.go)
 test 命令：
 ```
 go test
