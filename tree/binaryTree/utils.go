@@ -200,58 +200,61 @@ func checkGBTPostOrder(t *testing.T, tree BinaryTreeIf, data []int) {
 	}
 }
 
+func checkRBTRoot(t *testing.T, tree *RBT, n *GBTElement) {
+	//root must be black
+	if n == tree.Root() {
+		if !tree.color(n) {
+			t.Log(fmt.Sprintf("root node  %+v is not black!", n))
+			t.FailNow()
+		}
+	}
+}
+
+func checkRBTRedNode(t *testing.T, tree *RBT, n *GBTElement) {
+	//children of red node must be both black
+	if !tree.color(n) {
+		if !tree.IsNil(n.Left) && !tree.color(n.Left) {
+			t.Log(fmt.Sprintf("left node  %+v of a red node %+v is not black!", n.Left, n))
+			t.FailNow()
+		}
+		if !tree.IsNil(n.Right) && !tree.color(n.Right) {
+			t.Log(fmt.Sprintf("right node  %+v of a red node %+v is not black!", n.Right, n))
+			t.FailNow()
+		}
+	}
+}
+
+func checkRBTBlackPath(t *testing.T, tree *RBT, n *GBTElement, blackCntQ *[]int) {
+	//check blackcnt, leaves to root path must be the same
+	blackCnt := 0
+	if tree.IsNil(n.Right) && tree.IsNil(n.Left) {
+		for curNode := n; !tree.IsNil(curNode); curNode = curNode.Parent {
+			if tree.color(curNode) {
+				blackCnt++
+			}
+		}
+		if len(*blackCntQ) != 0 {
+			if blackCnt != (*blackCntQ)[0] {
+				t.Log(fmt.Sprintf("black cnt %0d in the path from node  %+v to root does not equal to the previous black cnt %0d", blackCnt, n, (*blackCntQ)[0]))
+				t.FailNow()
+			}
+		} else {
+			if blackCnt == 0 {
+				t.Log(fmt.Sprintf("black cnt in the path from node  %0d  to root is 0!", n))
+				t.FailNow()
+			}
+			*blackCntQ = append(*blackCntQ, blackCnt)
+		}
+	}
+}
+
 func checkRBT(t *testing.T, rbt *RBT) bool {
 	blackCntQ := make([]int, 0, 0)
-	rootMustBeBlack := func(tree *RBT, n *GBTElement) {
-		//root must be black
-		if n == tree.Root() {
-			if !tree.color(n) {
-				t.Log(fmt.Sprintf("root node  %+v is not black!", n))
-				t.FailNow()
-			}
-		}
-	}
-	redNodeCheck := func(tree *RBT, n *GBTElement) {
-		//children of red node must be both black
-		if !tree.color(n) {
-			if !tree.IsNil(n.Left) && !tree.color(n.Left) {
-				t.Log(fmt.Sprintf("left node  %+v of a red node %+v is not black!", n.Left, n))
-				t.FailNow()
-			}
-			if !tree.IsNil(n.Right) && !tree.color(n.Right) {
-				t.Log(fmt.Sprintf("right node  %+v of a red node %+v is not black!", n.Right, n))
-				t.FailNow()
-			}
-		}
-	}
-	collectBlackPath := func(tree *RBT, n *GBTElement) {
-		//check blackcnt, leaves to root path must be the same
-		blackCnt := 0
-		if tree.IsNil(n.Right) && tree.IsNil(n.Left) {
-			for curNode := n; !tree.IsNil(curNode); curNode = curNode.Parent {
-				if tree.color(curNode) {
-					blackCnt++
-				}
-			}
-			if len(blackCntQ) != 0 {
-				if blackCnt != blackCntQ[0] {
-					t.Log(fmt.Sprintf("black cnt %0d in the path from node  %+v to root does not equal to the previous black cnt %0d", blackCnt, n, blackCntQ[0]))
-					t.FailNow()
-				}
-			} else {
-				if blackCnt == 0 {
-					t.Log(fmt.Sprintf("black cnt in the path from node  %0d  to root is 0!", n))
-					t.FailNow()
-				}
-				blackCntQ = append(blackCntQ, blackCnt)
-			}
-		}
-	}
 
 	stop := rbt.PreOrderWalk(rbt.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		rootMustBeBlack(tree.(*RBT), node.(*GBTElement))
-		redNodeCheck(tree.(*RBT), node.(*GBTElement))
-		collectBlackPath(tree.(*RBT), node.(*GBTElement))
+		checkRBTRoot(t, tree.(*RBT), node.(*GBTElement))
+		checkRBTRedNode(t, tree.(*RBT), node.(*GBTElement))
+		checkRBTBlackPath(t, tree.(*RBT), node.(*GBTElement), &blackCntQ)
 		return false
 	})
 
