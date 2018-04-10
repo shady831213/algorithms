@@ -2,18 +2,43 @@ package genericBinaryTree
 
 import (
 	"testing"
-	"algorithms/tree"
+	"math/rand"
 	"fmt"
 	"flag"
 	"sort"
 	"reflect"
 	"algorithms/tree/binaryTree"
+	"time"
 )
 
 var debug = flag.Bool("debug", false, "debug flag")
 
+func GetRand() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
+func RandomSlice(start int, end int, count int) []int {
+	if end < start || (end-start) < count {
+		return nil
+	}
+	nums := make([]int, 0)
+	for len(nums) < count {
+		num := GetRand().Intn((end - start)) + start
+		exist := false
+		for _, v := range nums {
+			if v == num {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			nums = append(nums, num)
+		}
+	}
+	return nums
+}
 func TestGBT_Insert(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	gbt := New()
 	for _, v := range arr {
@@ -27,13 +52,13 @@ func TestGBT_Insert(t *testing.T) {
 }
 
 func TestGBT_Delete(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	delNum := tree.GetRand().Intn(10) + 1
+	delNum := GetRand().Intn(10) + 1
 	if *debug {
 		fmt.Println(delNum)
 	}
@@ -49,7 +74,7 @@ func TestGBT_Delete(t *testing.T) {
 }
 
 func TestGBT_Min(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
@@ -63,7 +88,7 @@ func TestGBT_Min(t *testing.T) {
 }
 
 func TestGBT_Max(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
@@ -77,12 +102,12 @@ func TestGBT_Max(t *testing.T) {
 }
 
 func TestGBT_Search(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	key := tree.GetRand().Intn(len(arr))
+	key := GetRand().Intn(len(arr))
 	result := int(gbt.Search(uint32(arr[key])).(*GBTElement).Key)
 	if result != arr[key] {
 		t.Log(fmt.Sprintf("search result expect to %0d but get:%0d", arr[key], result))
@@ -91,13 +116,13 @@ func TestGBT_Search(t *testing.T) {
 }
 
 func TestGBT_Predecesor(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	key := tree.GetRand().Intn(len(arr)-2) + 1
+	key := GetRand().Intn(len(arr)-2) + 1
 	result := int(gbt.Predecesor(gbt.Search(uint32(arr[key])), gbt.Root()).(*GBTElement).Key)
 	if result != arr[key-1] {
 		t.Log(fmt.Sprintf("Predecesor of %0d expect to %0d but get:%0d", arr[key], arr[key-1], result))
@@ -106,13 +131,13 @@ func TestGBT_Predecesor(t *testing.T) {
 }
 
 func TestGBT_Successor(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	key := tree.GetRand().Intn(len(arr)-2) + 1
+	key := GetRand().Intn(len(arr)-2) + 1
 	result := int(gbt.Successor(gbt.Search(uint32(arr[key])), gbt.Root()).(*GBTElement).Key)
 	if result != arr[key+1] {
 		t.Log(fmt.Sprintf("Successor of %0d expect to %0d but get:%0d", arr[key], arr[key+1], result))
@@ -121,7 +146,7 @@ func TestGBT_Successor(t *testing.T) {
 }
 
 func TestGBT_LeftRotate(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	gbt := New()
 	for _, v := range arr {
@@ -130,7 +155,7 @@ func TestGBT_LeftRotate(t *testing.T) {
 	//Left rotate randomly
 	leftRotateNodes := make([]*GBTElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTree.BinaryTreeIf, node interface{}) bool {
-		rotate := tree.GetRand().Intn(2)
+		rotate := GetRand().Intn(2)
 		if rotate == 1 {
 			leftRotateNodes = append(leftRotateNodes, node.(*GBTElement))
 			if *debug {
@@ -163,7 +188,7 @@ func TestGBT_LeftRotate(t *testing.T) {
 }
 
 func TestGBT_RightRotate(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	gbt := New()
 	for _, v := range arr {
@@ -172,7 +197,7 @@ func TestGBT_RightRotate(t *testing.T) {
 	//Right rotate randomly
 	rightRotateNodes := make([]*GBTElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTree.BinaryTreeIf, node interface{}) bool {
-		rotate := tree.GetRand().Intn(2)
+		rotate := GetRand().Intn(2)
 		if rotate == 1 {
 			rightRotateNodes = append(rightRotateNodes, node.(*GBTElement))
 		}
@@ -189,7 +214,7 @@ func TestGBT_RightRotate(t *testing.T) {
 }
 
 func TestGBT_Rotate(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	gbt := New()
 	for _, v := range arr {
@@ -198,14 +223,14 @@ func TestGBT_Rotate(t *testing.T) {
 	//Right rotate randomly
 	rotateNodes := make([]*GBTElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTree.BinaryTreeIf, node interface{}) bool {
-		rotate := tree.GetRand().Intn(2)
+		rotate := GetRand().Intn(2)
 		if rotate == 1 {
 			rotateNodes = append(rotateNodes, node.(*GBTElement))
 		}
 		return false
 	})
 	for _, v := range rotateNodes {
-		rotate := tree.GetRand().Intn(2)
+		rotate := GetRand().Intn(2)
 		if rotate == 1 {
 			gbt.LeftRotate(v)
 		} else {
@@ -220,7 +245,7 @@ func TestGBT_Rotate(t *testing.T) {
 }
 
 func TestGBTRecrusive_InOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	resultArr := make([]int, 0, 0)
 	gbt := New()
 	for _, v := range arr {
@@ -239,7 +264,7 @@ func TestGBTRecrusive_InOrderWalk(t *testing.T) {
 }
 
 func TestGBTRecrusive_PreOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
@@ -248,7 +273,7 @@ func TestGBTRecrusive_PreOrderWalk(t *testing.T) {
 }
 
 func TestGBTRecrusive_PostOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	gbt := New()
 	for _, v := range arr {
 		gbt.Insert(uint32(v))

@@ -2,18 +2,44 @@ package binarySearchTree
 
 import (
 	"testing"
-	"algorithms/tree"
+	"math/rand"
 	"fmt"
 	"flag"
 	"sort"
 	"reflect"
 	"algorithms/tree/binaryTree"
+	"time"
 )
 
 var debug = flag.Bool("debug", false, "debug flag")
 
+func GetRand() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
+func RandomSlice(start int, end int, count int) []int {
+	if end < start || (end-start) < count {
+		return nil
+	}
+	nums := make([]int, 0)
+	for len(nums) < count {
+		num := GetRand().Intn((end - start)) + start
+		exist := false
+		for _, v := range nums {
+			if v == num {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			nums = append(nums, num)
+		}
+	}
+	return nums
+}
+
 func TestBst_Insert(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	bst := NewBstRecrusive()
 	for _, v := range arr {
@@ -27,13 +53,13 @@ func TestBst_Insert(t *testing.T) {
 }
 
 func TestBst_Delete(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
 	}
-	delNum := tree.GetRand().Intn(10) + 1
+	delNum := GetRand().Intn(10) + 1
 	if *debug {
 		fmt.Println(delNum)
 	}
@@ -49,7 +75,7 @@ func TestBst_Delete(t *testing.T) {
 }
 
 func TestBst_Min(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
@@ -63,7 +89,7 @@ func TestBst_Min(t *testing.T) {
 }
 
 func TestBst_Max(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
@@ -77,12 +103,12 @@ func TestBst_Max(t *testing.T) {
 }
 
 func TestBst_Search(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
 	}
-	key := tree.GetRand().Intn(len(arr))
+	key := GetRand().Intn(len(arr))
 	result := int(bst.Search(uint32(arr[key])).(*BstElement).Key)
 	if result != arr[key] {
 		t.Log(fmt.Sprintf("search result expect to %0d but get: %0d", arr[key], result))
@@ -91,13 +117,13 @@ func TestBst_Search(t *testing.T) {
 }
 
 func TestBst_Predecesor(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	key := tree.GetRand().Intn(len(arr)-2) + 1
+	key := GetRand().Intn(len(arr)-2) + 1
 	result := int(bst.Predecesor(bst.Search(uint32(arr[key])), bst.Root()).(*BstElement).Key)
 	if result != arr[key-1] {
 		t.Log(fmt.Sprintf("Predecesor of %0d  expect to %0d but get:%0d", arr[key], arr[key-1], result))
@@ -106,13 +132,13 @@ func TestBst_Predecesor(t *testing.T) {
 }
 
 func TestBst_Successor(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
 	}
 	sort.Ints(arr)
-	key := tree.GetRand().Intn(len(arr)-2) + 1
+	key := GetRand().Intn(len(arr)-2) + 1
 	result := int(bst.Successor(bst.Search(uint32(arr[key])), bst.Root()).(*BstElement).Key)
 	if result != arr[key+1] {
 		t.Log(fmt.Sprintf("Successor of %0d expect to %0d but get:%0d", arr[key], arr[key+1], result))
@@ -121,7 +147,7 @@ func TestBst_Successor(t *testing.T) {
 }
 
 func TestBstRecrusive_InOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	resultArr := make([]int, 0, 0)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
@@ -140,7 +166,7 @@ func TestBstRecrusive_InOrderWalk(t *testing.T) {
 }
 
 func TestBstRecrusive_PreOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
@@ -149,7 +175,7 @@ func TestBstRecrusive_PreOrderWalk(t *testing.T) {
 }
 
 func TestBstRecrusive_PostOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	bst := NewBstRecrusive()
 	for _, v := range arr {
 		bst.Insert(uint32(v))
@@ -158,7 +184,7 @@ func TestBstRecrusive_PostOrderWalk(t *testing.T) {
 }
 
 func TestBstIterative_InOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	resultArr := make([]int, 0, 0)
 	bst := NewBstIterative()
 	for _, v := range arr {
@@ -177,7 +203,7 @@ func TestBstIterative_InOrderWalk(t *testing.T) {
 }
 
 func TestBstIterative_PreOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	resultArr := make([]int, 0, 0)
 	expArr := make([]int, 0, 0)
 	bst := NewBstIterative()
@@ -206,7 +232,7 @@ func TestBstIterative_PreOrderWalk(t *testing.T) {
 }
 
 func TestBstIterative_PostOrderWalk(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	resultArr := make([]int, 0, 0)
 	expArr := make([]int, 0, 0)
 	bst := NewBstIterative()

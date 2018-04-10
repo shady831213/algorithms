@@ -3,14 +3,40 @@ package rbTree
 import (
 	"flag"
 	"testing"
-	"algorithms/tree"
+	"math/rand"
 	"algorithms/tree/binaryTree/genericBinaryTree"
+	"time"
 )
 
 var debug = flag.Bool("debug", false, "debug flag")
 
+func GetRand() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
+func RandomSlice(start int, end int, count int) []int {
+	if end < start || (end-start) < count {
+		return nil
+	}
+	nums := make([]int, 0)
+	for len(nums) < count {
+		num := GetRand().Intn((end - start)) + start
+		exist := false
+		for _, v := range nums {
+			if v == num {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			nums = append(nums, num)
+		}
+	}
+	return nums
+}
+
 func TestRBT_Insert(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
+	arr := RandomSlice(0, 20, 10)
 	nodeCnt := 0
 	rbt := New()
 	for i, v := range arr {
@@ -32,8 +58,8 @@ func TestRBT_Insert(t *testing.T) {
 }
 
 func TestRBT_Delete(t *testing.T) {
-	arr := tree.RandomSlice(0, 20, 10)
-	deleteSequence := tree.RandomSlice(0, 10, 10)
+	arr := RandomSlice(0, 20, 10)
+	deleteSequence := RandomSlice(0, 10, 10)
 	nodeCnt := 0
 	rbt := New()
 	for _, v := range arr {
