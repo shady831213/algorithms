@@ -16,15 +16,16 @@ go version: >= 1.9.3
   
 - [Heap](https://github.com/shady831213/algorithms/tree/master/heap)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/heap.svg?tag=golang-1.10)
-  - [BinaryHeap on array](https://github.com/shady831213/algorithms/tree/master/heap/arrayHeap)
-  - [BinaryHeap on linkedlist](https://github.com/shady831213/algorithms/tree/master/heap/linkedHeap)
-  - [LeftistHeap](https://github.com/shady831213/algorithms/tree/master/heap/leftistHeap)
-  - [FibonacciHeap](https://github.com/shady831213/algorithms/tree/master/heap/fibHeap)
+  - [BinaryHeap on array](https://github.com/shady831213/algorithms/blob/master/heap/arrayHeap.go)
+  - [BinaryHeap on linkedlist](https://github.com/shady831213/algorithms/blob/master/heap/linkedHeap.go)
+  - [LeftistHeap](https://github.com/shady831213/algorithms/blob/master/heap/leftistHeap.go)
+  - [FibonacciHeap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go)
   
 - [Tree](https://github.com/shady831213/algorithms/tree/master/tree)
-  - [BST](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/binarySearchTree)
-  - [RedBlackTree](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/rbTree)
+  - [binaryTree](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/binaryTree.svg?tag=golang-1.10)
+    - [BST](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/binarySearchTree.go)
+    - [RedBlackTree](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/rbTree.go)
   - [B-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/bTree.svg?tag=golang-1.10)
   - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/vEBTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
@@ -42,8 +43,8 @@ go version: >= 1.9.3
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/hashMap.svg?tag=golang-1.10)
-  - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
-  - [LinkedListHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/chainedHashMap)
+  - [OpenAddressHashMap](https://github.com/shady831213/algorithms/blob/master/hashMap/openHashMap.go)
+  - [LinkedListHashMap](https://github.com/shady831213/algorithms/blob/master/hashMap/chainedHashMap.go)
   
 - [DynamicProgramming](https://github.com/shady831213/algorithms/tree/master/dp) (Including OOP pattern of golang)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/dp.svg?tag=golang-1.10)
