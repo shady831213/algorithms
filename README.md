@@ -15,6 +15,7 @@ go version: >= 1.9.3
   - [QuickSort](https://github.com/shady831213/algorithms/blob/master/sort/quickSort.go)
   
 - [Heap](https://github.com/shady831213/algorithms/tree/master/heap)
+![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/heap.svg?tag=golang-1.10)
   - [BinaryHeap on array](https://github.com/shady831213/algorithms/tree/master/heap/arrayHeap)
   - [BinaryHeap on linkedlist](https://github.com/shady831213/algorithms/tree/master/heap/linkedHeap)
   - [LeftistHeap](https://github.com/shady831213/algorithms/tree/master/heap/leftistHeap)
@@ -23,11 +24,16 @@ go version: >= 1.9.3
 - [Tree](https://github.com/shady831213/algorithms/tree/master/tree)
   - [BST](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/binarySearchTree)
   - [RedBlackTree](https://github.com/shady831213/algorithms/tree/master/tree/binaryTree/rbTree)
+  ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/binaryTree.svg?tag=golang-1.10)
   - [B-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)
+  ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/bTree.svg?tag=golang-1.10)
   - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/vEBTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
+  ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/vEBTree.svg?tag=golang-1.10)
   - [Disjoint-Set-Tree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
+  ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/disjointSetTree.svg?tag=golang-1.10)
   
 - [Graph](https://github.com/shady831213/algorithms/tree/master/graph) (including linkedMap)
+![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/graph.svg?tag=golang-1.10)
   - [AdjacencyMatrix and AdjacencyList](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
   - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
   - [DFS](https://github.com/shady831213/algorithms/blob/master/graph/dfs.go)(use stack)
@@ -35,6 +41,7 @@ go version: >= 1.9.3
   - [BioConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/bioConnectedComp.go)(vertex bcc & edge bcc, use stack)  
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
+![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/hashMap.svg?tag=golang-1.10)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
   - [LinkedListHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/chainedHashMap)
   
@@ -46,4 +53,5 @@ go version: >= 1.9.3
   - [Chess Game](https://github.com/shady831213/algorithms/blob/master/dp/chessGame.go)
   
 - [GreedyAlgorithm](https://github.com/shady831213/algorithms/tree/master/greedy)
+![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/greedy.svg?tag=golang-1.10)
   - [Minimum average end time scheduling](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch.go)
