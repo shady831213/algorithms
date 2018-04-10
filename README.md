@@ -1,4 +1,4 @@
-# algorithms
+# algorithms[![Go Report Card](https://goreportcard.com/badge/github.com/shady831213/algorithms)](https://goreportcard.com/report/github.com/shady831213/algorithms)
 CLRS study. Codes are written with golang.
 
 ----------------
