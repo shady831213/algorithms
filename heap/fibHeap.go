@@ -1,4 +1,4 @@
-package fibHeap
+package heap
 
 //element
 type fibHeapElement struct {

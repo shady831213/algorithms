@@ -1,14 +1,13 @@
-package chainedHashMap
+package hashMap
 
 import (
 	"container/list"
-	"algorithms/hashMap"
 	"crypto/sha1"
 	"math/big"
 )
 
 type ChainedHashMap struct {
-	hashMap.HashMapBase
+	HashMapBase
 	backets []*list.List
 }
 
@@ -27,7 +26,7 @@ func (h *ChainedHashMap) Move(cap uint32) {
 	for _, list := range oldBackets {
 		if list != nil {
 			for e := list.Front();e != nil; e = e.Next() {
-				h.HashInsert(e.Value.(hashMap.HashElement).Key, e.Value.(hashMap.HashElement).Value)
+				h.HashInsert(e.Value.(HashElement).Key, e.Value.(HashElement).Value)
 			}
 		}
 	}
@@ -42,7 +41,7 @@ func (h *ChainedHashMap) hash(key interface{})(uint32) {
 
 func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Element, bool) {
 	for e := list.Front();e != nil; e = e.Next() {
-		if e.Value.(hashMap.HashElement).Key == key {
+		if e.Value.(HashElement).Key == key {
 			return e, true
 		}
 	}
@@ -55,7 +54,7 @@ func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
 	if h.backets[hashKey] == nil{
 		h.backets[hashKey] = list.New()
 	}
-	e := hashMap.HashElement{Key:key, Value: value}
+	e := HashElement{Key:key, Value: value}
 	le, exist := h.existInList(key, h.backets[hashKey])
 	if exist {
 		le.Value = e
@@ -73,7 +72,7 @@ func (h *ChainedHashMap) HashGet(key interface{})(interface{}, bool) {
 		}
 		le, exist := h.existInList(key, h.backets[hashKey])
 		if exist {
-			return le.Value.(hashMap.HashElement).Value, true
+			return le.Value.(HashElement).Value, true
 		}
 	}
 	return nil,false
@@ -95,7 +94,7 @@ func (h *ChainedHashMap) HashDelete(key interface{}) {
 	h.DownScale()
 }
 
-func New()(*ChainedHashMap) {
+func NewChainedHashMap()(*ChainedHashMap) {
 	h := new(ChainedHashMap)
 	h.HashMapBase.HashMap = h
 	h.HashMapBase.ScaleableMap = h

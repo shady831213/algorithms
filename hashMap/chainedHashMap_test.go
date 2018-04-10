@@ -1,20 +1,19 @@
-package chainedHashMap
+package hashMap
 
 import (
 	"testing"
-	"algorithms/hashMap"
 	"reflect"
 	"fmt"
 )
 
 func Test_ChainedHashMap(t *testing.T) {
-	cmap := New()
-	hashMap.BasicTestHashMap(t,cmap)
+	cmap := NewChainedHashMap()
+	BasicTestHashMap(t,cmap)
 }
 
 func Test_ChainedHashMapUpScale(t *testing.T) {
-	cmap := New()
-	hashMap.TestHashMapResize(t, cmap)
+	cmap := NewChainedHashMap()
+	TestHashMapResize(t, cmap)
 	if !reflect.DeepEqual(cmap.Cap, uint32(16)) {
 		t.Log(fmt.Sprintf("expect:%0d ", uint32(16)) + fmt.Sprintf("but get:%0d ", cmap.Cap))
 		t.Fail()
@@ -22,9 +21,9 @@ func Test_ChainedHashMapUpScale(t *testing.T) {
 }
 
 func Test_ChainedHashMapDelete(t *testing.T) {
-	cmap := New()
+	cmap := NewChainedHashMap()
 	for i:=0;i<4; {
-		hashMap.TestHashMapDelete(t, cmap)
+		TestHashMapDelete(t, cmap)
 		if !reflect.DeepEqual(cmap.Count, uint32(0)) {
 			t.Log(fmt.Sprintf("expect:%0d ", 0) + fmt.Sprintf("but get:%0d ", cmap.Count))
 			t.Fail()
@@ -38,13 +37,13 @@ func Test_ChainedHashMapDelete(t *testing.T) {
 }
 
 func BenchmarkChainedHashMap_HashInsert(b *testing.B) {
-	hashMap.BenchmarkHashMapInsert(b,New())
+	BenchmarkHashMapInsert(b,NewChainedHashMap())
 }
 
 func BenchmarkChainedHashMap_HashInsertDelete(b *testing.B) {
-	hashMap.BenchmarkHashMapInsertDelete(b,New())
+	BenchmarkHashMapInsertDelete(b,NewChainedHashMap())
 }
 
 func BenchmarkChainedHashMap_HashGet(b *testing.B) {
-	hashMap.BenchmarkHashMapGet(b,New())
+	BenchmarkHashMapGet(b,NewChainedHashMap())
 }

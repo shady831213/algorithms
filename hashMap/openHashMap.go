@@ -1,19 +1,18 @@
-package openHashMap
+package hashMap
 
 import (
-	"algorithms/hashMap"
 	"crypto/sha1"
 	"crypto/sha256"
 	"math/big"
 )
 
 type OpenHashElement struct {
-	hashMap.HashElement
+	HashElement
 	exist bool
 }
 
 type OpenHashMap struct {
-	hashMap.HashMapBase
+	HashMapBase
 	backets []*OpenHashElement
 }
 
@@ -92,7 +91,7 @@ func (h *OpenHashMap) HashDelete(key interface{}) {
 	}
 }
 
-func New() (*OpenHashMap) {
+func NewOpenHashMap() (*OpenHashMap) {
 	h := new(OpenHashMap)
 	h.HashMapBase.HashMap = h
 	h.HashMapBase.ScaleableMap = h

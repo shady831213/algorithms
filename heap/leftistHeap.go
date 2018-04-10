@@ -1,4 +1,4 @@
-package leftistHeap
+package heap
 
 type LtHeapElement struct {
 	left, right *LtHeapElement
@@ -88,6 +88,6 @@ func (h *LtHeapArray) Union(i interface{})(interface{}) {
 	return h
 }
 
-func New() *LtHeapArray {
+func NewLtHeapArray() *LtHeapArray {
 	return new(LtHeapArray)
 }

@@ -1,6 +1,5 @@
-package linkedHeap
+package heap
 
-import "algorithms/heap"
 
 type Element struct {
 	parent, left, right, next, prev *Element
@@ -14,7 +13,7 @@ type LinkedHeapList struct {
 
 type LinkedHeap struct {
 	LinkedHeapList
-	heap.Heap
+	Heap
 }
 
 func (h*LinkedHeapList) Init() {
@@ -149,7 +148,7 @@ func (h *LinkedHeapList) Union(i interface{})(interface{}) {
 }
 
 
-func New() *LinkedHeap {
+func NewLinkedHeap() *LinkedHeap {
 	h := new(LinkedHeap)
 	h.LinkedHeapList = LinkedHeapList{}
 	h.LinkedHeapList.Init()

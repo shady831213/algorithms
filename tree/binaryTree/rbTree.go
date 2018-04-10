@@ -1,8 +1,4 @@
-package rbTree
-
-import (
-	"algorithms/tree/binaryTree/genericBinaryTree"
-)
+package binaryTree
 
 const (
 	black = true
@@ -11,39 +7,39 @@ const (
 )
 
 type RBT struct {
-	genericBinaryTree.GBT
+	GBT
 }
 
-func (t *RBT) setColor(node *genericBinaryTree.GBTElement, color bool) {
+func (t *RBT) setColor(node *GBTElement, color bool) {
 	node.SideValue = color
 }
 
-func (t *RBT) color(node *genericBinaryTree.GBTElement) (black bool) {
+func (t *RBT) color(node *GBTElement) (black bool) {
 	return t.IsNil(node) || node.SideValue.(bool)
 }
 
-func (t *RBT) otherSideNode(side bool, node *genericBinaryTree.GBTElement) (*genericBinaryTree.GBTElement) {
+func (t *RBT) otherSideNode(side bool, node *GBTElement) (*GBTElement) {
 	if side == left {
 		return node.Right
 	} else {
 		return node.Left
 	}
 }
-func (t *RBT) invDirRotation(side bool, node *genericBinaryTree.GBTElement) (interface{}) {
+func (t *RBT) invDirRotation(side bool, node *GBTElement) (interface{}) {
 	if side == left {
 		return t.RightRotate(node)
 	} else {
 		return t.LeftRotate(node)
 	}
 }
-func (t *RBT) sameSideNode(side bool, node *genericBinaryTree.GBTElement) (*genericBinaryTree.GBTElement) {
+func (t *RBT) sameSideNode(side bool, node *GBTElement) (*GBTElement) {
 	if side == left {
 		return node.Left
 	} else {
 		return node.Right
 	}
 }
-func (t *RBT) sameDirRotation(side bool, node *genericBinaryTree.GBTElement) (interface{}) {
+func (t *RBT) sameDirRotation(side bool, node *GBTElement) (interface{}) {
 	if side == left {
 		return t.LeftRotate(node)
 	} else {
@@ -52,14 +48,14 @@ func (t *RBT) sameDirRotation(side bool, node *genericBinaryTree.GBTElement) (in
 }
 
 func (t *RBT) Insert(node interface{}) (interface{}) {
-	n := t.GBT.Insert(node).(*genericBinaryTree.GBTElement)
+	n := t.GBT.Insert(node).(*GBTElement)
 	t.setColor(n, red)
 	t.insertFix(n)
 	return n
 }
 
 func (t *RBT) insertFix(node interface{}) () {
-	n := node.(*genericBinaryTree.GBTElement)
+	n := node.(*GBTElement)
 	//only can violate property 3: both left and right children of red node must be black
 	for !t.color(n.Parent) && !t.color(n) {
 		grandNode := n.Parent.Parent //must be black
@@ -83,15 +79,15 @@ func (t *RBT) insertFix(node interface{}) () {
 			}
 			//case 3 n is left child of parent
 			t.setColor(t.sameSideNode(side, grandNode), black)
-			t.invDirRotation(side,grandNode)
+			t.invDirRotation(side, grandNode)
 		}
 	}
-	t.setColor(t.Root().(*genericBinaryTree.GBTElement), black)
+	t.setColor(t.Root().(*GBTElement), black)
 }
 
 func (t *RBT) Delete(key uint32) (interface{}) {
-	deleteNonCompletedNode := func(node *genericBinaryTree.GBTElement) (deletedNode *genericBinaryTree.GBTElement, nextNode *genericBinaryTree.GBTElement) {
-		var reConnectedNode *genericBinaryTree.GBTElement
+	deleteNonCompletedNode := func(node *GBTElement) (deletedNode *GBTElement, nextNode *GBTElement) {
+		var reConnectedNode *GBTElement
 		if t.IsNil(node.Left) {
 			reConnectedNode = node.Right
 		} else {
@@ -109,15 +105,15 @@ func (t *RBT) Delete(key uint32) (interface{}) {
 		}
 		return node, reConnectedNode
 	}
-	node := t.Search(key).(*genericBinaryTree.GBTElement)
+	node := t.Search(key).(*GBTElement)
 	if t.IsNil(node) {
 		return node
 	}
-	var deletedNode, reConnectedNode *genericBinaryTree.GBTElement
+	var deletedNode, reConnectedNode *GBTElement
 	if t.IsNil(node.Left) || t.IsNil(node.Right) {
 		deletedNode, reConnectedNode = deleteNonCompletedNode(node)
 	} else {
-		successor := t.Successor(node, t.Root()).(*genericBinaryTree.GBTElement)
+		successor := t.Successor(node, t.Root()).(*GBTElement)
 		_key, _value := successor.Key, successor.Value
 		node.Key, node.Value = _key, _value
 		deletedNode, reConnectedNode = deleteNonCompletedNode(successor)
@@ -132,7 +128,7 @@ func (t *RBT) Delete(key uint32) (interface{}) {
 }
 
 func (t *RBT) deleteFix(node interface{}) () {
-	n := node.(*genericBinaryTree.GBTElement)
+	n := node.(*GBTElement)
 	//n always points to the black-black or black-red node.The purpose is to remove the additional black color,
 	//which means add a black color in the same side or reduce a black color in the other side
 	for n != t.Root() && t.color(n) {
@@ -160,7 +156,7 @@ func (t *RBT) deleteFix(node interface{}) () {
 				t.setColor(n.Parent, black)
 				t.setColor(t.otherSideNode(side, brotherNode), black)
 				t.sameDirRotation(side, n.Parent)
-				n = t.Root().(*genericBinaryTree.GBTElement)
+				n = t.Root().(*GBTElement)
 			}
 		}
 
@@ -169,7 +165,7 @@ func (t *RBT) deleteFix(node interface{}) () {
 
 }
 
-func New() *RBT {
+func NewRBT() *RBT {
 	t := new(RBT)
 	t.Init()
 	t.GBT.Object = t

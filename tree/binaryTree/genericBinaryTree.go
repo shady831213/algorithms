@@ -1,17 +1,14 @@
-package genericBinaryTree
-import (
-	"algorithms/tree/binaryTree"
-)
+package binaryTree
 
 type GBTElement struct {
-	binaryTree.BinaryTreeElement
+	BinaryTreeElement
 	Parent, Left, Right *GBTElement
 	SideValue           interface{}
 }
 
 type GBT struct {
 	NilNode *GBTElement //nil node, Left, Right point to the root, Parent point to it self, empty pointer point to th NilNode
-	Object  binaryTree.BinaryTreeIf
+	Object  BinaryTreeIf
 }
 
 func (t *GBT) Init() {
@@ -215,7 +212,7 @@ func (t *GBT) RightRotate(node interface{})(interface{}) {
 
 //next node should always be successor node
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *GBT) InOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*GBTElement)
 	for curNode := t.Min(n).(*GBTElement); !t.IsNil(curNode); {
 		stop := callback(t.Object, curNode)
@@ -237,7 +234,7 @@ func (t *GBT) InOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeI
 // Right node: remove itself from Parent, then find the successor of Parent, then recover Parent
 //During going up, when it gets root or a node has Right child , go down
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *GBT) PreOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	root := node.(*GBTElement)
 
 	goDown := func(curNode *GBTElement) (*GBTElement, bool) {
@@ -289,7 +286,7 @@ func (t *GBT) PreOrderWalk(node interface{}, callback func(binaryTree.BinaryTree
 //if the node is Right leaf node, go bach to Parent
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
 
-func (t *GBT) PostOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) PostOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*GBTElement)
 
 	leftistNode := func(curNode *GBTElement) (nextNode *GBTElement) {
@@ -316,7 +313,7 @@ func (t *GBT) PostOrderWalk(node interface{}, callback func(binaryTree.BinaryTre
 	return callback(t, n)
 }
 
-func New() binaryTree.BinaryTreeIf {
+func NewGBT() BinaryTreeIf {
 	t := new(GBT)
 	t.Init()
 	return t

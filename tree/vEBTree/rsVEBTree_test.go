@@ -3,10 +3,35 @@ package vEBTree
 import (
 	"testing"
 	"fmt"
-	"algorithms/tree"
 	"math/rand"
 	"sort"
+	"time"
 )
+
+func GetRand() *rand.Rand  {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
+func RandomSlice(start int, end int, count int) []int {
+	if end < start || (end-start) < count {
+		return nil
+	}
+	nums := make([]int, 0)
+	for len(nums) < count {
+		num := GetRand().Intn((end - start)) + start
+		exist := false
+		for _, v := range nums {
+			if v == num {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			nums = append(nums, num)
+		}
+	}
+	return nums
+}
 
 func basicData() (int, map[uint32][]int, []int) {
 	return 4, map[uint32][]int{1: {1},
@@ -19,10 +44,10 @@ func basicData() (int, map[uint32][]int, []int) {
 
 func randData() (int, map[uint32][]int, []int) {
 	lgu := rand.Intn(25) + 7
-	datasKey := tree.RandomSlice(1, (1<<uint32(lgu))-1, rand.Intn((1<<7)-1)+1)
+	datasKey := RandomSlice(1, (1<<uint32(lgu))-1, rand.Intn((1<<7)-1)+1)
 	datas := make(map[uint32][]int)
 	for _, v := range datasKey {
-		arr := tree.RandomSlice(0, 64, rand.Intn(10)+1)
+		arr := RandomSlice(0, 64, rand.Intn(10)+1)
 		datas[uint32(v)] = arr
 	}
 	return lgu, datas, datasKey

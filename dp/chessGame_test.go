@@ -8,11 +8,12 @@ import (
 )
 
 func buildBoard(size int)([][]int) {
+	_rand := rand.New(rand.NewSource(1))
 	board := make([][]int, size, size)
 	for i := range board {
 		board[i] = make([]int, size, size)
 		for j := range board[i] {
-			board[i][j] = rand.Intn(20) - 10
+			board[i][j] = _rand.Intn(20) - 10
 		}
 	}
 	return board

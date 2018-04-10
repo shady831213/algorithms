@@ -1,11 +1,7 @@
-package binarySearchTree
-
-import (
-	"algorithms/tree/binaryTree"
-)
+package binaryTree
 
 type BstElement struct {
-	binaryTree.BinaryTreeElement
+	BinaryTreeElement
 	parent, left, right *BstElement
 }
 
@@ -155,7 +151,7 @@ type BstRecrusive struct {
 	Bst
 }
 
-func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 	if n != nil {
 		stop := t.InOrderWalk(n.left, callback)
@@ -172,7 +168,7 @@ func (t *BstRecrusive) InOrderWalk(node interface{}, callback func(binaryTree.Bi
 	return false
 }
 
-func (t *BstRecrusive) PreOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstRecrusive) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 	if n != nil {
 		stop := callback(t,n)
@@ -189,7 +185,7 @@ func (t *BstRecrusive) PreOrderWalk(node interface{}, callback func(binaryTree.B
 	return false
 }
 
-func (t *BstRecrusive) PostOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstRecrusive) PostOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 	if n != nil {
 		stop := t.PostOrderWalk(n.left, callback)
@@ -216,7 +212,7 @@ type BstIterative struct {
 
 //next node should always be successor node
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *BstIterative) InOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstIterative) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 	for curNode := t.Min(n).(*BstElement); curNode != nil; {
 		stop := callback(t, curNode)
@@ -238,7 +234,7 @@ func (t *BstIterative) InOrderWalk(node interface{}, callback func(binaryTree.Bi
 // right node: remove itself from parent, then find the successor of parent, then recover parent
 //During going up, when it gets root or a node has right child , go down
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *BstIterative) PreOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstIterative) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	root := node.(*BstElement)
 
 	goDown := func(curNode *BstElement) (*BstElement, bool) {
@@ -290,7 +286,7 @@ func (t *BstIterative) PreOrderWalk(node interface{}, callback func(binaryTree.B
 //if the node is right leaf node, go bach to parent
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
 
-func (t *BstIterative) PostOrderWalk(node interface{}, callback func(binaryTree.BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *BstIterative) PostOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
 	n := node.(*BstElement)
 
 	leftistNode := func(curNode *BstElement) (nextNode *BstElement) {

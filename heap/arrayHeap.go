@@ -1,9 +1,8 @@
-package arrayHeap
+package heap
 
-import "algorithms/heap"
 type heapIntArrays []int
 type HeapIntArray struct {
-	heap.Heap
+	Heap
 	heapIntArrays
 }
 
@@ -82,7 +81,7 @@ func (h *HeapIntArray) Append(i interface{}) {
 	h.Heap.Append(i)
 }
 
-func New(arr []int) *HeapIntArray {
+func NewHeapIntArray(arr []int) *HeapIntArray {
 	h := new(HeapIntArray)
 	h.heapIntArrays = arr
 	h.Heap.BinHeapArrayIf = &h.heapIntArrays

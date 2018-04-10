@@ -1,4 +1,4 @@
-package fibHeap
+package heap
 
 import (
 	"testing"

@@ -1,19 +1,18 @@
-package openHashMap
+package hashMap
 import (
 	"testing"
-	"algorithms/hashMap"
 	"reflect"
 	"fmt"
 )
 
 func Test_OpenHashMap(t *testing.T) {
-	cmap := New()
-	hashMap.BasicTestHashMap(t,cmap)
+	cmap := NewOpenHashMap()
+	BasicTestHashMap(t,cmap)
 }
 
 func Test_OpenHashMapResize(t *testing.T) {
-	cmap := New()
-	hashMap.TestHashMapResize(t, cmap)
+	cmap := NewOpenHashMap()
+	TestHashMapResize(t, cmap)
 	if !reflect.DeepEqual(cmap.Cap, uint32(16)) {
 		t.Log(fmt.Sprintf("expect: %0d ", uint32(16)) + fmt.Sprintf("but get: %0d ", cmap.Cap))
 		t.Fail()
@@ -21,9 +20,9 @@ func Test_OpenHashMapResize(t *testing.T) {
 }
 
 func Test_OpenHashMapDelete(t *testing.T) {
-	cmap := New()
+	cmap := NewOpenHashMap()
 	for i:=0;i<4; {
-		hashMap.TestHashMapDelete(t, cmap)
+		TestHashMapDelete(t, cmap)
 		if !reflect.DeepEqual(cmap.Count, uint32(0)) {
 			t.Log(fmt.Sprintf("expect: %0d ", 0) + fmt.Sprintf("but get:%0d ", cmap.Count))
 			t.Fail()
@@ -37,13 +36,13 @@ func Test_OpenHashMapDelete(t *testing.T) {
 }
 
 func BenchmarkOpenHashMap_HashInsert(b *testing.B) {
-	hashMap.BenchmarkHashMapInsert(b,New())
+	BenchmarkHashMapInsert(b, NewOpenHashMap())
 }
 
 func BenchmarkOpenHashMap_HashInsertDelete(b *testing.B) {
-	hashMap.BenchmarkHashMapInsertDelete(b,New())
+	BenchmarkHashMapInsertDelete(b, NewOpenHashMap())
 }
 
 func BenchmarkOpenHashMap_HashGet(b *testing.B) {
-	hashMap.BenchmarkHashMapGet(b,New())
+	BenchmarkHashMapGet(b, NewOpenHashMap())
 }
