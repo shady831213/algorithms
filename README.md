@@ -32,6 +32,7 @@ go version: >= 1.9.3
   - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
   - [DFS](https://github.com/shady831213/algorithms/blob/master/graph/dfs.go)(use stack)
   - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
+  - [BioConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/bioConnectedComp.go)(vertex bcc & edge bcc, use stack)  
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/openHashMap)
