@@ -93,9 +93,9 @@ func TestGBT_Predecesor(t *testing.T) {
 	}
 	sort.Ints(arr)
 	key := GetRand().Intn(len(arr)-2) + 1
-	result := int(gbt.Predecesor(gbt.Search(uint32(arr[key])), gbt.Root()).(*GBTElement).Key)
+	result := int(gbt.Predecessor(gbt.Search(uint32(arr[key])), gbt.Root()).(*GBTElement).Key)
 	if result != arr[key-1] {
-		t.Log(fmt.Sprintf("Predecesor of %0d expect to %0d but get:%0d", arr[key], arr[key-1], result))
+		t.Log(fmt.Sprintf("Predecessor of %0d expect to %0d but get:%0d", arr[key], arr[key-1], result))
 		t.Fail()
 	}
 }

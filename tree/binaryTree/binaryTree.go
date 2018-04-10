@@ -11,7 +11,7 @@ type BinaryTreeIf interface {
 	Search(uint32) interface{}
 	Insert(interface{}) interface{}
 	Delete(uint32) interface{}
-	Predecesor(interface{}, interface{}) interface{}
+	Predecessor(interface{}, interface{}) interface{}
 	Successor(interface{}, interface{}) interface{}
 	LeftRotate(interface{}) interface{}
 	RightRotate(interface{}) interface{}

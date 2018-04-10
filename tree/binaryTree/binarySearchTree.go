@@ -107,7 +107,7 @@ func (t *Bst) Max(node interface{}) interface{} {
 	return cur
 }
 
-func (t *Bst) Predecesor(node interface{}, root interface{}) interface{} {
+func (t *Bst) Predecessor(node interface{}, root interface{}) interface{} {
 	n := node.(*BstElement)
 	if n == nil {
 		return nil

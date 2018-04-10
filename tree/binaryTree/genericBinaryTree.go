@@ -122,7 +122,7 @@ func (t *GBT) Max(node interface{}) interface{} {
 	return cur
 }
 
-func (t *GBT) Predecesor(node interface{}, root interface{}) interface{} {
+func (t *GBT) Predecessor(node interface{}, root interface{}) interface{} {
 	r := root.(*GBTElement)
 	if r == nil {
 		r = t.Root().(*GBTElement)
