@@ -85,7 +85,7 @@ func TestGBT_Search(t *testing.T) {
 	}
 }
 
-func TestGBT_Predecesor(t *testing.T) {
+func TestGET_Predecessor(t *testing.T) {
 	arr := RandomSlice(0, 20, 10)
 	gbt := NewGBT()
 	for _, v := range arr {
