@@ -1,8 +1,6 @@
 # algorithms
 CLRS study. Codes are written with golang.
 
-![algoritms/dp go](https://cover.run/go/github.com/shady831213/algorithms/dp.svg?tag=golang-1.10)
-
 ----------------
 
 go version: >= 1.9.3
@@ -41,6 +39,7 @@ go version: >= 1.9.3
   - [LinkedListHashMap](https://github.com/shady831213/algorithms/tree/master/hashMap/chainedHashMap)
   
 - [DynamicProgramming](https://github.com/shady831213/algorithms/tree/master/dp) (Including OOP pattern of golang)
+![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/dp.svg?tag=golang-1.10)
   - [Double adjustable Euclidean traveling salesman](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP.go)
   - [Pretty Print](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint.go)
   - [Levenshtein Distance](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance.go)
