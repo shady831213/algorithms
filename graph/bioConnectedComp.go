@@ -58,24 +58,21 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 	timer := 0
 	vertexStack := list.New()
 	edgeStack := list.New()
+	pushVertexStack := func(v interface{}) {
+		timer++
+		disc[v] = timer
+		lows[v] = disc[v]
+		vertexStack.PushBack(v)
+	}
 	for _, v := range g.AllVertices() {
 		if _, ok := disc[v]; !ok {
-			timer++
-			disc[v] = timer
-			lows[v] = disc[v]
-			vertexStack.PushBack(v)
-			for {
+			pushVertexStack(v)
+			for vertexStack.Len() != 0 {
 				top := vertexStack.Back().Value
 				for e := range g.IterConnectedVertices(top) {
 					if _, ok := disc[e]; !ok {
-						if _, ok := children[top]; !ok {
-							children[top] = 0
-						}
 						children[top]++
-						timer++
-						disc[e] = timer
-						lows[e] = disc[e]
-						vertexStack.PushBack(e)
+						pushVertexStack(e)
 						edgeStack.PushBack(Edge{top, e})
 						break
 					} else if disc[e] < lows[top] {
@@ -86,27 +83,26 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 				}
 				if top == vertexStack.Back().Value {
 					vertexStack.Remove(vertexStack.Back())
-					if vertexStack.Len() != 0 {
-						next := vertexStack.Back().Value
-						if lows[top] < lows[next] {
-							lows[next] = lows[top]
+					if vertexStack.Back() == nil {
+						continue
+					}
+					next := vertexStack.Back().Value
+					if lows[top] < lows[next] {
+						lows[next] = lows[top]
+					}
+					if lows[top] >= disc[next] {
+						if !(disc[next] == 1 && children[top] < 2) {
+							cuts.AddVertex(next)
 						}
-						if lows[top] >= disc[next] {
-							if !(disc[next] == 1 && children[next] < 2) {
-								cuts.AddVertex(next)
-							}
-							comps = append(comps, CreateGraphByType(g))
-							for edgeStack.Len() != 0 {
-								e := edgeStack.Back().Value
-								edgeStack.Remove(edgeStack.Back())
-								comps[len(comps)-1].AddEdgeBi(e.(Edge))
-								if e.(Edge).Start == next && e.(Edge).End == top {
-									break
-								}
+						comps = append(comps, CreateGraphByType(g))
+						for edgeStack.Len() != 0 {
+							e := edgeStack.Back().Value
+							edgeStack.Remove(edgeStack.Back())
+							comps[len(comps)-1].AddEdgeBi(e.(Edge))
+							if e.(Edge).Start == next && e.(Edge).End == top {
+								break
 							}
 						}
-					} else {
-						break
 					}
 				}
 			}
@@ -124,21 +120,21 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 	timer := 0
 	vertexStack := list.New()
 	edgeStack := list.New()
+	pushVertexStack := func(v interface{}) {
+		timer++
+		disc[v] = timer
+		lows[v] = disc[v]
+		vertexStack.PushBack(v)
+	}
 	for _, v := range g.AllVertices() {
 		if _, ok := disc[v]; !ok {
-			timer++
-			disc[v] = timer
-			lows[v] = disc[v]
-			vertexStack.PushBack(v)
-			for {
+			pushVertexStack(v)
+			for vertexStack.Len() != 0 {
 				top := vertexStack.Back().Value
 				for e := range g.IterConnectedVertices(top) {
 					if _, ok := disc[e]; !ok {
 						parent[e] = top
-						timer++
-						disc[e] = timer
-						lows[e] = disc[e]
-						vertexStack.PushBack(e)
+						pushVertexStack(e)
 						edgeStack.PushBack(Edge{top, e})
 						break
 					} else if disc[e] < lows[top] && parent[top] != e {
@@ -149,34 +145,33 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 				}
 				if top == vertexStack.Back().Value {
 					vertexStack.Remove(vertexStack.Back())
-					if vertexStack.Len() != 0 {
-						next := vertexStack.Back().Value
-						if lows[top] < lows[next] {
-							lows[next] = lows[top]
-						}
-						if lows[top] > disc[next] {
-							bridges.AddEdgeBi(Edge{next, top})
-						}
-						if lows[top] >= disc[next] {
-							comp := CreateGraphByType(g)
-							for edgeStack.Len() != 0 {
-								e := edgeStack.Back().Value
-								edgeStack.Remove(edgeStack.Back())
-								//excluding bridge
-								if lows[top] == disc[next] || e.(Edge).Start != next || e.(Edge).End != top {
-									comp.AddEdgeBi(e.(Edge))
-								}
-								if e.(Edge).Start == next && e.(Edge).End == top {
-									break
-								}
+					if vertexStack.Back() == nil {
+						continue
+					}
+					next := vertexStack.Back().Value
+					if lows[top] < lows[next] {
+						lows[next] = lows[top]
+					}
+					if lows[top] > disc[next] {
+						bridges.AddEdgeBi(Edge{next, top})
+					}
+					if lows[top] >= disc[next] {
+						comp := CreateGraphByType(g)
+						for edgeStack.Len() != 0 {
+							e := edgeStack.Back().Value
+							edgeStack.Remove(edgeStack.Back())
+							//excluding bridge
+							if lows[top] == disc[next] || e.(Edge).Start != next || e.(Edge).End != top {
+								comp.AddEdgeBi(e.(Edge))
 							}
-							//if component is not empty, push it to the slice
-							if len(comp.AllVertices()) != 0 {
-								comps = append(comps, comp)
+							if e.(Edge).Start == next && e.(Edge).End == top {
+								break
 							}
 						}
-					} else {
-						break
+						//if component is not empty, push it to the slice
+						if len(comp.AllVertices()) != 0 {
+							comps = append(comps, comp)
+						}
 					}
 				}
 			}

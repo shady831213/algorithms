@@ -166,29 +166,28 @@ func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
 	for _, v := range vertices {
 		elements.add(v, NewDFSElement(v))
 	}
+	pushStack := func(v interface{}) {
+		//push root vertex to stack
+		elements.get(v).(*DFSElement).Color = GRAY
+		timer++
+		elements.get(v).(*DFSElement).D = timer
+		dfsForest.AddVertex(elements.get(v).(*DFSElement))
+		stack.PushBack(elements.get(v).(*DFSElement))
+	}
 	for v := elements.frontKey(); v != nil; v = elements.nextKey(v) {
 		if elements.get(v).(*DFSElement).Color == WHITE {
-			//push root vertex to stack
-			elements.get(v).(*DFSElement).Color = GRAY
-			timer++
-			elements.get(v).(*DFSElement).D = timer
-			dfsForest.AddVertex(elements.get(v).(*DFSElement))
-			stack.PushBack(elements.get(v).(*DFSElement))
+			pushStack(v)
 
 			for stack.Len() != 0 {
 				e := stack.Back().Value.(*DFSElement)
 				for c := range g.IterConnectedVertices(e.V) {
 					if elements.get(c).(*DFSElement).Color == WHITE {
 						// parent in deeper path always override that in shallower
-						elements.get(c).(*DFSElement).Color = GRAY
-						timer++
-						elements.get(c).(*DFSElement).D = timer
 						elements.get(c).(*DFSElement).P = e
 						elements.get(c).(*DFSElement).Root = e
-						dfsForest.AddVertex(elements.get(c).(*DFSElement))
+						pushStack(c)
 						//tree edge definition. First time visit
 						dfsForest.AddTreeEdge(Edge{e, elements.get(c).(*DFSElement)})
-						stack.PushBack(elements.get(c).(*DFSElement))
 						break
 					} else if elements.get(c).(*DFSElement).Color == GRAY {
 						// if color is already gray, it's a back edge
