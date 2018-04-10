@@ -1,7 +1,7 @@
 # algorithms
 CLRS study. Codes are written with golang.
 
-![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/dp.svg?tag=golang-1.10)
+![algoritms/dp go](https://cover.run/go/github.com/shady831213/algorithms/dp.svg?tag=golang-1.10)
 
 ----------------
 
