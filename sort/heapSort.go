@@ -21,7 +21,6 @@ import (
 	"algorithms/heap"
 )
 
-
 func heapSort(arr []int) {
 	h := heap.NewHeapIntArray(arr)
 	for i := h.Len() - 1; i > 0; i-- {
@@ -29,17 +28,16 @@ func heapSort(arr []int) {
 	}
 }
 
-
 /*not generic heap*/
 type intArrayForHeapSort []int
 
-func (h *intArrayForHeapSort) parent(i int) (int) {
+func (h *intArrayForHeapSort) parent(i int) int {
 	return i >> 1
 }
-func (h *intArrayForHeapSort) left(i int) (int) {
+func (h *intArrayForHeapSort) left(i int) int {
 	return (i << 1) + 1
 }
-func (h *intArrayForHeapSort) right(i int) (int) {
+func (h *intArrayForHeapSort) right(i int) int {
 	return (i << 1) + 2
 }
 

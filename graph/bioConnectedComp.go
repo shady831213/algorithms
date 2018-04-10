@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"sort"
 	"container/list"
+	"sort"
 )
 
 func getCutsAndBridgesFromComponent(dfsForest *DFSForest) (cuts, bridges Graph) {
@@ -60,7 +60,7 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 	edgeStack := list.New()
 	for _, v := range g.AllVertices() {
 		if _, ok := disc[v]; !ok {
-			timer ++
+			timer++
 			disc[v] = timer
 			lows[v] = disc[v]
 			vertexStack.PushBack(v)
@@ -72,7 +72,7 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 							children[top] = 0
 						}
 						children[top]++
-						timer ++
+						timer++
 						disc[e] = timer
 						lows[e] = disc[e]
 						vertexStack.PushBack(e)
@@ -126,7 +126,7 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 	edgeStack := list.New()
 	for _, v := range g.AllVertices() {
 		if _, ok := disc[v]; !ok {
-			timer ++
+			timer++
 			disc[v] = timer
 			lows[v] = disc[v]
 			vertexStack.PushBack(v)
@@ -135,7 +135,7 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 				for e := range g.IterConnectedVertices(top) {
 					if _, ok := disc[e]; !ok {
 						parent[e] = top
-						timer ++
+						timer++
 						disc[e] = timer
 						lows[e] = disc[e]
 						vertexStack.PushBack(e)
@@ -172,7 +172,7 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 							}
 							//if component is not empty, push it to the slice
 							if len(comp.AllVertices()) != 0 {
-								comps = append(comps,comp)
+								comps = append(comps, comp)
 							}
 						}
 					} else {

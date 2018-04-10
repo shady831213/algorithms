@@ -170,18 +170,18 @@ func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
 		if elements.get(v).(*DFSElement).Color == WHITE {
 			//push root vertex to stack
 			elements.get(v).(*DFSElement).Color = GRAY
-			timer ++
+			timer++
 			elements.get(v).(*DFSElement).D = timer
 			dfsForest.AddVertex(elements.get(v).(*DFSElement))
 			stack.PushBack(elements.get(v).(*DFSElement))
 
 			for stack.Len() != 0 {
-				e := stack.Back().Value.(*DFSElement);
+				e := stack.Back().Value.(*DFSElement)
 				for c := range g.IterConnectedVertices(e.V) {
 					if elements.get(c).(*DFSElement).Color == WHITE {
 						// parent in deeper path always override that in shallower
 						elements.get(c).(*DFSElement).Color = GRAY
-						timer ++
+						timer++
 						elements.get(c).(*DFSElement).D = timer
 						elements.get(c).(*DFSElement).P = e
 						elements.get(c).(*DFSElement).Root = e
@@ -204,7 +204,7 @@ func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
 				if e == stack.Back().Value.(*DFSElement) {
 					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
 					e.Color = BLACK
-					timer ++
+					timer++
 					e.F = timer
 					stack.Remove(stack.Back())
 				}

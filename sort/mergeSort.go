@@ -12,30 +12,30 @@ import (
 	"sync"
 )
 
-func merge(arr []int)  {
+func merge(arr []int) {
 	i := len(arr) / 2
 	//copy left and right array
-	leftArr, rightArr := make([]int,i,i), make([]int, len(arr) - i , len(arr) - i )
-	copy(leftArr,arr[:i])
-	copy(rightArr,arr[i:])
+	leftArr, rightArr := make([]int, i, i), make([]int, len(arr)-i, len(arr)-i)
+	copy(leftArr, arr[:i])
+	copy(rightArr, arr[i:])
 	leftIter, rightIter := ints(leftArr).Iter(), ints(rightArr).Iter()
-	leftValue,leftHasNext:= leftIter()
-	rightValue,rightHasNext := rightIter()
+	leftValue, leftHasNext := leftIter()
+	rightValue, rightHasNext := rightIter()
 	//merge
 	for k := range arr {
-		if !leftHasNext {//left empty, use right value, in CLRS, use infinity
+		if !leftHasNext { //left empty, use right value, in CLRS, use infinity
 			arr[k] = rightValue
-			rightValue,rightHasNext = rightIter()
-		} else if !rightHasNext {//right empty, use left value, in CLRS, use infinity
+			rightValue, rightHasNext = rightIter()
+		} else if !rightHasNext { //right empty, use left value, in CLRS, use infinity
 			arr[k] = leftValue
-			leftValue,leftHasNext = leftIter()
+			leftValue, leftHasNext = leftIter()
 		} else {
 			if leftValue > rightValue {
 				arr[k] = rightValue
-				rightValue,rightHasNext = rightIter()
+				rightValue, rightHasNext = rightIter()
 			} else {
 				arr[k] = leftValue
-				leftValue,leftHasNext = leftIter()
+				leftValue, leftHasNext = leftIter()
 			}
 		}
 	}
@@ -58,7 +58,7 @@ func mergeSortParallel(arr []int) {
 		go func() {
 			mergeSortParallel(arr[:i])
 			wd.Done()
-			}()
+		}()
 		go func() {
 			mergeSortParallel(arr[i:])
 			wd.Done()

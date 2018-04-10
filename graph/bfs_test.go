@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"testing"
 	"sort"
+	"testing"
 )
 
 func bfsSetupGraph(g Graph) {

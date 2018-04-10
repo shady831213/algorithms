@@ -1,10 +1,10 @@
 package binaryTree
 
 import (
-	"testing"
 	"fmt"
-	"sort"
 	"reflect"
+	"sort"
+	"testing"
 )
 
 func TestGBT_Insert(t *testing.T) {

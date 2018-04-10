@@ -11,7 +11,7 @@ type ChainedHashMap struct {
 	backets []*list.List
 }
 
-func (h *ChainedHashMap) Init (cap uint32) {
+func (h *ChainedHashMap) Init(cap uint32) {
 	h.HashMapBase.Init(cap)
 	if cap == 0 {
 		h.backets = nil
@@ -25,22 +25,22 @@ func (h *ChainedHashMap) Move(cap uint32) {
 	h.Init(cap)
 	for _, list := range oldBackets {
 		if list != nil {
-			for e := list.Front();e != nil; e = e.Next() {
+			for e := list.Front(); e != nil; e = e.Next() {
 				h.HashInsert(e.Value.(HashElement).Key, e.Value.(HashElement).Value)
 			}
 		}
 	}
 }
 
-func (h *ChainedHashMap) hash(key interface{})(uint32) {
-	hashValue :=  h.HashFunc(key,sha1.New())
-	mb:=big.NewInt(int64(h.Cap))
-	hashValue.Mod(hashValue,mb)
+func (h *ChainedHashMap) hash(key interface{}) uint32 {
+	hashValue := h.HashFunc(key, sha1.New())
+	mb := big.NewInt(int64(h.Cap))
+	hashValue.Mod(hashValue, mb)
 	return uint32(hashValue.Uint64())
 }
 
-func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Element, bool) {
-	for e := list.Front();e != nil; e = e.Next() {
+func (h *ChainedHashMap) existInList(key interface{}, list *list.List) (*list.Element, bool) {
+	for e := list.Front(); e != nil; e = e.Next() {
 		if e.Value.(HashElement).Key == key {
 			return e, true
 		}
@@ -48,13 +48,13 @@ func (h *ChainedHashMap) existInList(key interface{}, list *list.List)(*list.Ele
 	return nil, false
 }
 
-func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
+func (h *ChainedHashMap) HashInsert(key interface{}, value interface{}) {
 	h.UpScale()
 	hashKey := h.hash(key)
-	if h.backets[hashKey] == nil{
+	if h.backets[hashKey] == nil {
 		h.backets[hashKey] = list.New()
 	}
-	e := HashElement{Key:key, Value: value}
+	e := HashElement{Key: key, Value: value}
 	le, exist := h.existInList(key, h.backets[hashKey])
 	if exist {
 		le.Value = e
@@ -64,7 +64,7 @@ func (h *ChainedHashMap) HashInsert(key interface{},value interface{}) {
 	}
 }
 
-func (h *ChainedHashMap) HashGet(key interface{})(interface{}, bool) {
+func (h *ChainedHashMap) HashGet(key interface{}) (interface{}, bool) {
 	if h.Count != 0 {
 		hashKey := h.hash(key)
 		if h.backets[hashKey] == nil {
@@ -75,7 +75,7 @@ func (h *ChainedHashMap) HashGet(key interface{})(interface{}, bool) {
 			return le.Value.(HashElement).Value, true
 		}
 	}
-	return nil,false
+	return nil, false
 }
 
 func (h *ChainedHashMap) HashDelete(key interface{}) {
@@ -94,7 +94,7 @@ func (h *ChainedHashMap) HashDelete(key interface{}) {
 	h.DownScale()
 }
 
-func NewChainedHashMap()(*ChainedHashMap) {
+func NewChainedHashMap() *ChainedHashMap {
 	h := new(ChainedHashMap)
 	h.HashMapBase.HashMap = h
 	h.HashMapBase.ScaleableMap = h

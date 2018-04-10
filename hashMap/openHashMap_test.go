@@ -1,13 +1,14 @@
 package hashMap
+
 import (
-	"testing"
-	"reflect"
 	"fmt"
+	"reflect"
+	"testing"
 )
 
 func Test_OpenHashMap(t *testing.T) {
 	cmap := NewOpenHashMap()
-	BasicTestHashMap(t,cmap)
+	BasicTestHashMap(t, cmap)
 }
 
 func Test_OpenHashMapResize(t *testing.T) {
@@ -21,7 +22,7 @@ func Test_OpenHashMapResize(t *testing.T) {
 
 func Test_OpenHashMapDelete(t *testing.T) {
 	cmap := NewOpenHashMap()
-	for i:=0;i<4; {
+	for i := 0; i < 4; {
 		TestHashMapDelete(t, cmap)
 		if !reflect.DeepEqual(cmap.Count, uint32(0)) {
 			t.Log(fmt.Sprintf("expect: %0d ", 0) + fmt.Sprintf("but get:%0d ", cmap.Count))

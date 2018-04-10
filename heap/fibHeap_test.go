@@ -1,11 +1,11 @@
 package heap
 
 import (
-	"testing"
-	"reflect"
 	"fmt"
-	"sort"
 	"math/rand"
+	"reflect"
+	"sort"
+	"testing"
 )
 
 func TestFibHeapBasic(t *testing.T) {
@@ -138,7 +138,7 @@ func BenchmarkFibHeap_ModifyNode(b *testing.B) {
 	h := NewFibHeap()
 	for i := 0; i < b.N; i++ {
 		n := rand.Intn(10000)
-		nodeArr = append(nodeArr,h.Insert(n, n))
+		nodeArr = append(nodeArr, h.Insert(n, n))
 		arr = append(arr, n+rand.Intn(50)+50)
 	}
 	h.consolidate()
@@ -155,7 +155,7 @@ func BenchmarkFibHeap_ExtractMinAfterModifyNode(b *testing.B) {
 	h := NewFibHeap()
 	for i := 0; i < b.N; i++ {
 		n := rand.Intn(10000)
-		nodeArr = append(nodeArr,h.Insert(n, n))
+		nodeArr = append(nodeArr, h.Insert(n, n))
 		arr = append(arr, n+rand.Intn(50)+50)
 	}
 	h.consolidate()

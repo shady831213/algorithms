@@ -1,8 +1,8 @@
 package disjointSetTree
 
 type DisjointSet struct {
-	p *DisjointSet
-	rank int
+	p     *DisjointSet
+	rank  int
 	Value interface{}
 }
 
@@ -25,7 +25,7 @@ func Union(e1, e2 *DisjointSet) *DisjointSet {
 	return link(FindSet(e1), FindSet(e2))
 }
 
-func link(s1,s2 *DisjointSet) *DisjointSet {
+func link(s1, s2 *DisjointSet) *DisjointSet {
 	if s1 != s2 {
 		if s1.rank < s2.rank {
 			s1.p = s2

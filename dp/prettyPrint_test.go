@@ -1,8 +1,8 @@
 package dp
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestPrettyPrint(t *testing.T) {

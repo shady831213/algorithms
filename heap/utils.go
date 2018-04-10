@@ -1,15 +1,15 @@
 package heap
 
 import (
-	"reflect"
 	"fmt"
-	"testing"
 	"math/rand"
+	"reflect"
 	"sort"
+	"testing"
 )
 
 func BasicTestHeap(t *testing.T, h HeapIf) {
-	arr := []int{1,3,2,2,4,5}
+	arr := []int{1, 3, 2, 2, 4, 5}
 	sortedArr := make([]int, 0, 0)
 	for _, v := range arr {
 		h.Append(v)

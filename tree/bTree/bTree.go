@@ -11,7 +11,7 @@ type keyValue struct {
 
 type bTreeNodeSort interface {
 	sort.Interface
-	LessByKey(interface{}, interface{}) (bool)
+	LessByKey(interface{}, interface{}) bool
 }
 
 type bTreeNode struct {
@@ -23,7 +23,7 @@ type bTreeNode struct {
 	bTreeNodeSort
 }
 
-func (n *bTreeNode) init(t int, self bTreeNodeSort) (*bTreeNode) {
+func (n *bTreeNode) init(t int, self bTreeNodeSort) *bTreeNode {
 	n.t = t
 	n.c = make([]*bTreeNode, 1, 1)
 	n.keyValue = make([]*keyValue, 0, 0)
@@ -44,7 +44,7 @@ func (n *bTreeNode) Less(i, j int) bool {
 	return n.bTreeNodeSort.LessByKey(n.keyValue[i].key, n.keyValue[j].key)
 }
 
-func (n *bTreeNode) searchKeyIdx(key interface{}) (int) {
+func (n *bTreeNode) searchKeyIdx(key interface{}) int {
 	//binary search
 	i, j := 0, len(n.keyValue)-1
 	for i != j {
@@ -77,11 +77,11 @@ func (n *bTreeNode) getChildOrKeyValue(key interface{}) (interface{}, int) {
 	}
 }
 
-func (n *bTreeNode) addKeyValue(key, value interface{}) (int) {
+func (n *bTreeNode) addKeyValue(key, value interface{}) int {
 	//insert sort
 	n.keyValue = append(n.keyValue, &keyValue{key, value})
 	i := len(n.keyValue) - 1
-	for ; i > 0 && n.Less(i, i-1); i -- {
+	for ; i > 0 && n.Less(i, i-1); i-- {
 		n.Swap(i-1, i)
 	}
 	temp := n.c[i:]
@@ -90,7 +90,7 @@ func (n *bTreeNode) addKeyValue(key, value interface{}) (int) {
 	return i
 }
 
-func (n *bTreeNode) removeKeyValue(key interface{}) () {
+func (n *bTreeNode) removeKeyValue(key interface{}) {
 	keyValueOrChild, keyValueIdx := n.getChildOrKeyValue(key)
 	if _, ok := keyValueOrChild.(*keyValue); ok {
 		n.keyValue = append(n.keyValue[:keyValueIdx], n.keyValue[keyValueIdx+1:]...)
@@ -98,17 +98,17 @@ func (n *bTreeNode) removeKeyValue(key interface{}) () {
 	}
 }
 
-func (n *bTreeNode) isFull() (bool) {
+func (n *bTreeNode) isFull() bool {
 	return len(n.keyValue) == 2*n.t-1
 }
 
-func (n *bTreeNode) isEmpty() (bool) {
+func (n *bTreeNode) isEmpty() bool {
 	return len(n.keyValue) <= n.t-1
 }
 
 //Tree
 type bTreeIf interface {
-	newNode(int) (*bTreeNode)
+	newNode(int) *bTreeNode
 }
 
 type bTree struct {
@@ -117,14 +117,14 @@ type bTree struct {
 	bTreeIf
 }
 
-func (bt *bTree) init(t int, self bTreeIf) (*bTree) {
+func (bt *bTree) init(t int, self bTreeIf) *bTree {
 	bt.t = t
 	bt.height = 0
 	bt.bTreeIf = self
 	return bt
 }
 
-func (bt *bTree) split(n *bTreeNode) (int) {
+func (bt *bTree) split(n *bTreeNode) int {
 	//because it is up-down, parent must be not full
 	if !n.isFull() {
 		panic("split when not full!")
@@ -147,7 +147,7 @@ func (bt *bTree) split(n *bTreeNode) (int) {
 	return i
 }
 
-func (bt *bTree) merge(leftNode *bTreeNode, rightNode *bTreeNode, mid *keyValue) (*bTreeNode) {
+func (bt *bTree) merge(leftNode *bTreeNode, rightNode *bTreeNode, mid *keyValue) *bTreeNode {
 	leftNode.keyValue = append(leftNode.keyValue, mid)
 	rightNode.keyValue = append(leftNode.keyValue, rightNode.keyValue...)
 	for _, v := range leftNode.c {
@@ -174,7 +174,7 @@ func (bt *bTree) insertOrSet(n *bTreeNode, key, value interface{}) *bTreeNode {
 			n.p = bt.bTreeIf.newNode(bt.t)
 			n.p.isLeaf = false
 			bt.root = n.p
-			bt.height ++
+			bt.height++
 		}
 		p := n.p
 		i := bt.split(n)
@@ -189,7 +189,7 @@ func (bt *bTree) insertOrSet(n *bTreeNode, key, value interface{}) *bTreeNode {
 			//reture right part
 			return p.c[i+1]
 		}
-	} else if n.isLeaf{
+	} else if n.isLeaf {
 		// if it is leaf, add key-value
 		n.addKeyValue(key, value)
 		return nil
@@ -233,7 +233,6 @@ func (bt *bTree) rightNode(n *bTreeNode) (*bTreeNode, int) {
 	}
 }
 
-
 func (bt *bTree) insert(key, value interface{}) {
 	//empty tree
 	if bt.root == nil {
@@ -241,7 +240,7 @@ func (bt *bTree) insert(key, value interface{}) {
 		bt.height++
 	}
 
-	for n := bt.root;n != nil; {
+	for n := bt.root; n != nil; {
 		n = bt.insertOrSet(n, key, value)
 	}
 
@@ -256,9 +255,9 @@ func (bt *bTree) remove(key interface{}) {
 			//non-leaf node and hit the key
 			preChild, postChild := n.c[keyValueIdx], n.c[keyValueIdx+1]
 			if !preChild.isEmpty() {
-				n.keyValue[keyValueIdx] = preChild.keyValue[preChild.Len() - 1]
+				n.keyValue[keyValueIdx] = preChild.keyValue[preChild.Len()-1]
 				n = preChild
-				k = preChild.keyValue[preChild.Len() - 1].key
+				k = preChild.keyValue[preChild.Len()-1].key
 			} else if !postChild.isEmpty() {
 				n.keyValue[keyValueIdx] = postChild.keyValue[0]
 				n = postChild
@@ -269,7 +268,7 @@ func (bt *bTree) remove(key interface{}) {
 				if n.Len() == 0 {
 					newNode.p = n.p
 					bt.root = newNode
-					bt.height --
+					bt.height--
 				}
 				n = newNode
 			}
@@ -308,7 +307,7 @@ func (bt *bTree) remove(key interface{}) {
 				if n.Len() == 0 {
 					newNode.p = n.p
 					bt.root = newNode
-					bt.height --
+					bt.height--
 				}
 				n = newNode
 			}
@@ -320,11 +319,11 @@ func (bt *bTree) remove(key interface{}) {
 	n.removeKeyValue(k)
 	if n.Len() == 0 {
 		bt.root = nil
-		bt.height --
+		bt.height--
 	}
 }
 
-func (bt *bTree) preOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode) (bool)) (bool) {
+func (bt *bTree) preOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode) bool) bool {
 	if node == nil {
 		return false
 	}
@@ -339,7 +338,7 @@ func (bt *bTree) preOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode)
 	return false
 }
 
-func (bt *bTree) inOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode, int) (bool)) (bool) {
+func (bt *bTree) inOrderWalk(node *bTreeNode, callback func(*bTree, *bTreeNode, int) bool) bool {
 	if node == nil {
 		return false
 	}

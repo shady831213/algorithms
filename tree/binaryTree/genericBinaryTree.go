@@ -19,17 +19,15 @@ func (t *GBT) Init() {
 	t.Object = t
 }
 
-
-func (t *GBT) IsNil(n interface{}) (bool) {
+func (t *GBT) IsNil(n interface{}) bool {
 	return n.(*GBTElement) == t.NilNode
 }
 
-
-func (t *GBT) Root() (interface{}) {
+func (t *GBT) Root() interface{} {
 	return t.NilNode.Left
 }
 
-func (t *GBT) Search(key uint32) (interface{}) {
+func (t *GBT) Search(key uint32) interface{} {
 	for cur := t.Root().(*GBTElement); !t.IsNil(cur); {
 		if cur.Key == key {
 			return cur
@@ -42,7 +40,7 @@ func (t *GBT) Search(key uint32) (interface{}) {
 	return t.NilNode
 }
 
-func (t *GBT) Insert(node interface{})(interface{}) {
+func (t *GBT) Insert(node interface{}) interface{} {
 	target := t.Root().(*GBTElement)
 	n, isNode := node.(*GBTElement)
 	if !isNode {
@@ -73,7 +71,7 @@ func (t *GBT) Insert(node interface{})(interface{}) {
 	return n
 }
 
-func (t *GBT) Delete(key uint32)(interface{}) {
+func (t *GBT) Delete(key uint32) interface{} {
 	deleteNonCompletedNode := func(node *GBTElement) {
 		var reConnectedNode *GBTElement
 		if t.IsNil(node.Left) {
@@ -100,7 +98,7 @@ func (t *GBT) Delete(key uint32)(interface{}) {
 	if t.IsNil(node.Left) || t.IsNil(node.Right) {
 		deleteNonCompletedNode(node)
 	} else {
-		successor := t.Successor(node,t.Root()).(*GBTElement)
+		successor := t.Successor(node, t.Root()).(*GBTElement)
 		_key, _value := successor.Key, successor.Value
 		node.Key, node.Value = _key, _value
 		deleteNonCompletedNode(successor)
@@ -108,7 +106,7 @@ func (t *GBT) Delete(key uint32)(interface{}) {
 	return node
 }
 
-func (t *GBT) Min(node interface{}) (interface{}) {
+func (t *GBT) Min(node interface{}) interface{} {
 	cur := node.(*GBTElement)
 	for !t.IsNil(cur.Left) {
 		cur = cur.Left
@@ -116,7 +114,7 @@ func (t *GBT) Min(node interface{}) (interface{}) {
 	return cur
 }
 
-func (t *GBT) Max(node interface{}) (interface{}) {
+func (t *GBT) Max(node interface{}) interface{} {
 	cur := node.(*GBTElement)
 	for !t.IsNil(cur.Right) {
 		cur = cur.Right
@@ -124,7 +122,7 @@ func (t *GBT) Max(node interface{}) (interface{}) {
 	return cur
 }
 
-func (t *GBT) Predecesor(node interface{}, root interface{}) (interface{}) {
+func (t *GBT) Predecesor(node interface{}, root interface{}) interface{} {
 	r := root.(*GBTElement)
 	if r == nil {
 		r = t.Root().(*GBTElement)
@@ -137,7 +135,7 @@ func (t *GBT) Predecesor(node interface{}, root interface{}) (interface{}) {
 		return t.Max(n.Left)
 	} else {
 		cur := n
-		for cur != r  && cur.Parent.Right != cur {
+		for cur != r && cur.Parent.Right != cur {
 			cur = cur.Parent
 		}
 		if cur == r {
@@ -147,7 +145,7 @@ func (t *GBT) Predecesor(node interface{}, root interface{}) (interface{}) {
 	}
 }
 
-func (t *GBT) Successor(node interface{}, root interface{}) (interface{}) {
+func (t *GBT) Successor(node interface{}, root interface{}) interface{} {
 	r := root.(*GBTElement)
 	if r == nil {
 		r = t.Root().(*GBTElement)
@@ -170,7 +168,7 @@ func (t *GBT) Successor(node interface{}, root interface{}) (interface{}) {
 	}
 }
 
-func (t *GBT) LeftRotate(node interface{})(interface{}) {
+func (t *GBT) LeftRotate(node interface{}) interface{} {
 	n := node.(*GBTElement)
 	if t.IsNil(n.Right) {
 		return t.NilNode
@@ -190,7 +188,7 @@ func (t *GBT) LeftRotate(node interface{})(interface{}) {
 	return newNode
 }
 
-func (t *GBT) RightRotate(node interface{})(interface{}) {
+func (t *GBT) RightRotate(node interface{}) interface{} {
 	n := node.(*GBTElement)
 	if t.IsNil(n.Left) {
 		return t.NilNode
@@ -212,7 +210,7 @@ func (t *GBT) RightRotate(node interface{})(interface{}) {
 
 //next node should always be successor node
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *GBT) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) bool) bool {
 	n := node.(*GBTElement)
 	for curNode := t.Min(n).(*GBTElement); !t.IsNil(curNode); {
 		stop := callback(t.Object, curNode)
@@ -234,7 +232,7 @@ func (t *GBT) InOrderWalk(node interface{}, callback func(BinaryTreeIf, interfac
 // Right node: remove itself from Parent, then find the successor of Parent, then recover Parent
 //During going up, when it gets root or a node has Right child , go down
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
-func (t *GBT) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) bool) bool {
 	root := node.(*GBTElement)
 
 	goDown := func(curNode *GBTElement) (*GBTElement, bool) {
@@ -286,7 +284,7 @@ func (t *GBT) PreOrderWalk(node interface{}, callback func(BinaryTreeIf, interfa
 //if the node is Right leaf node, go bach to Parent
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
 
-func (t *GBT) PostOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) (bool)) (bool) {
+func (t *GBT) PostOrderWalk(node interface{}, callback func(BinaryTreeIf, interface{}) bool) bool {
 	n := node.(*GBTElement)
 
 	leftistNode := func(curNode *GBTElement) (nextNode *GBTElement) {
@@ -318,4 +316,3 @@ func NewGBT() BinaryTreeIf {
 	t.Init()
 	return t
 }
-

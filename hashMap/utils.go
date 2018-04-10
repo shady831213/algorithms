@@ -2,9 +2,9 @@ package hashMap
 
 import (
 	"fmt"
+	"math/rand"
 	"reflect"
 	"testing"
-	"math/rand"
 )
 
 func BasicTestHashMap(t *testing.T, hmap HashMap) {
@@ -29,12 +29,12 @@ func BasicTestHashMap(t *testing.T, hmap HashMap) {
 
 func TestHashMapResize(t *testing.T, hmap interface{}) {
 	expMap := map[string]int{
-		"a":   1,
-		"b":   2,
-		"c":   999,
-		"z":   16,
-		"bcd": 90,
-		"ed":  90,
+		"a":    1,
+		"b":    2,
+		"c":    999,
+		"z":    16,
+		"bcd":  90,
+		"ed":   90,
 		"ab":   1,
 		"ba":   2,
 		"ca":   999,
@@ -49,12 +49,12 @@ func TestHashMapResize(t *testing.T, hmap interface{}) {
 
 func TestHashMapDelete(t *testing.T, hmap interface{}) {
 	expMap := map[string]int{
-		"a":   1,
-		"b":   2,
-		"c":   999,
-		"z":   16,
-		"bcd": 90,
-		"ed":  90,
+		"a":    1,
+		"b":    2,
+		"c":    999,
+		"z":    16,
+		"bcd":  90,
+		"ed":   90,
 		"ab":   1,
 		"ba":   2,
 		"ca":   999,

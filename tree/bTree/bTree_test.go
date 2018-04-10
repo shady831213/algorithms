@@ -1,12 +1,12 @@
 package bTree
 
 import (
-	"testing"
-	"sort"
-	"reflect"
 	"fmt"
-	"time"
 	"math/rand"
+	"reflect"
+	"sort"
+	"testing"
+	"time"
 )
 
 func GetRand() *rand.Rand {
@@ -60,18 +60,18 @@ func (bt *testBTree) init(t int) *testBTree {
 	return bt
 }
 
-func (bt *testBTree) newNode(t int) (*bTreeNode) {
+func (bt *testBTree) newNode(t int) *bTreeNode {
 	return &newTestBTreeNode(t).bTreeNode
 }
 
-func newTestBTree(t int) (*testBTree) {
+func newTestBTree(t int) *testBTree {
 	return new(testBTree).init(t)
 }
 
 func checkBtree(t *testing.T, exp []int, bt *bTree) {
 	result := make([]int, 0, 0)
 	bt.inOrderWalk(bt.root,
-		func(btree *bTree, node *bTreeNode, idx int) (bool) {
+		func(btree *bTree, node *bTreeNode, idx int) bool {
 			result = append(result, node.keyValue[idx].key.(int))
 			if node != bt.root && node.Len() < bt.t-1 {
 				t.Log(fmt.Sprintf("len of non-root node is less than t - 1: \n%+v\n ", node))
@@ -118,7 +118,7 @@ func TestBTreeInsert(t *testing.T) {
 }
 
 func TestBTreeRemove(t *testing.T) {
-	deleteExp := func(arr []int, e int) ([]int) {
+	deleteExp := func(arr []int, e int) []int {
 		//binary search
 		i, j := 0, len(arr)-1
 		for i != j {

@@ -1,13 +1,13 @@
 package dp
 
 import (
-	"testing"
-	"math/rand"
 	"fmt"
+	"math/rand"
 	"reflect"
+	"testing"
 )
 
-func buildBoard(size int)([][]int) {
+func buildBoard(size int) [][]int {
 	_rand := rand.New(rand.NewSource(1))
 	board := make([][]int, size, size)
 	for i := range board {
@@ -19,8 +19,7 @@ func buildBoard(size int)([][]int) {
 	return board
 }
 
-
-func TestChessGame(t *testing.T)  {
+func TestChessGame(t *testing.T) {
 	board := buildBoard(5)
 	score, path := chessGame(board, 0, 3)
 	if score != 3 {
@@ -28,7 +27,7 @@ func TestChessGame(t *testing.T)  {
 		printBoard(board)
 		t.Fail()
 	}
-	if !reflect.DeepEqual(path, [][]int{[]int{0,0}, []int{1,0}, []int{2,1}, []int{3,2}, []int{4,3}}) {
+	if !reflect.DeepEqual(path, [][]int{{0, 0}, {1, 0}, {2, 1}, {3, 2}, {4, 3}}) {
 		t.Log("path wrong!\n")
 		printBoard(board)
 		t.Log(path)

@@ -1,9 +1,9 @@
 package dp
 
 import (
+	"fmt"
 	"math"
 	"sort"
-	"fmt"
 )
 
 type point struct {
@@ -15,15 +15,15 @@ func newPoint(x, y float64) *point {
 }
 
 type line struct {
-	p0,p1 *point
+	p0, p1   *point
 	prevLine *line
 }
 
-func newLine(p0,p1 *point) *line {
-	return &line{p0,p1, nil}
+func newLine(p0, p1 *point) *line {
+	return &line{p0, p1, nil}
 }
 
-func (l *line) dist() (float64) {
+func (l *line) dist() float64 {
 	return math.Sqrt(math.Pow(l.p0.x-l.p1.x, 2) + math.Pow(l.p0.y-l.p1.y, 2))
 }
 
@@ -36,7 +36,7 @@ func (l *line) print() {
 
 type pointSlice []*point
 
-func (p *pointSlice) Less(i, j int) (bool) {
+func (p *pointSlice) Less(i, j int) bool {
 	return (*p)[i].x < (*p)[j].x
 }
 
@@ -93,7 +93,7 @@ func bitonicTSP(points []*point) (float64, []*line) {
 
 	//track line path
 	linePath := make([]*line, 0, 0)
-	for l := lines[len(sortedPoints)-1][len(sortedPoints)-1]; l != nil;l = l.prevLine {
+	for l := lines[len(sortedPoints)-1][len(sortedPoints)-1]; l != nil; l = l.prevLine {
 		linePath = append([]*line{l}, linePath...)
 	}
 

@@ -23,7 +23,7 @@ func (t *task) init(r, p, id int) *task {
 	return t
 }
 
-func (t *task) state() (int) {
+func (t *task) state() int {
 	if *(t.clk) < t.r+t.startTime {
 		return WAIT
 	} else if t.p > 0 {
@@ -35,7 +35,7 @@ func (t *task) state() (int) {
 
 func (t *task) run() {
 	if t.p > 0 {
-		t.p --
+		t.p--
 	}
 	if t.p == 0 {
 		t.finishTime = *(t.clk)
@@ -158,7 +158,7 @@ func (s *scheduler) run(input chan *task, output []chan *task) {
 		case t := <-input:
 			s.newTask(t)
 			inputLen := len(input)
-			for i := 0; i < inputLen; i ++ {
+			for i := 0; i < inputLen; i++ {
 				t = <-input
 				s.newTask(t)
 			}

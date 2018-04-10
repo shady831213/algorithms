@@ -1,9 +1,9 @@
 package graph
 
 import (
-	"testing"
 	"reflect"
 	"sort"
+	"testing"
 )
 
 func compareGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
@@ -38,7 +38,6 @@ func compareGraph(t *testing.T, v, vExp []interface{}, e, eExp []Edge) {
 		t.Fail()
 	}
 }
-
 
 func checkDFSGraphOutOfOrder(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()

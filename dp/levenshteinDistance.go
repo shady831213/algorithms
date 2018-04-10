@@ -3,9 +3,10 @@ package dp
 import (
 	"math"
 )
+
 //base method and data
 type lDCompute interface {
-	updateCost(int, int, *lDComputor) (int)
+	updateCost(int, int, *lDComputor) int
 	preOpIdx(int, int, *lDComputor) (int, int)
 }
 
@@ -15,7 +16,7 @@ type lDOperation struct {
 	lDCompute
 }
 
-func (op *lDOperation)init(name string, cost int)(*lDOperation)  {
+func (op *lDOperation) init(name string, cost int) *lDOperation {
 	op.name = name
 	op.cost = cost
 	return op
@@ -26,23 +27,23 @@ type copy struct {
 	lDOperation
 }
 
-func (c *copy)init(cost int)(*copy)  {
-	op:=c.lDOperation.init("copy", cost)
+func (c *copy) init(cost int) *copy {
+	op := c.lDOperation.init("copy", cost)
 	op.lDCompute = c
 	return c
 }
 
-func (c *copy) updateCost(i int, j int, ldc *lDComputor) (int) {
+func (c *copy) updateCost(i int, j int, ldc *lDComputor) int {
 	if ldc.seq0[i] == ldc.seq1[j] {
-		return ldc.cost[i-1][j-1] + c.cost//1
+		return ldc.cost[i-1][j-1] + c.cost //1
 	}
 	return math.MaxInt32
 }
 func (c *copy) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
-	return i-1, j-1
+	return i - 1, j - 1
 }
 
-func newCopy(cost int)(*copy) {
+func newCopy(cost int) *copy {
 	return new(copy).init(cost)
 }
 
@@ -50,69 +51,68 @@ type replace struct {
 	lDOperation
 }
 
-func (r *replace)init(cost int)(*replace)  {
-	op:=r.lDOperation.init("replace", cost)
+func (r *replace) init(cost int) *replace {
+	op := r.lDOperation.init("replace", cost)
 	op.lDCompute = r
 	return r
 }
 
-func (r *replace) updateCost(i int, j int, ldc *lDComputor) (int) {
+func (r *replace) updateCost(i int, j int, ldc *lDComputor) int {
 	if ldc.seq0[i] != ldc.seq1[j] {
-		return ldc.cost[i-1][j-1] + r.cost//4
+		return ldc.cost[i-1][j-1] + r.cost //4
 	}
 	return math.MaxInt32
 }
 
-func newReplace(cost int)(*replace) {
+func newReplace(cost int) *replace {
 	return new(replace).init(cost)
 }
 
 func (r *replace) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
-	return i-1, j-1
+	return i - 1, j - 1
 }
 
 type insert struct {
 	lDOperation
 }
 
-func (is *insert)init(cost int)(*insert)  {
-	op:=is.lDOperation.init("insert", cost)
+func (is *insert) init(cost int) *insert {
+	op := is.lDOperation.init("insert", cost)
 	op.lDCompute = is
 	return is
 }
 
-func (is *insert) updateCost(i int, j int, ldc *lDComputor) (int) {
-	return ldc.cost[i][j-1] + is.cost//3
+func (is *insert) updateCost(i int, j int, ldc *lDComputor) int {
+	return ldc.cost[i][j-1] + is.cost //3
 }
 
 func (is *insert) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
-	return i, j-1
+	return i, j - 1
 }
 
-func newInsert(cost int)(*insert) {
+func newInsert(cost int) *insert {
 	return new(insert).init(cost)
 }
-
 
 type delete struct {
 	lDOperation
 }
 
-func (d *delete)init(cost int)(*delete)  {
-	op:=d.lDOperation.init("delete", cost)
+func (d *delete) init(cost int) *delete {
+	op := d.lDOperation.init("delete", cost)
 	op.lDCompute = d
 	return d
 }
 
-func (d *delete) updateCost(i int, j int, ldc *lDComputor) (int) {
-	return ldc.cost[i-1][j] + d.cost//2
+func (d *delete) updateCost(i int, j int, ldc *lDComputor) int {
+	return ldc.cost[i-1][j] + d.cost //2
 }
 
 func (d *delete) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
-	return i-1, j
+	return i - 1, j
 }
 
-func newDelete(cost int)(*delete) {
+func newDelete(cost int) *delete {
 	return new(delete).init(cost)
 }
 
@@ -120,15 +120,15 @@ type twiddle struct {
 	lDOperation
 }
 
-func (t *twiddle)init(cost int)(*twiddle)  {
-	op:=t.lDOperation.init("twiddle", cost)
+func (t *twiddle) init(cost int) *twiddle {
+	op := t.lDOperation.init("twiddle", cost)
 	op.lDCompute = t
 	return t
 }
 
-func (t *twiddle) updateCost(i int, j int, ldc *lDComputor) (int) {
+func (t *twiddle) updateCost(i int, j int, ldc *lDComputor) int {
 	if i > 1 && j > 1 && ldc.seq0[i] == ldc.seq1[j-1] && ldc.seq0[i-1] == ldc.seq1[j] {
-		return ldc.cost[i-2][j-2] + t.cost//2
+		return ldc.cost[i-2][j-2] + t.cost //2
 	}
 	return math.MaxInt32
 }
@@ -137,7 +137,7 @@ func (t *twiddle) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return i - 2, j - 2
 }
 
-func newTwiddle(cost int)(*twiddle) {
+func newTwiddle(cost int) *twiddle {
 	return new(twiddle).init(cost)
 }
 
@@ -145,46 +145,45 @@ type kill struct {
 	lDOperation
 }
 
-func (k *kill)init(cost int)(*kill)  {
-	op:=k.lDOperation.init("kill", cost)
+func (k *kill) init(cost int) *kill {
+	op := k.lDOperation.init("kill", cost)
 	op.lDCompute = k
 	return k
 }
 
-func (t *kill) updateCost(i int, j int, ldc *lDComputor) (int) {
+func (t *kill) updateCost(i int, j int, ldc *lDComputor) int {
 	return t.cost
 }
 
 func (t *kill) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
-	return 0,0
+	return 0, 0
 }
 
-func newKill(cost int)(*kill) {
+func newKill(cost int) *kill {
 	return new(kill).init(cost)
 }
 
-
 //levenshteinDistance computor
 type lDComputor struct {
-	cost       [][]int//side data, store cost
-	opSeq      [][]*lDOperation// side data, store operation
-	seq0, seq1 []byte// string to array
-	ops        []*lDOperation//operations set
-	delete *lDOperation
-	insert *lDOperation
-	kill *lDOperation
+	cost       [][]int          //side data, store cost
+	opSeq      [][]*lDOperation // side data, store operation
+	seq0, seq1 []byte           // string to array
+	ops        []*lDOperation   //operations set
+	delete     *lDOperation
+	insert     *lDOperation
+	kill       *lDOperation
 }
 
 //init
-func (ldc *lDComputor) init(word0, word1 string, delete, insert, kill*lDOperation) (*lDComputor) {
+func (ldc *lDComputor) init(word0, word1 string, delete, insert, kill *lDOperation) *lDComputor {
 	//string to array, and 1 to deal with boundary
 	ldc.seq0 = append([]byte{0}, ([]byte)(word0)...)
 	ldc.seq1 = append([]byte{0}, ([]byte)(word1)...)
-	ldc.ops = make([]*lDOperation,0,0)
+	ldc.ops = make([]*lDOperation, 0, 0)
 	ldc.delete = delete
 	ldc.insert = insert
 	ldc.kill = kill
-	ldc.ops = append(ldc.ops,[]*lDOperation{ldc.delete,ldc.insert}...)
+	ldc.ops = append(ldc.ops, []*lDOperation{ldc.delete, ldc.insert}...)
 	//initialize side datas
 	ldc.cost = make([][]int, len(ldc.seq0), len(ldc.seq0))
 	ldc.opSeq = make([][]*lDOperation, len(ldc.seq0), len(ldc.seq0))
@@ -193,12 +192,12 @@ func (ldc *lDComputor) init(word0, word1 string, delete, insert, kill*lDOperatio
 		ldc.opSeq[i] = make([]*lDOperation, len(ldc.seq1), len(ldc.seq1))
 		//j = 0 , use delete to init, means delete all chars in word0
 		if i > 0 {
-			ldc.cost[i][0] = ldc.delete.updateCost(i,0,ldc)
+			ldc.cost[i][0] = ldc.delete.updateCost(i, 0, ldc)
 			ldc.opSeq[i][0] = ldc.delete
 		}
 		//i = 0, use insert to init, means insert all chars in word1
 		for j := range ldc.cost[i][1:] {
-			ldc.cost[i][j+1] = ldc.insert.updateCost(0,j+1,ldc)
+			ldc.cost[i][j+1] = ldc.insert.updateCost(0, j+1, ldc)
 			ldc.opSeq[i][j+1] = ldc.insert
 		}
 	}
@@ -211,8 +210,8 @@ func (ldc *lDComputor) addOp(op *lDOperation) {
 
 func (ldc *lDComputor) levenshteinDistance() (int, []string) {
 	//dynamic solve
-	for i := 1;i < len(ldc.cost);i++{
-		for j := 1;j < len(ldc.cost[i]);j++ {
+	for i := 1; i < len(ldc.cost); i++ {
+		for j := 1; j < len(ldc.cost[i]); j++ {
 			ldc.cost[i][j] = math.MaxInt32
 			for op := range ldc.ops {
 				temp := ldc.ops[op].updateCost(i, j, ldc)
@@ -227,10 +226,10 @@ func (ldc *lDComputor) levenshteinDistance() (int, []string) {
 	//deal with kill, pick up the min value in len(ldc.seq1)-1 vol
 	opSeq := make([]string, 0, 0)
 	minDist := ldc.cost[len(ldc.seq0)-1][len(ldc.seq1)-1]
-	minI := len(ldc.seq0)-1
-	for i := 1; i < len(ldc.seq0) - 1; i++ {
-		temp := ldc.cost[i][len(ldc.seq1)-1] + ldc.kill.updateCost(0,0,ldc)
-		if  temp < minDist {
+	minI := len(ldc.seq0) - 1
+	for i := 1; i < len(ldc.seq0)-1; i++ {
+		temp := ldc.cost[i][len(ldc.seq1)-1] + ldc.kill.updateCost(0, 0, ldc)
+		if temp < minDist {
 			minDist = temp
 			minI = i
 			opSeq = []string{ldc.kill.name}
@@ -246,6 +245,6 @@ func (ldc *lDComputor) levenshteinDistance() (int, []string) {
 	return minDist, opSeq
 }
 
-func newLdc(word0, word1 string, delete, insert, kill*lDOperation) (*lDComputor) {
-	return new(lDComputor).init(word0, word1,  delete, insert, kill)
+func newLdc(word0, word1 string, delete, insert, kill *lDOperation) *lDComputor {
+	return new(lDComputor).init(word0, word1, delete, insert, kill)
 }

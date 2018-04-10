@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"testing"
 	"sort"
+	"testing"
 )
 
 func dfsSetupGraph(g Graph) {
@@ -22,7 +22,7 @@ func dfsSetupGraph(g Graph) {
 	g.AddEdge(Edge{"z", "z"})
 }
 
-func dfsGolden(g Graph) (*DFSForest) {
+func dfsGolden(g Graph) *DFSForest {
 	dfsForest := NewDFSForest(g)
 	vertexes := make(map[interface{}]*DFSElement)
 

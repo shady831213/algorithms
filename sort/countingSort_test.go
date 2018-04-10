@@ -14,6 +14,6 @@ func countingSortWrapper(arr []int) {
 	copy(arr, sortedArry)
 }
 
-func Test_countingSort(t *testing.T){
+func Test_countingSort(t *testing.T) {
 	testSort(t, countingSortWrapper)
 }

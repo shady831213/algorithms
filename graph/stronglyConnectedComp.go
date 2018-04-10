@@ -23,17 +23,17 @@ func SCC(g Graph) (scc Graph) {
 	for i := range dfsGraphOfT.Comps {
 		components[i] = CreateGraphByType(g)
 		//add all sub vertices
-		for _,v := range dfsGraphOfT.Comps[i].AllVertices() {
+		for _, v := range dfsGraphOfT.Comps[i].AllVertices() {
 			components[i].AddVertex(v.(*DFSElement).V)
 		}
 		//add all sub edges
 		for _, e := range dfsGraphOfT.Comps[i].AllEdges() {
-			components[i].AddEdge(Edge{e.End.(*DFSElement).V,e.Start.(*DFSElement).V})
+			components[i].AddEdge(Edge{e.End.(*DFSElement).V, e.Start.(*DFSElement).V})
 		}
 	}
 
 	//keep all cross edges which cross components
-	for _,e := range dfsGraphOfT.AllCrossEdges() {
+	for _, e := range dfsGraphOfT.AllCrossEdges() {
 		if e.End.(*DFSElement).FindRoot() != e.Start.(*DFSElement).FindRoot() {
 			scc.AddEdge(Edge{components[e.End.(*DFSElement).FindRoot()], components[e.Start.(*DFSElement).FindRoot()]})
 		}

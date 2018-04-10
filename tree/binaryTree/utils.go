@@ -1,12 +1,12 @@
 package binaryTree
 
 import (
-	"fmt"
-	"testing"
-	"reflect"
-	"time"
-	"math/rand"
 	"flag"
+	"fmt"
+	"math/rand"
+	"reflect"
+	"testing"
+	"time"
 )
 
 var debug = flag.Bool("debug", false, "debug flag")
@@ -36,7 +36,7 @@ func RandomSlice(start int, end int, count int) []int {
 	return nums
 }
 
-func checkBst(t *testing.T, nodeCnt *int, debug bool) (func(BinaryTreeIf, interface{}) (bool)) {
+func checkBst(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interface{}) bool {
 	return func(tree BinaryTreeIf, node interface{}) bool {
 		n := node.(*BstElement)
 		if n.left != nil && n.left.Key >= n.Key {
@@ -132,7 +132,7 @@ func checkBstPostOrder(t *testing.T, bst BinaryTreeIf) {
 	}
 }
 
-func CheckGBT(t *testing.T, nodeCnt *int, debug bool) (func(BinaryTreeIf, interface{}) (bool)) {
+func CheckGBT(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interface{}) bool {
 	return func(tree BinaryTreeIf, node interface{}) bool {
 		n := node.(*GBTElement)
 		if !tree.IsNil(n.Left) && n.Left.Key >= n.Key {
@@ -200,7 +200,7 @@ func checkGBTPostOrder(t *testing.T, tree BinaryTreeIf, data []int) {
 	}
 }
 
-func checkRBT(t *testing.T, rbt *RBT) (bool) {
+func checkRBT(t *testing.T, rbt *RBT) bool {
 	blackCntQ := make([]int, 0, 0)
 	stop := rbt.PreOrderWalk(rbt.Root(), func(tree BinaryTreeIf, node interface{}) bool {
 		_tree := tree.(*RBT)

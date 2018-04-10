@@ -1,6 +1,5 @@
 package disjointSetTree
 
-
 const OFFLINEMINIMUM_EXTRACT = -1
 
 //input sequence: -1 means extract, minimum insert value should be 1
@@ -20,7 +19,7 @@ func offLineMinimum(seq []int) []int {
 	insertSets = append(insertSets, MakeSet(0))
 	for i := range seq {
 		if seq[i] == OFFLINEMINIMUM_EXTRACT {
-			m ++
+			m++
 			insertSets = append(insertSets, MakeSet(m))
 		} else {
 			if seq[i] < 1 {
@@ -34,13 +33,13 @@ func offLineMinimum(seq []int) []int {
 
 	//get minimum sequence
 	extractSeq := make([]int, m, m)
-	for i := 1; i < n; i ++ {
+	for i := 1; i < n; i++ {
 		j := FindSet(values[i]).Value.(int)
 		if j != m {
 			extractSeq[j] = i
-			for l := j + 1; l <= m; l ++ {
+			for l := j + 1; l <= m; l++ {
 				if insertSets[l] != nil {
-					insertSets[l] = Union(insertSets[l],insertSets[j])
+					insertSets[l] = Union(insertSets[l], insertSets[j])
 					insertSets[l].Value = l
 					insertSets[j] = nil
 					break

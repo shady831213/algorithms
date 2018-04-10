@@ -12,8 +12,8 @@ type memory interface {
 
 type Memory interface {
 	memory
-	encIdx(interface{}) (interface{})
-	decIdx(interface{}) (interface{})
+	encIdx(interface{}) interface{}
+	decIdx(interface{}) interface{}
 	encData(interface{}) interface{}
 	decData(interface{}) interface{}
 }
@@ -54,7 +54,7 @@ type cacheModel struct {
 	Memory
 }
 
-func (m *cacheModel) init(size int, downStreamModel memory, self Memory) (*cacheModel) {
+func (m *cacheModel) init(size int, downStreamModel memory, self Memory) *cacheModel {
 	m.mem = make(map[interface{}]*list.Element)
 	m.pq = list.New()
 	for i := 0; i < size; i++ {
@@ -67,7 +67,7 @@ func (m *cacheModel) init(size int, downStreamModel memory, self Memory) (*cache
 	return m
 }
 
-func (m *cacheModel) update(id interface{}) (*list.Element) {
+func (m *cacheModel) update(id interface{}) *list.Element {
 	var item *list.Element
 	var ok bool
 	if item, ok = m.mem[id]; !ok {

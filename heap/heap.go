@@ -2,24 +2,24 @@ package heap
 
 type ArrayIf interface {
 	Swap(interface{}, interface{})
-	Len() (int)
-	Key(interface{}) (int)
-	Value(interface{}) (interface{})
-	Pop() (interface{})
+	Len() int
+	Key(interface{}) int
+	Value(interface{}) interface{}
+	Pop() interface{}
 	Append(interface{})
-	Left(interface{}) (interface{})
-	Right(interface{}) (interface{})
-	Union(interface{})(interface{})
+	Left(interface{}) interface{}
+	Right(interface{}) interface{}
+	Union(interface{}) interface{}
 }
 
 type BinHeapArrayIf interface {
 	ArrayIf
-	Last() (interface{})
-	Head() (interface{})
-	Prev(interface{}) (interface{})
-	Next(interface{}) (interface{})
-	Valid(interface{}) (bool)
-	Parent(interface{}) (interface{})
+	Last() interface{}
+	Head() interface{}
+	Prev(interface{}) interface{}
+	Next(interface{}) interface{}
+	Valid(interface{}) bool
+	Parent(interface{}) interface{}
 }
 
 type HeapIf interface {
@@ -36,7 +36,6 @@ type Heap struct {
 	BinHeapArrayIf
 }
 
-
 func (h *Heap) MaxHeaplify(i interface{}) {
 	largest, largest_idx := h.Key(i), i
 	if h.Valid(h.Left(i)) && h.Key(h.Left(i)) > largest {
@@ -52,7 +51,7 @@ func (h *Heap) MaxHeaplify(i interface{}) {
 }
 
 func (h *Heap) BuildHeap() {
-	for i := h.Last();  h.Valid(i); i = h.Prev(i) {
+	for i := h.Last(); h.Valid(i); i = h.Prev(i) {
 		h.MaxHeaplify(i)
 	}
 }
@@ -73,4 +72,3 @@ func (h *Heap) Append(i interface{}) {
 		idx = h.Parent(idx)
 	}
 }
-

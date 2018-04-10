@@ -10,7 +10,7 @@ log10/9(n)             ...                                 <=n
 
 
 so T(n) <= nlog10(n) + n(log10/9(n) - log10(n)) = nlog10/9(n) = O(nlogn)
- */
+*/
 
 package sort
 
@@ -18,7 +18,7 @@ import "math/rand"
 
 func partition(arr []int) (primeIdx int) {
 	primeIdx = 0
-	for i := 0; i < len(arr)-1; i ++ {
+	for i := 0; i < len(arr)-1; i++ {
 		if arr[i] < arr[len(arr)-1] {
 			arr[i], arr[primeIdx] = arr[primeIdx], arr[i]
 			primeIdx++
@@ -45,7 +45,6 @@ func randomQuickSort(arr []int) {
 		randomQuickSort(arr[primeIdx+1:])
 	}
 }
-
 
 func quickSortTail(arr []int) {
 	for len(arr) > 1 {

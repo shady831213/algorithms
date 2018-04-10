@@ -18,28 +18,28 @@ func (t *RBT) color(node *GBTElement) (black bool) {
 	return t.IsNil(node) || node.SideValue.(bool)
 }
 
-func (t *RBT) otherSideNode(side bool, node *GBTElement) (*GBTElement) {
+func (t *RBT) otherSideNode(side bool, node *GBTElement) *GBTElement {
 	if side == left {
 		return node.Right
 	} else {
 		return node.Left
 	}
 }
-func (t *RBT) invDirRotation(side bool, node *GBTElement) (interface{}) {
+func (t *RBT) invDirRotation(side bool, node *GBTElement) interface{} {
 	if side == left {
 		return t.RightRotate(node)
 	} else {
 		return t.LeftRotate(node)
 	}
 }
-func (t *RBT) sameSideNode(side bool, node *GBTElement) (*GBTElement) {
+func (t *RBT) sameSideNode(side bool, node *GBTElement) *GBTElement {
 	if side == left {
 		return node.Left
 	} else {
 		return node.Right
 	}
 }
-func (t *RBT) sameDirRotation(side bool, node *GBTElement) (interface{}) {
+func (t *RBT) sameDirRotation(side bool, node *GBTElement) interface{} {
 	if side == left {
 		return t.LeftRotate(node)
 	} else {
@@ -47,14 +47,14 @@ func (t *RBT) sameDirRotation(side bool, node *GBTElement) (interface{}) {
 	}
 }
 
-func (t *RBT) Insert(node interface{}) (interface{}) {
+func (t *RBT) Insert(node interface{}) interface{} {
 	n := t.GBT.Insert(node).(*GBTElement)
 	t.setColor(n, red)
 	t.insertFix(n)
 	return n
 }
 
-func (t *RBT) insertFix(node interface{}) () {
+func (t *RBT) insertFix(node interface{}) {
 	n := node.(*GBTElement)
 	//only can violate property 3: both left and right children of red node must be black
 	for !t.color(n.Parent) && !t.color(n) {
@@ -85,7 +85,7 @@ func (t *RBT) insertFix(node interface{}) () {
 	t.setColor(t.Root().(*GBTElement), black)
 }
 
-func (t *RBT) Delete(key uint32) (interface{}) {
+func (t *RBT) Delete(key uint32) interface{} {
 	deleteNonCompletedNode := func(node *GBTElement) (deletedNode *GBTElement, nextNode *GBTElement) {
 		var reConnectedNode *GBTElement
 		if t.IsNil(node.Left) {
@@ -127,7 +127,7 @@ func (t *RBT) Delete(key uint32) (interface{}) {
 	return node
 }
 
-func (t *RBT) deleteFix(node interface{}) () {
+func (t *RBT) deleteFix(node interface{}) {
 	n := node.(*GBTElement)
 	//n always points to the black-black or black-red node.The purpose is to remove the additional black color,
 	//which means add a black color in the same side or reduce a black color in the other side

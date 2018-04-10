@@ -1,23 +1,23 @@
 package hashMap
 
 import (
-	"hash"
 	"bytes"
 	"encoding/gob"
+	"hash"
 	"math/big"
 )
 
-const DEFALUTCAP  = 8
+const DEFALUTCAP = 8
 
 type HashElement struct {
-	Key interface{}
+	Key   interface{}
 	Value interface{}
 }
 
 type HashMap interface {
-	HashInsert(interface{},interface{})
+	HashInsert(interface{}, interface{})
 	HashDelete(interface{})
-	HashGet(interface{})(interface{},bool)
+	HashGet(interface{}) (interface{}, bool)
 	Init(uint32)
 }
 
@@ -28,25 +28,25 @@ type ScaleableMap interface {
 }
 
 type HashMapBase struct {
-	Cap uint32
+	Cap   uint32
 	Count uint32
 	HashMap
 	ScaleableMap
 }
 
-func (h *HashMapBase) Init (cap uint32) {
+func (h *HashMapBase) Init(cap uint32) {
 	h.Cap = cap
 	h.Count = 0
 }
 
-func (h *HashMapBase) GetAlpha ()(float64) {
+func (h *HashMapBase) GetAlpha() float64 {
 	if h.Cap == 0 {
 		return 1.0
 	}
-	return float64(h.Count)/float64(h.Cap)
+	return float64(h.Count) / float64(h.Cap)
 }
 
-func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) (*big.Int) {
+func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) *big.Int {
 	buf := bytes.NewBuffer(nil)
 	enc := gob.NewEncoder(buf)
 	enc.Encode(key)

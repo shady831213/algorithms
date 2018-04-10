@@ -1,12 +1,12 @@
 package graph
 
 import (
-	"testing"
 	"sort"
+	"testing"
 )
 
 func bccSetupGraph(g Graph) {
-	for i := 0; i < 23; i ++ {
+	for i := 0; i < 23; i++ {
 		g.AddVertex(i)
 	}
 

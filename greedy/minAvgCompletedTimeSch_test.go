@@ -1,8 +1,8 @@
 package greedy
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func collectResult(input []chan *task, result *[]*task) {
@@ -50,7 +50,7 @@ func TestBasicScheduler(t *testing.T) {
 		t.Fail()
 	}
 
-	if ! reflect.DeepEqual(result, expect) {
+	if !reflect.DeepEqual(result, expect) {
 		t.Log("Scheduled Seq wrong!")
 		t.Log("expect is:")
 		for i := range expect {
@@ -114,7 +114,7 @@ func TestBasicScheduler_Insert(t *testing.T) {
 		t.Fail()
 	}
 
-	if ! reflect.DeepEqual(result, expect) {
+	if !reflect.DeepEqual(result, expect) {
 		t.Log("Scheduled Seq wrong!")
 		t.Log("expect is:")
 		for i := range expect {

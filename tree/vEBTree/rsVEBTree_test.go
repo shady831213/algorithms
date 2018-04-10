@@ -1,14 +1,14 @@
 package vEBTree
 
 import (
-	"testing"
 	"fmt"
 	"math/rand"
 	"sort"
+	"testing"
 	"time"
 )
 
-func GetRand() *rand.Rand  {
+func GetRand() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
@@ -35,9 +35,9 @@ func RandomSlice(start int, end int, count int) []int {
 
 func basicData() (int, map[uint32][]int, []int) {
 	return 4, map[uint32][]int{1: {1},
-		2: {2, 3},
-		4: {60, 70},
-		7: {8, 9},
+		2:  {2, 3},
+		4:  {60, 70},
+		7:  {8, 9},
 		11: {79, 86},
 		15: {31, 2}}, []int{1, 2, 4, 7, 11, 15}
 }

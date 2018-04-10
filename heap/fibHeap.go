@@ -189,7 +189,7 @@ func (h *fibHeap) Insert(key, value interface{}) *fibHeapElement {
 	if h.Less(n, h.min) {
 		h.min = n
 	}
-	h.n ++
+	h.n++
 	return n
 }
 
@@ -252,7 +252,7 @@ func (h *fibHeap) ExtractMin() *fibHeapElement {
 }
 
 func (h *fibHeap) cascadingCut(n *fibHeapElement) {
-	if p := n.p;p != nil {
+	if p := n.p; p != nil {
 		if n.mark {
 			p.c.Remove(n)
 			h.root.PushLeft(n)
@@ -270,7 +270,7 @@ func (h *fibHeap) ModifyNode(n *fibHeapElement, key, value interface{}) {
 	}
 	n.key = key
 	n.value = value
-	if p := n.p;n.p != nil && h.Less(n, n.p) {
+	if p := n.p; n.p != nil && h.Less(n, n.p) {
 		p.c.Remove(n)
 		h.root.PushLeft(n)
 		n.mark = false
