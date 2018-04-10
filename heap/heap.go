@@ -42,7 +42,7 @@ func (h *Heap) MaxHeaplify(i interface{}) {
 		largest, largest_idx = h.Key(h.Left(i)), h.Left(i)
 	}
 	if h.Valid(h.Right(i)) && h.Key(h.Right(i)) > largest {
-		largest, largest_idx = h.Key(h.Right(i)), h.Right(i)
+		_, largest_idx = h.Key(h.Right(i)), h.Right(i)
 	}
 	if i != largest_idx {
 		h.Swap(largest_idx, i)
