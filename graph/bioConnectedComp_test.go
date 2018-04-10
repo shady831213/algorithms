@@ -3,7 +3,7 @@ package graph
 import (
 	"testing"
 	"sort"
-	)
+)
 
 func bccSetupGraph(g Graph) {
 	for i := 0; i < 23; i ++ {
@@ -123,12 +123,52 @@ func vertexBCCGolden(g Graph) (cuts Graph, comps []Graph) {
 	return
 }
 
+func edgeBCCGolden(g Graph) (bridges Graph, comps []Graph) {
+	bridges = CreateGraphByType(g)
+	comps = make([]Graph, 6, 6)
+	for i := range comps {
+		comps[i] = CreateGraphByType(g)
+	}
+
+	bridges.AddEdgeBi(Edge{19, 17})
+	bridges.AddEdgeBi(Edge{17, 22})
+	bridges.AddEdgeBi(Edge{12, 14})
+	bridges.AddEdgeBi(Edge{10, 4})
+	bridges.AddEdgeBi(Edge{7, 9})
+	bridges.AddEdgeBi(Edge{0, 4})
+
+	comps[0].AddEdgeBi(Edge{0, 1})
+	comps[0].AddEdgeBi(Edge{1, 2})
+	comps[0].AddEdgeBi(Edge{2, 3})
+	comps[0].AddEdgeBi(Edge{3, 0})
+	comps[1].AddEdgeBi(Edge{4, 5})
+	comps[1].AddEdgeBi(Edge{4, 6})
+	comps[1].AddEdgeBi(Edge{5, 6})
+	comps[2].AddEdgeBi(Edge{4, 7})
+	comps[2].AddEdgeBi(Edge{4, 8})
+	comps[2].AddEdgeBi(Edge{7, 8})
+	comps[5].AddEdgeBi(Edge{10, 11})
+	comps[5].AddEdgeBi(Edge{11, 12})
+	comps[5].AddEdgeBi(Edge{12, 13})
+	comps[5].AddEdgeBi(Edge{13, 10})
+	comps[4].AddEdgeBi(Edge{14, 15})
+	comps[4].AddEdgeBi(Edge{15, 16})
+	comps[4].AddEdgeBi(Edge{16, 17})
+	comps[4].AddEdgeBi(Edge{17, 14})
+	comps[4].AddEdgeBi(Edge{14, 18})
+	comps[4].AddEdgeBi(Edge{18, 16})
+	comps[3].AddEdgeBi(Edge{19, 20})
+	comps[3].AddEdgeBi(Edge{20, 21})
+	comps[3].AddEdgeBi(Edge{21, 19})
+	return
+}
+
 func checkBCCGraphOutOfOrder(t *testing.T, g Graph, gGloden Graph) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
-		if 	edges[i].Start.(int) == edges[j].Start.(int) {
+		if edges[i].Start.(int) == edges[j].Start.(int) {
 			return edges[i].End.(int) < edges[j].End.(int)
 		}
 		return edges[i].Start.(int) < edges[j].Start.(int)
@@ -142,7 +182,7 @@ func checkBCCGraphOutOfOrder(t *testing.T, g Graph, gGloden Graph) {
 	expVertices := gGloden.AllVertices()
 
 	sort.Slice(expEdges, func(i, j int) bool {
-		if 	expEdges[i].Start.(int) == expEdges[j].Start.(int) {
+		if expEdges[i].Start.(int) == expEdges[j].Start.(int) {
 			return expEdges[i].End.(int) < expEdges[j].End.(int)
 		}
 		return expEdges[i].Start.(int) < expEdges[j].Start.(int)
@@ -164,4 +204,32 @@ func TestVertexBCC(t *testing.T) {
 	for i := range comps {
 		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
 	}
+}
+
+func TestEdgeBCC(t *testing.T) {
+	g := NewAdjacencyList()
+	bccSetupGraph(g)
+	bridges, comps := EdgeBCC(g)
+	bridgesExp, compsExp := edgeBCCGolden(g)
+	checkBCCGraphOutOfOrder(t, bridges, bridgesExp)
+	for i := range comps {
+		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
+	}
+	//for _, v := range bridges.AllEdges() {
+	//	t.Log(v)
+	//	t.Log(v.Start)
+	//	t.Log(v.End)
+	//}
+	//for i := range comps {
+	//	t.Log("comps ", i, "vertices:")
+	//	for _, v := range comps[i].AllVertices() {
+	//		t.Log(v)
+	//	}
+	//	t.Log("comps ", i, "edges:")
+	//	for _, v := range comps[i].AllEdges() {
+	//		t.Log(v)
+	//		t.Log(v.Start)
+	//		t.Log(v.End)
+	//	}
+	//}
 }
