@@ -66,7 +66,7 @@ func VertexBCC(g Graph) (cuts Graph, comps []Graph) {
 			vertexStack.PushBack(v)
 			for {
 				top := vertexStack.Back().Value
-				for _, e := range g.AllConnectedVertices(top) {
+				for e := range g.IterConnectedVertices(top) {
 					if _, ok := disc[e]; !ok {
 						if _, ok := children[top]; !ok {
 							children[top] = 0
@@ -132,7 +132,7 @@ func EdgeBCC(g Graph) (bridges Graph, comps []Graph) {
 			vertexStack.PushBack(v)
 			for {
 				top := vertexStack.Back().Value
-				for _, e := range g.AllConnectedVertices(top) {
+				for e := range g.IterConnectedVertices(top) {
 					if _, ok := disc[e]; !ok {
 						parent[e] = top
 						timer ++

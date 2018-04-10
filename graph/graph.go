@@ -21,6 +21,7 @@ type Graph interface {
 	AllVertices() []interface{}
 	AllEdges() []Edge
 	AllConnectedVertices(interface{}) []interface{}
+	IterConnectedVertices(interface{}) chan interface{}
 	Transpose()Graph
 	GetGraph() (interface{})
 }
@@ -145,6 +146,19 @@ func (g *AdjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 	return keys
 }
 
+func (g *AdjacencyMatrix) IterConnectedVertices(v interface{}) chan interface{}{
+	ch := make(chan interface{})
+	go func(){
+		if g.matrix.exist(v){
+			for key := g.matrix.get(v).(*linkedMap).frontKey(); key != nil; key = g.matrix.get(v).(*linkedMap).nextKey(key) {
+				ch <- key
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 func (g *AdjacencyMatrix) Transpose() Graph {
 	gt := NewAdjacencyMatrix()
 	for _, e := range g.AllEdges() {
@@ -209,6 +223,20 @@ func (g *AdjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 		}
 	}
 	return value
+}
+
+func (g *AdjacencyList) IterConnectedVertices(v interface{}) chan interface{}{
+	ch := make(chan interface{})
+	go func(){
+		if g.matrix.exist(v) {
+			for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
+				ch <- e.Value
+			}
+		}
+		close(ch)
+	}()
+
+	return ch
 }
 
 func (g *AdjacencyList) AllEdges() []Edge {

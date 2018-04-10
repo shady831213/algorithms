@@ -40,7 +40,7 @@ func BFS(g Graph, s interface{}) (bfsGraph Graph) {
 
 	for queue.Len() != 0 {
 		qe := queue.Front()
-		for _, v := range g.AllConnectedVertices(qe.Value) {
+		for v := range g.IterConnectedVertices(qe.Value) {
 			if elements[v].Color == WHITE {
 				elements[v].Color = GRAY
 				elements[v].Dist = elements[qe.Value].Dist + 1

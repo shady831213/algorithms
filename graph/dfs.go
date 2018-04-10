@@ -177,7 +177,7 @@ func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
 
 			for stack.Len() != 0 {
 				e := stack.Back().Value.(*DFSElement);
-				for _, c := range g.AllConnectedVertices(e.V) {
+				for c := range g.IterConnectedVertices(e.V) {
 					if elements.get(c).(*DFSElement).Color == WHITE {
 						// parent in deeper path always override that in shallower
 						elements.get(c).(*DFSElement).Color = GRAY
