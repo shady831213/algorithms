@@ -14,7 +14,7 @@ type bfsElement struct {
 
 func (e *bfsElement) Init(v interface{}) *bfsElement {
 	e.V = v
-	e.Color = WHITE
+	e.Color = white
 	e.Dist = math.MaxInt32
 	e.P = nil
 	return e
@@ -34,22 +34,22 @@ func bfs(g graph, s interface{}) (bfsGraph graph) {
 		bfsGraph.AddVertex(elements[v])
 	}
 
-	elements[s].Color = GRAY
+	elements[s].Color = gray
 	elements[s].Dist = 0
 	queue.PushBack(s)
 
 	for queue.Len() != 0 {
 		qe := queue.Front()
 		for v := range g.IterConnectedVertices(qe.Value) {
-			if elements[v].Color == WHITE {
-				elements[v].Color = GRAY
+			if elements[v].Color == white {
+				elements[v].Color = gray
 				elements[v].Dist = elements[qe.Value].Dist + 1
 				elements[v].P = elements[qe.Value]
 				bfsGraph.AddEdge(edge{elements[qe.Value], elements[v]})
 				queue.PushBack(v)
 			}
 		}
-		elements[qe.Value].Color = BLACK
+		elements[qe.Value].Color = black
 		queue.Remove(qe)
 	}
 	return

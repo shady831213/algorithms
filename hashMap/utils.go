@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func BasicTestHashMap(t *testing.T, hmap HashMap) {
+func basicTestHashMap(t *testing.T, hmap hashMap) {
 	actMap := make(map[string]int)
 	expMap := map[string]int{
 		"a":   1,
@@ -27,7 +27,7 @@ func BasicTestHashMap(t *testing.T, hmap HashMap) {
 	}
 }
 
-func TestHashMapResize(t *testing.T, hmap interface{}) {
+func testHashMapResize(t *testing.T, hmap interface{}) {
 	expMap := map[string]int{
 		"a":    1,
 		"b":    2,
@@ -43,11 +43,11 @@ func TestHashMapResize(t *testing.T, hmap interface{}) {
 		"eda":  90,
 	}
 	for i, v := range expMap {
-		hmap.(HashMap).HashInsert(i, v)
+		hmap.(hashMap).HashInsert(i, v)
 	}
 }
 
-func TestHashMapDelete(t *testing.T, hmap interface{}) {
+func testHashMapDelete(t *testing.T, hmap interface{}) {
 	expMap := map[string]int{
 		"a":    1,
 		"b":    2,
@@ -63,9 +63,9 @@ func TestHashMapDelete(t *testing.T, hmap interface{}) {
 		"eda":  90,
 	}
 	for i, v := range expMap {
-		hmap.(HashMap).HashInsert(i, v)
-		hmap.(HashMap).HashDelete(i)
-		value, exist := hmap.(HashMap).HashGet(i)
+		hmap.(hashMap).HashInsert(i, v)
+		hmap.(hashMap).HashDelete(i)
+		value, exist := hmap.(hashMap).HashGet(i)
 		if value != nil {
 			t.Log(fmt.Sprintf("expect value of key %s should be nil", i) + fmt.Sprintf("but get: %s", value))
 			t.Fail()
@@ -77,13 +77,13 @@ func TestHashMapDelete(t *testing.T, hmap interface{}) {
 	}
 }
 
-func BenchmarkHashMapInsert(b *testing.B, hmap HashMap) {
+func benchmarkHashMapInsert(b *testing.B, hmap hashMap) {
 	for i := 0; i < b.N; i++ {
 		hmap.HashInsert(rand.Intn(128), i)
 	}
 }
 
-func BenchmarkHashMapInsertDelete(b *testing.B, hmap HashMap) {
+func benchmarkHashMapInsertDelete(b *testing.B, hmap hashMap) {
 	b.StopTimer()
 	for i := 0; i < 128; i++ {
 		hmap.HashInsert(rand.Intn(128), i)
@@ -96,7 +96,7 @@ func BenchmarkHashMapInsertDelete(b *testing.B, hmap HashMap) {
 	}
 }
 
-func BenchmarkHashMapGet(b *testing.B, hmap HashMap) {
+func benchmarkHashMapGet(b *testing.B, hmap hashMap) {
 	b.StopTimer()
 	for i := 0; i < 128; i++ {
 		hmap.HashInsert(rand.Intn(128), i)

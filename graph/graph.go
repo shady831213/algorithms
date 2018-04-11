@@ -3,11 +3,10 @@ package graph
 import (
 	"container/list"
 )
-//for dfs and bfs color
 const (
-	WHITE = 0
-	GRAY  = 1
-	BLACK = 2
+	white = 0
+	gray  = 1
+	black = 2
 )
 
 type edge struct {

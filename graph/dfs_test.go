@@ -63,7 +63,7 @@ func dfsGolden(g graph) *dfsForest {
 	vertexes["z"].Root = vertexes["w"]
 
 	for v := range vertexes {
-		vertexes[v].Color = BLACK
+		vertexes[v].Color = black
 		dfsForest.AddVertex(vertexes[v])
 	}
 

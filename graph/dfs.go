@@ -13,7 +13,7 @@ type dfsElement struct {
 
 func (e *dfsElement) Init(v interface{}) *dfsElement {
 	e.V = v
-	e.Color = WHITE
+	e.Color = white
 	e.D = 0
 	e.F = 0
 	e.P = nil
@@ -168,20 +168,20 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 	}
 	pushStack := func(v interface{}) {
 		//push root vertex to stack
-		elements.get(v).(*dfsElement).Color = GRAY
+		elements.get(v).(*dfsElement).Color = gray
 		timer++
 		elements.get(v).(*dfsElement).D = timer
 		dfsForest.AddVertex(elements.get(v).(*dfsElement))
 		stack.PushBack(elements.get(v).(*dfsElement))
 	}
 	for v := elements.frontKey(); v != nil; v = elements.nextKey(v) {
-		if elements.get(v).(*dfsElement).Color == WHITE {
+		if elements.get(v).(*dfsElement).Color == white {
 			pushStack(v)
 
 			for stack.Len() != 0 {
 				e := stack.Back().Value.(*dfsElement)
 				for c := range g.IterConnectedVertices(e.V) {
-					if elements.get(c).(*dfsElement).Color == WHITE {
+					if elements.get(c).(*dfsElement).Color == white {
 						// parent in deeper path always override that in shallower
 						elements.get(c).(*dfsElement).P = e
 						elements.get(c).(*dfsElement).Root = e
@@ -189,7 +189,7 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 						//tree edge definition. First time visit
 						dfsForest.AddTreeEdge(edge{e, elements.get(c).(*dfsElement)})
 						break
-					} else if elements.get(c).(*dfsElement).Color == GRAY {
+					} else if elements.get(c).(*dfsElement).Color == gray {
 						// if color is already gray, it's a back edge
 						dfsForest.AddBackEdge(edge{e, elements.get(c).(*dfsElement)})
 					} else if e.D > elements.get(c).(*dfsElement).D {
@@ -202,7 +202,7 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 				}
 				if e == stack.Back().Value.(*dfsElement) {
 					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
-					e.Color = BLACK
+					e.Color = black
 					timer++
 					e.F = timer
 					stack.Remove(stack.Back())

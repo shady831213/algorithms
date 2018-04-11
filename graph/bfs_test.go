@@ -61,7 +61,7 @@ func bfsGolden(g graph) (bfsGraph graph) {
 	vertexes["y"].P = vertexes["x"]
 
 	for v := range vertexes {
-		vertexes[v].Color = BLACK
+		vertexes[v].Color = black
 		bfsGraph.AddVertex(vertexes[v])
 		if vertexes[v].P != nil {
 			bfsGraph.AddEdge(edge{vertexes[v].P, vertexes[v]})

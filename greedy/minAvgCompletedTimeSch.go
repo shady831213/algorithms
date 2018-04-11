@@ -3,11 +3,10 @@ package greedy
 import (
 	"container/heap"
 )
-
 const (
-	WAIT   = 0
-	RUN    = 1
-	FINISH = 2
+	wait   = 0
+	run    = 1
+	finish = 2
 )
 
 type task struct {
@@ -25,11 +24,11 @@ func (t *task) init(r, p, id int) *task {
 
 func (t *task) state() int {
 	if *(t.clk) < t.r+t.startTime {
-		return WAIT
+		return wait
 	} else if t.p > 0 {
-		return RUN
+		return run
 	} else {
-		return FINISH
+		return finish
 	}
 }
 
@@ -166,7 +165,7 @@ func (s *scheduler) run(input chan *task, output []chan *task) {
 		}
 
 		//check preTasks
-		for s.preTasks.Len() > 0 && s.preTasks.tasks[0].state() != WAIT {
+		for s.preTasks.Len() > 0 && s.preTasks.tasks[0].state() != wait {
 			temp := heap.Pop(s.preTasks).(*task)
 			heap.Push(s.runningTasks, temp)
 		}
@@ -174,7 +173,7 @@ func (s *scheduler) run(input chan *task, output []chan *task) {
 		if s.runningTasks.Len() > 0 {
 			s.runningTasks.tasks[0].run()
 			output[0] <- s.runningTasks.tasks[0]
-			if s.runningTasks.tasks[0].state() == FINISH {
+			if s.runningTasks.tasks[0].state() == finish {
 				s.finishedCnt++
 				s.totalCompletedTime += s.runningTasks.tasks[0].finishTime - s.runningTasks.tasks[0].startTime
 				heap.Pop(s.runningTasks)

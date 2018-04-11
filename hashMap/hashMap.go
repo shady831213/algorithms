@@ -7,46 +7,46 @@ import (
 	"math/big"
 )
 
-const DEFALUTCAP = 8
+const defalutcap = 8
 
-type HashElement struct {
+type hashElement struct {
 	Key   interface{}
 	Value interface{}
 }
 
-type HashMap interface {
+type hashMap interface {
 	HashInsert(interface{}, interface{})
 	HashDelete(interface{})
 	HashGet(interface{}) (interface{}, bool)
 	Init(uint32)
 }
 
-type ScaleableMap interface {
+type scaleableMap interface {
 	UpScale()
 	DownScale()
 	Move(uint32)
 }
 
-type HashMapBase struct {
+type hashMapBase struct {
 	Cap   uint32
 	Count uint32
-	HashMap
-	ScaleableMap
+	hashMap
+	scaleableMap
 }
 
-func (h *HashMapBase) Init(cap uint32) {
+func (h *hashMapBase) Init(cap uint32) {
 	h.Cap = cap
 	h.Count = 0
 }
 
-func (h *HashMapBase) GetAlpha() float64 {
+func (h *hashMapBase) GetAlpha() float64 {
 	if h.Cap == 0 {
 		return 1.0
 	}
 	return float64(h.Count) / float64(h.Cap)
 }
 
-func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) *big.Int {
+func (h *hashMapBase) HashFunc(key interface{}, hash hash.Hash) *big.Int {
 	buf := bytes.NewBuffer(nil)
 	enc := gob.NewEncoder(buf)
 	enc.Encode(key)
@@ -54,23 +54,23 @@ func (h *HashMapBase) HashFunc(key interface{}, hash hash.Hash) *big.Int {
 	return new(big.Int).SetBytes(hashBytes)
 }
 
-func (h *HashMapBase) UpScale() {
+func (h *hashMapBase) UpScale() {
 	if h.GetAlpha() >= 0.75 {
 		if h.Cap == 0 {
-			h.HashMap.Init(DEFALUTCAP)
+			h.hashMap.Init(defalutcap)
 		} else {
 			h.Move(h.Cap << 1)
 		}
 	}
 }
 
-func (h *HashMapBase) DownScale() {
+func (h *hashMapBase) DownScale() {
 	if h.GetAlpha() <= 0.125 {
 		if h.Count == 0 {
-			h.HashMap.Init(0)
+			h.hashMap.Init(0)
 			return
 		}
-		if h.Cap > DEFALUTCAP {
+		if h.Cap > defalutcap {
 			h.Move(h.Cap >> 1)
 		}
 	}
