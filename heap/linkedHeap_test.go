@@ -5,16 +5,16 @@ import (
 )
 
 func Test_linkedHeap(t *testing.T) {
-	h := NewLinkedHeap()
-	TestHeap(t, h)
+	h := newLinkedHeap()
+	testHeap(t, h)
 }
 
 func Test_linkedHeapUnion(t *testing.T) {
-	h, h2 := NewLinkedHeap(), NewLinkedHeap()
-	TestHeapUnion(t, h, h2)
+	h, h2 := newLinkedHeap(), newLinkedHeap()
+	testHeapUnion(t, h, h2)
 }
 
 func Benchmark_linkedHeap(b *testing.B) {
-	h := NewLinkedHeap()
-	BenchmarkHeap(b, h)
+	h := newLinkedHeap()
+	benchmarkHeap(b, h)
 }

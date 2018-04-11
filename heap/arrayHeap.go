@@ -2,7 +2,7 @@ package heap
 
 type heapIntArrays []int
 
-//cross package
+//HeapIntArray cross package
 type HeapIntArray struct {
 	heap
 	heapIntArrays

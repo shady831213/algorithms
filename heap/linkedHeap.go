@@ -1,21 +1,21 @@
 package heap
 
-type Element struct {
-	parent, left, right, next, prev *Element
+type linkedHeapListElement struct {
+	parent, left, right, next, prev *linkedHeapListElement
 	Value                           interface{}
 }
 
-type LinkedHeapList struct {
-	root Element
+type linkedHeapList struct {
+	root linkedHeapListElement
 	len  int
 }
 
-type LinkedHeap struct {
-	LinkedHeapList
+type linkedHeap struct {
+	linkedHeapList
 	heap
 }
 
-func (h *LinkedHeapList) Init() {
+func (h *linkedHeapList) Init() {
 	h.root.prev = &h.root
 	h.root.next = &h.root
 	h.root.parent = &h.root
@@ -24,62 +24,62 @@ func (h *LinkedHeapList) Init() {
 	h.len = 0
 }
 
-func (h *LinkedHeapList) Parent(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Parent(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.parent
 }
-func (h *LinkedHeapList) Left(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Left(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.left
 }
-func (h *LinkedHeapList) Right(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Right(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.right
 }
 
-func (h *LinkedHeapList) Prev(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Prev(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.prev
 }
-func (h *LinkedHeapList) Next(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Next(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.next
 }
 
-func (h *LinkedHeapList) Last() interface{} {
+func (h *linkedHeapList) Last() interface{} {
 	return h.root.prev
 }
-func (h *LinkedHeapList) Head() interface{} {
+func (h *linkedHeapList) Head() interface{} {
 	return h.root.next
 }
 
-func (h *LinkedHeapList) Valid(i interface{}) bool {
-	iE := i.(*Element)
+func (h *linkedHeapList) Valid(i interface{}) bool {
+	iE := i.(*linkedHeapListElement)
 	return iE != &h.root && iE != nil
 }
 
-func (h *LinkedHeapList) Swap(i interface{}, j interface{}) {
-	iE := i.(*Element)
-	jE := j.(*Element)
+func (h *linkedHeapList) Swap(i interface{}, j interface{}) {
+	iE := i.(*linkedHeapListElement)
+	jE := j.(*linkedHeapListElement)
 	iE.Value, jE.Value = jE.Value, iE.Value
 }
 
-func (h *LinkedHeapList) Key(i interface{}) int {
-	iE := i.(*Element)
+func (h *linkedHeapList) Key(i interface{}) int {
+	iE := i.(*linkedHeapListElement)
 	return iE.Value.(int)
 }
 
-func (h *LinkedHeapList) Value(i interface{}) interface{} {
-	iE := i.(*Element)
+func (h *linkedHeapList) Value(i interface{}) interface{} {
+	iE := i.(*linkedHeapListElement)
 	return iE.Value
 }
 
-func (h *LinkedHeapList) Len() int {
+func (h *linkedHeapList) Len() int {
 	return h.len
 }
 
-func (h *LinkedHeapList) Pop() (i interface{}) {
-	last := h.Last().(*Element)
+func (h *linkedHeapList) Pop() (i interface{}) {
+	last := h.Last().(*linkedHeapListElement)
 	lastParent := last.parent
 	lastPrev := last.prev
 	lastPrev.next = &h.root
@@ -93,11 +93,11 @@ func (h *LinkedHeapList) Pop() (i interface{}) {
 	return last.Value
 }
 
-func (h *LinkedHeapList) Append(i interface{}) {
-	newE := new(Element)
+func (h *linkedHeapList) Append(i interface{}) {
+	newE := new(linkedHeapListElement)
 	newE.Value = i
 	newE.next = &h.root
-	last := h.Last().(*Element)
+	last := h.Last().(*linkedHeapListElement)
 	lastParent := last.parent
 	last.next = newE
 	newE.prev = last
@@ -113,23 +113,23 @@ func (h *LinkedHeapList) Append(i interface{}) {
 }
 
 //O(n)
-func (h *LinkedHeapList) Union(i interface{}) interface{} {
-	var midNode *Element
-	_i := i.(*LinkedHeapList)
+func (h *linkedHeapList) Union(i interface{}) interface{} {
+	var midNode *linkedHeapListElement
+	_i := i.(*linkedHeapList)
 	if h.Len() > _i.Len() {
-		midNode = _i.Head().(*Element)
-		h.Last().(*Element).next = midNode
-		midNode.prev = h.Last().(*Element)
-		h.root.prev = _i.Last().(*Element)
-		_i.Last().(*Element).next = &h.root
+		midNode = _i.Head().(*linkedHeapListElement)
+		h.Last().(*linkedHeapListElement).next = midNode
+		midNode.prev = h.Last().(*linkedHeapListElement)
+		h.root.prev = _i.Last().(*linkedHeapListElement)
+		_i.Last().(*linkedHeapListElement).next = &h.root
 	} else {
-		midNode := h.Head().(*Element)
-		_i.Last().(*Element).next = midNode
-		midNode.prev = _i.Last().(*Element)
-		h.root.next = _i.Head().(*Element)
-		_i.Head().(*Element).prev = &h.root
+		midNode := h.Head().(*linkedHeapListElement)
+		_i.Last().(*linkedHeapListElement).next = midNode
+		midNode.prev = _i.Last().(*linkedHeapListElement)
+		h.root.next = _i.Head().(*linkedHeapListElement)
+		_i.Head().(*linkedHeapListElement).prev = &h.root
 	}
-	for iNode := midNode; h.Valid(iNode); iNode = h.Next(iNode).(*Element) {
+	for iNode := midNode; h.Valid(iNode); iNode = h.Next(iNode).(*linkedHeapListElement) {
 		iNode.parent = nil
 		iNode.left = nil
 		iNode.right = nil
@@ -147,27 +147,27 @@ func (h *LinkedHeapList) Union(i interface{}) interface{} {
 	return *h
 }
 
-func NewLinkedHeap() *LinkedHeap {
-	h := new(LinkedHeap)
-	h.LinkedHeapList = LinkedHeapList{}
-	h.LinkedHeapList.Init()
-	h.heap.binHeapArrayIf = &h.LinkedHeapList
+func newLinkedHeap() *linkedHeap {
+	h := new(linkedHeap)
+	h.linkedHeapList = linkedHeapList{}
+	h.linkedHeapList.Init()
+	h.heap.binHeapArrayIf = &h.linkedHeapList
 	return h
 }
 
 //merge:O(n)
 //rebuild:O(n)
 //T(n)=O(n)
-func (h *LinkedHeap) Union(i interface{}) interface{} {
-	h.LinkedHeapList = h.LinkedHeapList.Union(&(i.(*LinkedHeap).LinkedHeapList)).(LinkedHeapList)
+func (h *linkedHeap) Union(i interface{}) interface{} {
+	h.linkedHeapList = h.linkedHeapList.Union(&(i.(*linkedHeap).linkedHeapList)).(linkedHeapList)
 	h.heap.BuildHeap()
 	return h
 }
 
-func (h *LinkedHeap) Pop() (i interface{}) {
+func (h *linkedHeap) Pop() (i interface{}) {
 	return h.heap.Pop()
 }
 
-func (h *LinkedHeap) Append(i interface{}) {
+func (h *linkedHeap) Append(i interface{}) {
 	h.heap.Append(i)
 }

@@ -1,66 +1,66 @@
 package heap
 
-type LtHeapElement struct {
-	left, right *LtHeapElement
+type ltHeapElement struct {
+	left, right *ltHeapElement
 	dist        int
 	Value       interface{}
 }
 
-type LtHeapArray struct {
-	root *LtHeapElement
+type ltHeapArray struct {
+	root *ltHeapElement
 	len  int
 }
 
-func (h *LtHeapArray) Left(i interface{}) interface{} {
-	iE := i.(*LtHeapElement)
+func (h *ltHeapArray) Left(i interface{}) interface{} {
+	iE := i.(*ltHeapElement)
 	return iE.left
 }
-func (h *LtHeapArray) Right(i interface{}) interface{} {
-	iE := i.(*LtHeapElement)
+func (h *ltHeapArray) Right(i interface{}) interface{} {
+	iE := i.(*ltHeapElement)
 	return iE.right
 }
 
-func (h *LtHeapArray) Head() interface{} {
+func (h *ltHeapArray) Head() interface{} {
 	return h.root
 }
 
-func (h *LtHeapArray) Swap(i interface{}, j interface{}) {
-	iE := i.(**LtHeapElement)
-	jE := j.(**LtHeapElement)
+func (h *ltHeapArray) Swap(i interface{}, j interface{}) {
+	iE := i.(**ltHeapElement)
+	jE := j.(**ltHeapElement)
 	(*iE), (*jE) = (*jE), (*iE)
 }
 
-func (h *LtHeapArray) Key(i interface{}) int {
-	iE := i.(*LtHeapElement)
+func (h *ltHeapArray) Key(i interface{}) int {
+	iE := i.(*ltHeapElement)
 	return iE.Value.(int)
 }
 
-func (h *LtHeapArray) Value(i interface{}) interface{} {
-	iE := i.(*LtHeapElement)
+func (h *ltHeapArray) Value(i interface{}) interface{} {
+	iE := i.(*ltHeapElement)
 	return iE.Value
 }
 
-func (h *LtHeapArray) Len() int {
+func (h *ltHeapArray) Len() int {
 	return h.len
 }
 
-func (h *LtHeapArray) Pop() (i interface{}) {
+func (h *ltHeapArray) Pop() (i interface{}) {
 	i = h.root.Value
-	h.root = h.merge(h.root.left, h.root.right).(*LtHeapElement)
+	h.root = h.merge(h.root.left, h.root.right).(*ltHeapElement)
 	h.len--
 	return
 }
 
-func (h *LtHeapArray) Append(i interface{}) {
-	newE := LtHeapElement{Value: i}
-	h.root = h.merge(h.root, &newE).(*LtHeapElement)
+func (h *ltHeapArray) Append(i interface{}) {
+	newE := ltHeapElement{Value: i}
+	h.root = h.merge(h.root, &newE).(*ltHeapElement)
 	h.len++
 }
 
 //merge:O(logn)
-func (h *LtHeapArray) merge(i interface{}, j interface{}) interface{} {
-	iE := i.(*LtHeapElement)
-	jE := j.(*LtHeapElement)
+func (h *ltHeapArray) merge(i interface{}, j interface{}) interface{} {
+	iE := i.(*ltHeapElement)
+	jE := j.(*ltHeapElement)
 	if iE == nil {
 		return jE
 	}
@@ -70,7 +70,7 @@ func (h *LtHeapArray) merge(i interface{}, j interface{}) interface{} {
 	if h.Key(iE) < h.Key(jE) {
 		h.Swap(&iE, &jE)
 	}
-	iE.right = h.merge(iE.right, jE).(*LtHeapElement)
+	iE.right = h.merge(iE.right, jE).(*ltHeapElement)
 	if iE.left == nil || iE.right.dist > iE.left.dist {
 		h.Swap(&iE.left, &iE.right)
 	}
@@ -82,13 +82,13 @@ func (h *LtHeapArray) merge(i interface{}, j interface{}) interface{} {
 	return iE
 }
 
-func (h *LtHeapArray) Union(i interface{}) interface{} {
-	_i := i.(*LtHeapArray)
-	h.root = h.merge(h.root, _i.root).(*LtHeapElement)
+func (h *ltHeapArray) Union(i interface{}) interface{} {
+	_i := i.(*ltHeapArray)
+	h.root = h.merge(h.root, _i.root).(*ltHeapElement)
 	h.len += _i.len
 	return h
 }
 
-func NewLtHeapArray() *LtHeapArray {
-	return new(LtHeapArray)
+func newLtHeapArray() *ltHeapArray {
+	return new(ltHeapArray)
 }
