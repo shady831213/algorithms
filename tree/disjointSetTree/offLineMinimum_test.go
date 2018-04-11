@@ -8,15 +8,15 @@ import (
 
 func TestOfflineMinimum(t *testing.T) {
 	seq := []int{4, 8,
-		OFFLINEMINIMUM_EXTRACT,
+		offlineminimumExtract,
 		3,
-		OFFLINEMINIMUM_EXTRACT,
+		offlineminimumExtract,
 		9, 2, 6,
-		OFFLINEMINIMUM_EXTRACT,
-		OFFLINEMINIMUM_EXTRACT,
-		OFFLINEMINIMUM_EXTRACT,
+		offlineminimumExtract,
+		offlineminimumExtract,
+		offlineminimumExtract,
 		1, 7,
-		OFFLINEMINIMUM_EXTRACT,
+		offlineminimumExtract,
 		5}
 	exp := []int{4, 3, 2, 6, 8, 1}
 	extractSeq := offLineMinimum(seq)
