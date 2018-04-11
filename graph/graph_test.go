@@ -7,20 +7,20 @@ import (
 	"testing"
 )
 
-func setupGraph(g Graph) {
+func setupGraph(g graph) {
 	g.AddVertex(2)
 	g.AddVertex(4)
 	g.AddVertex(6)
-	g.AddEdgeBi(Edge{6, 4})
+	g.AddEdgeBi(edge{6, 4})
 	g.AddVertex(6)
 	g.AddVertex(8)
-	g.AddEdge(Edge{1, 2})
-	g.AddEdge(Edge{2, 1})
-	g.AddEdge(Edge{2, 4})
-	g.AddEdge(Edge{8, 7})
+	g.AddEdge(edge{1, 2})
+	g.AddEdge(edge{2, 1})
+	g.AddEdge(edge{2, 4})
+	g.AddEdge(edge{8, 7})
 }
 
-func checkGraph(t *testing.T, g Graph) {
+func checkGraph(t *testing.T, g graph) {
 	edges := g.AllEdges()
 	vertexes := g.AllVertices()
 	sort.Slice(edges, func(i, j int) bool {
@@ -39,7 +39,7 @@ func checkGraph(t *testing.T, g Graph) {
 			return connectedVertices[i][k].(int) < connectedVertices[i][j].(int)
 		})
 	}
-	expEdges := []Edge{{1, 2}, {2, 1}, {2, 4}, {4, 6}, {6, 4}, {8, 7}}
+	expEdges := []edge{{1, 2}, {2, 1}, {2, 4}, {4, 6}, {6, 4}, {8, 7}}
 	expVertices := []interface{}{1, 2, 4, 6, 7, 8}
 	expConnetedVertices := [][]interface{}{{2}, {1, 4}, {6}, {4}, {}, {7}}
 	if !reflect.DeepEqual(edges, expEdges) {
@@ -57,27 +57,27 @@ func checkGraph(t *testing.T, g Graph) {
 
 }
 
-func testGraph(t *testing.T, g Graph) {
+func testGraph(t *testing.T, g graph) {
 	setupGraph(g)
 	checkGraph(t, g)
 }
 
 func TestNewAdjacencyList(t *testing.T) {
-	testGraph(t, NewAdjacencyList())
+	testGraph(t, newAdjacencyList())
 }
 
 func TestNewAdjacencyMatrix(t *testing.T) {
-	testGraph(t, NewAdjacencyMatrix())
+	testGraph(t, newAdjacencyMatrix())
 }
 
 func TestAdjacencyList2AdjacencyMatrix(t *testing.T) {
-	l := NewAdjacencyList()
+	l := newAdjacencyList()
 	setupGraph(l)
-	checkGraph(t, AdjacencyList2AdjacencyMatrix(l))
+	checkGraph(t, adjacencyList2AdjacencyMatrix(l))
 }
 
 func TestAdjacencyMatrix2AdjacencyList(t *testing.T) {
-	m := NewAdjacencyMatrix()
+	m := newAdjacencyMatrix()
 	setupGraph(m)
-	checkGraph(t, AdjacencyMatrix2AdjacencyList(m))
+	checkGraph(t, adjacencyMatrix2AdjacencyList(m))
 }

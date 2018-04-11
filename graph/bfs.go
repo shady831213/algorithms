@@ -5,14 +5,14 @@ import (
 	"math"
 )
 
-type BFSElement struct {
+type bfsElement struct {
 	Color int
 	Dist  int
-	P     *BFSElement
+	P     *bfsElement
 	V     interface{}
 }
 
-func (e *BFSElement) Init(v interface{}) *BFSElement {
+func (e *bfsElement) Init(v interface{}) *bfsElement {
 	e.V = v
 	e.Color = WHITE
 	e.Dist = math.MaxInt32
@@ -20,17 +20,17 @@ func (e *BFSElement) Init(v interface{}) *BFSElement {
 	return e
 }
 
-func NewBFSElement(v interface{}) *BFSElement {
-	return new(BFSElement).Init(v)
+func newBFSElement(v interface{}) *bfsElement {
+	return new(bfsElement).Init(v)
 }
 
-func BFS(g Graph, s interface{}) (bfsGraph Graph) {
-	bfsGraph = CreateGraphByType(g)
+func bfs(g graph, s interface{}) (bfsGraph graph) {
+	bfsGraph = createGraphByType(g)
 
-	elements := make(map[interface{}]*BFSElement)
+	elements := make(map[interface{}]*bfsElement)
 	queue := list.New()
 	for _, v := range g.AllVertices() {
-		elements[v] = NewBFSElement(v)
+		elements[v] = newBFSElement(v)
 		bfsGraph.AddVertex(elements[v])
 	}
 
@@ -45,7 +45,7 @@ func BFS(g Graph, s interface{}) (bfsGraph Graph) {
 				elements[v].Color = GRAY
 				elements[v].Dist = elements[qe.Value].Dist + 1
 				elements[v].P = elements[qe.Value]
-				bfsGraph.AddEdge(Edge{elements[qe.Value], elements[v]})
+				bfsGraph.AddEdge(edge{elements[qe.Value], elements[v]})
 				queue.PushBack(v)
 			}
 		}

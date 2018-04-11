@@ -151,11 +151,11 @@ func (k *kill) init(cost int) *kill {
 	return k
 }
 
-func (t *kill) updateCost(i int, j int, ldc *lDComputor) int {
-	return t.cost
+func (k *kill) updateCost(i int, j int, ldc *lDComputor) int {
+	return k.cost
 }
 
-func (t *kill) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
+func (k *kill) preOpIdx(i int, j int, ldc *lDComputor) (int, int) {
 	return 0, 0
 }
 

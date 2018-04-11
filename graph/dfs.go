@@ -4,14 +4,14 @@ import (
 	"container/list"
 )
 
-type DFSElement struct {
+type dfsElement struct {
 	Color   int
 	D, F    int
-	P, Root *DFSElement
+	P, Root *dfsElement
 	V       interface{}
 }
 
-func (e *DFSElement) Init(v interface{}) *DFSElement {
+func (e *dfsElement) Init(v interface{}) *dfsElement {
 	e.V = v
 	e.Color = WHITE
 	e.D = 0
@@ -22,7 +22,7 @@ func (e *DFSElement) Init(v interface{}) *DFSElement {
 }
 
 //path compression, inspiration from disjoint-set
-func (e *DFSElement) FindRoot() *DFSElement {
+func (e *dfsElement) FindRoot() *dfsElement {
 	_e := e
 	for _e.Root != _e {
 		if _e.Root.Root != _e.Root {
@@ -34,113 +34,113 @@ func (e *DFSElement) FindRoot() *DFSElement {
 
 }
 
-func NewDFSElement(v interface{}) *DFSElement {
-	return new(DFSElement).Init(v)
+func newDFSElement(v interface{}) *dfsElement {
+	return new(dfsElement).Init(v)
 }
 
-type DFSForest struct {
-	Trees, BackEdges, ForwardEdges, CrossEdges Graph
-	Comps                                      map[*DFSElement]*DFSForest
+type dfsForest struct {
+	Trees, BackEdges, ForwardEdges, CrossEdges graph
+	Comps                                      map[*dfsElement]*dfsForest
 }
 
-func (f *DFSForest) Init(g Graph) *DFSForest {
-	f.Trees = CreateGraphByType(g)
-	f.BackEdges = CreateGraphByType(g)
-	f.ForwardEdges = CreateGraphByType(g)
-	f.CrossEdges = CreateGraphByType(g)
-	f.Comps = make(map[*DFSElement]*DFSForest)
+func (f *dfsForest) Init(g graph) *dfsForest {
+	f.Trees = createGraphByType(g)
+	f.BackEdges = createGraphByType(g)
+	f.ForwardEdges = createGraphByType(g)
+	f.CrossEdges = createGraphByType(g)
+	f.Comps = make(map[*dfsElement]*dfsForest)
 	return f
 }
 
-func (f *DFSForest) addVertex(v *DFSElement) {
+func (f *dfsForest) addVertex(v *dfsElement) {
 	f.Trees.AddVertex(v)
 	f.BackEdges.AddVertex(v)
 	f.ForwardEdges.AddVertex(v)
 	f.CrossEdges.AddVertex(v)
 }
 
-func (f *DFSForest) addTreeEdge(e Edge) {
+func (f *dfsForest) addTreeEdge(e edge) {
 	f.Trees.AddEdge(e)
 }
 
-func (f *DFSForest) addForwardEdge(e Edge) {
+func (f *dfsForest) addForwardEdge(e edge) {
 	f.ForwardEdges.AddEdge(e)
 }
 
-func (f *DFSForest) addBackEdge(e Edge) {
+func (f *dfsForest) addBackEdge(e edge) {
 	f.BackEdges.AddEdge(e)
 }
 
-func (f *DFSForest) addCrossEdge(e Edge) {
+func (f *dfsForest) addCrossEdge(e edge) {
 	f.CrossEdges.AddEdge(e)
 }
 
-func (f *DFSForest) getRoot(e *DFSElement) *DFSElement {
+func (f *dfsForest) getRoot(e *dfsElement) *dfsElement {
 	root := e.FindRoot()
 	if _, ok := f.Comps[root]; !ok {
-		f.Comps[root] = NewDFSForest(f.Trees)
+		f.Comps[root] = newDFSForest(f.Trees)
 	}
 	return root
 }
 
-func (f *DFSForest) AddVertex(v *DFSElement) {
+func (f *dfsForest) AddVertex(v *dfsElement) {
 	f.addVertex(v)
 	f.Comps[f.getRoot(v)].addVertex(v)
 }
 
-func (f *DFSForest) AddTreeEdge(e Edge) {
+func (f *dfsForest) AddTreeEdge(e edge) {
 	f.addTreeEdge(e)
-	root := f.getRoot(e.Start.(*DFSElement))
-	if root == f.getRoot(e.End.(*DFSElement)) {
+	root := f.getRoot(e.Start.(*dfsElement))
+	if root == f.getRoot(e.End.(*dfsElement)) {
 		f.Comps[root].addTreeEdge(e)
 	}
 }
 
-func (f *DFSForest) AddForwardEdge(e Edge) {
+func (f *dfsForest) AddForwardEdge(e edge) {
 	f.addForwardEdge(e)
-	root := f.getRoot(e.Start.(*DFSElement))
-	if root == f.getRoot(e.End.(*DFSElement)) {
+	root := f.getRoot(e.Start.(*dfsElement))
+	if root == f.getRoot(e.End.(*dfsElement)) {
 		f.Comps[root].addForwardEdge(e)
 	}
 }
 
-func (f *DFSForest) AddBackEdge(e Edge) {
+func (f *dfsForest) AddBackEdge(e edge) {
 	f.addBackEdge(e)
-	root := f.getRoot(e.Start.(*DFSElement))
-	if root == f.getRoot(e.End.(*DFSElement)) {
+	root := f.getRoot(e.Start.(*dfsElement))
+	if root == f.getRoot(e.End.(*dfsElement)) {
 		f.Comps[root].addBackEdge(e)
 	}
 }
 
-func (f *DFSForest) AddCrossEdge(e Edge) {
+func (f *dfsForest) AddCrossEdge(e edge) {
 	f.addCrossEdge(e)
-	root := f.getRoot(e.Start.(*DFSElement))
-	if root == f.getRoot(e.End.(*DFSElement)) {
+	root := f.getRoot(e.Start.(*dfsElement))
+	if root == f.getRoot(e.End.(*dfsElement)) {
 		f.Comps[root].addCrossEdge(e)
 	}
 }
 
-func (f *DFSForest) AllTreeEdges() []Edge {
+func (f *dfsForest) AllTreeEdges() []edge {
 	return f.Trees.AllEdges()
 }
 
-func (f *DFSForest) AllBackEdges() []Edge {
+func (f *dfsForest) AllBackEdges() []edge {
 	return f.BackEdges.AllEdges()
 }
 
-func (f *DFSForest) AllForwardEdges() []Edge {
+func (f *dfsForest) AllForwardEdges() []edge {
 	return f.ForwardEdges.AllEdges()
 }
 
-func (f *DFSForest) AllCrossEdges() []Edge {
+func (f *dfsForest) AllCrossEdges() []edge {
 	return f.CrossEdges.AllEdges()
 }
 
-func (f *DFSForest) AllVertices() []interface{} {
+func (f *dfsForest) AllVertices() []interface{} {
 	return f.Trees.AllVertices()
 }
 
-func (f *DFSForest) AllEdges() []Edge {
+func (f *dfsForest) AllEdges() []edge {
 	edges := f.AllTreeEdges()
 	edges = append(edges, f.AllForwardEdges()...)
 	edges = append(edges, f.AllBackEdges()...)
@@ -148,12 +148,12 @@ func (f *DFSForest) AllEdges() []Edge {
 	return edges
 }
 
-func NewDFSForest(g Graph) *DFSForest {
-	return new(DFSForest).Init(g)
+func newDFSForest(g graph) *dfsForest {
+	return new(dfsForest).Init(g)
 }
 
-func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
-	dfsForest = NewDFSForest(g)
+func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
+	dfsForest = newDFSForest(g)
 	timer := 0
 	stack := list.New()
 	//to keep vertices order
@@ -164,43 +164,43 @@ func DFS(g Graph, sorter func([]interface{})) (dfsForest *DFSForest) {
 		sorter(vertices)
 	}
 	for _, v := range vertices {
-		elements.add(v, NewDFSElement(v))
+		elements.add(v, newDFSElement(v))
 	}
 	pushStack := func(v interface{}) {
 		//push root vertex to stack
-		elements.get(v).(*DFSElement).Color = GRAY
+		elements.get(v).(*dfsElement).Color = GRAY
 		timer++
-		elements.get(v).(*DFSElement).D = timer
-		dfsForest.AddVertex(elements.get(v).(*DFSElement))
-		stack.PushBack(elements.get(v).(*DFSElement))
+		elements.get(v).(*dfsElement).D = timer
+		dfsForest.AddVertex(elements.get(v).(*dfsElement))
+		stack.PushBack(elements.get(v).(*dfsElement))
 	}
 	for v := elements.frontKey(); v != nil; v = elements.nextKey(v) {
-		if elements.get(v).(*DFSElement).Color == WHITE {
+		if elements.get(v).(*dfsElement).Color == WHITE {
 			pushStack(v)
 
 			for stack.Len() != 0 {
-				e := stack.Back().Value.(*DFSElement)
+				e := stack.Back().Value.(*dfsElement)
 				for c := range g.IterConnectedVertices(e.V) {
-					if elements.get(c).(*DFSElement).Color == WHITE {
+					if elements.get(c).(*dfsElement).Color == WHITE {
 						// parent in deeper path always override that in shallower
-						elements.get(c).(*DFSElement).P = e
-						elements.get(c).(*DFSElement).Root = e
+						elements.get(c).(*dfsElement).P = e
+						elements.get(c).(*dfsElement).Root = e
 						pushStack(c)
 						//tree edge definition. First time visit
-						dfsForest.AddTreeEdge(Edge{e, elements.get(c).(*DFSElement)})
+						dfsForest.AddTreeEdge(edge{e, elements.get(c).(*dfsElement)})
 						break
-					} else if elements.get(c).(*DFSElement).Color == GRAY {
+					} else if elements.get(c).(*dfsElement).Color == GRAY {
 						// if color is already gray, it's a back edge
-						dfsForest.AddBackEdge(Edge{e, elements.get(c).(*DFSElement)})
-					} else if e.D > elements.get(c).(*DFSElement).D {
-						// if color is already black, it's a cross edge,d(e) > d(elements.get(c).(*DFSElement))
-						dfsForest.AddCrossEdge(Edge{e, elements.get(c).(*DFSElement)})
-					} else if elements.get(c).(*DFSElement).D-e.D > 1 {
-						// if color is already black, it's a cross edge,d(e) < d(elements.get(c).(*DFSElement)) - 1
-						dfsForest.AddForwardEdge(Edge{e, elements.get(c).(*DFSElement)})
+						dfsForest.AddBackEdge(edge{e, elements.get(c).(*dfsElement)})
+					} else if e.D > elements.get(c).(*dfsElement).D {
+						// if color is already black, it's a cross edge,d(e) > d(elements.get(c).(*dfsElement))
+						dfsForest.AddCrossEdge(edge{e, elements.get(c).(*dfsElement)})
+					} else if elements.get(c).(*dfsElement).D-e.D > 1 {
+						// if color is already black, it's a cross edge,d(e) < d(elements.get(c).(*dfsElement)) - 1
+						dfsForest.AddForwardEdge(edge{e, elements.get(c).(*dfsElement)})
 					}
 				}
-				if e == stack.Back().Value.(*DFSElement) {
+				if e == stack.Back().Value.(*dfsElement) {
 					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
 					e.Color = BLACK
 					timer++
