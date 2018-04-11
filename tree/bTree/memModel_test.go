@@ -18,10 +18,10 @@ func TestDiscModel(t *testing.T) {
 	for i := 0; i < 8; i++ {
 		data, _ := d.read(i)
 		buf := bytes.NewBuffer(data.([]byte))
-		var data_i uint32
-		binary.Read(buf, binary.LittleEndian, &data_i)
-		if uint32(i) != data_i {
-			t.Log(i, data_i)
+		var dataI uint32
+		binary.Read(buf, binary.LittleEndian, &dataI)
+		if uint32(i) != dataI {
+			t.Log(i, dataI)
 			t.Fail()
 		}
 	}
@@ -31,7 +31,7 @@ type testCacheModel struct {
 	cacheModel
 }
 
-func (c *testCacheModel) init(size int, downStreamModel memory) *testCacheModel {
+func (c *testCacheModel) init(size int, downStreamModel access) *testCacheModel {
 	c.cacheModel.init(size, downStreamModel, c)
 	return c
 }
@@ -59,7 +59,7 @@ func (c *testCacheModel) decData(data interface{}) interface{} {
 	return result
 }
 
-func newTestCacheModel(size int, downStreamModel memory) *testCacheModel {
+func newTestCacheModel(size int, downStreamModel access) *testCacheModel {
 	return new(testCacheModel).init(size, downStreamModel)
 }
 

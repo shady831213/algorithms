@@ -211,9 +211,8 @@ func (bt *bTree) leftNode(n *bTreeNode) (*bTreeNode, int) {
 			return nil, -1
 		}
 		return n.p.c[i-1], i - 1
-	} else {
-		return n.p.c[i], i
 	}
+	return n.p.c[i], i
 }
 
 func (bt *bTree) rightNode(n *bTreeNode) (*bTreeNode, int) {
@@ -228,9 +227,8 @@ func (bt *bTree) rightNode(n *bTreeNode) (*bTreeNode, int) {
 			return nil, -1
 		}
 		return n.p.c[i+2], i + 1
-	} else {
-		return n.p.c[i+1], i
 	}
+	return n.p.c[i+1], i
 }
 
 func (bt *bTree) insert(key, value interface{}) {
