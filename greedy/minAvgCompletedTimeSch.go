@@ -3,6 +3,7 @@ package greedy
 import (
 	"container/heap"
 )
+
 const (
 	wait   = 0
 	run    = 1

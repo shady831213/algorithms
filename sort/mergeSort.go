@@ -1,5 +1,5 @@
-
 package sort
+
 /*
 merge sort O(nlgn):
 T(n) = 2T(n/2) + O(n)

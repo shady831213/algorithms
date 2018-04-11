@@ -70,21 +70,23 @@ func (h *heapIntArrays) Union(i interface{}) interface{} {
 //rebuild:O(n)
 //T(n)=O(n)
 
-
 //Union cross package
 func (h *HeapIntArray) Union(i interface{}) interface{} {
 	h.heapIntArrays = h.heapIntArrays.Union(&(i.(*HeapIntArray).heapIntArrays)).(heapIntArrays)
 	h.heap.BuildHeap()
 	return h
 }
+
 //Pop cross package
 func (h *HeapIntArray) Pop() (i interface{}) {
 	return h.heap.Pop()
 }
+
 //Append cross package
 func (h *HeapIntArray) Append(i interface{}) {
 	h.heap.Append(i)
 }
+
 //NewHeapIntArray cross package
 func NewHeapIntArray(arr []int) *HeapIntArray {
 	h := new(HeapIntArray)

@@ -3,6 +3,7 @@ package graph
 import (
 	"container/list"
 )
+
 const (
 	white = 0
 	gray  = 1
