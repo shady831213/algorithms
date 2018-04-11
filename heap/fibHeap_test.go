@@ -11,7 +11,7 @@ import (
 func TestFibHeapBasic(t *testing.T) {
 	arr := []int{1, 3, 2, 2, 4, 5}
 	sortedArr := make([]int, 0, 0)
-	h := NewFibHeap()
+	h := newFibHeap()
 	for _, v := range arr {
 		h.Insert(v, v)
 	}
@@ -33,7 +33,7 @@ func TestFibHeap(t *testing.T) {
 		arr[i] = rand.Intn(100)
 	}
 	sortedArr := make([]int, 0, 0)
-	h := NewFibHeap()
+	h := newFibHeap()
 	for _, v := range arr {
 		h.Insert(v, v)
 	}
@@ -56,7 +56,7 @@ func TestFibHeapUnion(t *testing.T) {
 		arr[i] = rand.Intn(100)
 	}
 	sortedArr := make([]int, 0, 0)
-	h1, h2 := NewFibHeap(), NewFibHeap()
+	h1, h2 := newFibHeap(), newFibHeap()
 	for i, v := range arr {
 		if i < arrSize1 {
 			h1.Insert(v, v)
@@ -85,7 +85,7 @@ func TestFibHeap_ModifyNode(t *testing.T) {
 		arr[i] = rand.Intn(100)
 	}
 	sortedArr := make([]int, 0, 0)
-	h := NewFibHeap()
+	h := newFibHeap()
 	for _, v := range arr {
 		n := h.Insert(v, v)
 		nodeArr = append(nodeArr, n)
@@ -108,7 +108,7 @@ func TestFibHeap_ModifyNode(t *testing.T) {
 
 func BenchmarkFibHeap_Insert(b *testing.B) {
 	b.StopTimer()
-	h := NewFibHeap()
+	h := newFibHeap()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -120,7 +120,7 @@ func BenchmarkFibHeap_Insert(b *testing.B) {
 
 func BenchmarkFibHeap_ExtractMin(b *testing.B) {
 	b.StopTimer()
-	h := NewFibHeap()
+	h := newFibHeap()
 	for i := 0; i < b.N; i++ {
 		n := rand.Intn(10000)
 		h.Insert(n, n)
@@ -135,7 +135,7 @@ func BenchmarkFibHeap_ModifyNode(b *testing.B) {
 	b.StopTimer()
 	arr := make([]int, 0, 0)
 	nodeArr := make([]*fibHeapElement, 0, 0)
-	h := NewFibHeap()
+	h := newFibHeap()
 	for i := 0; i < b.N; i++ {
 		n := rand.Intn(10000)
 		nodeArr = append(nodeArr, h.Insert(n, n))
@@ -152,7 +152,7 @@ func BenchmarkFibHeap_ExtractMinAfterModifyNode(b *testing.B) {
 	b.StopTimer()
 	arr := make([]int, 0, 0)
 	nodeArr := make([]*fibHeapElement, 0, 0)
-	h := NewFibHeap()
+	h := newFibHeap()
 	for i := 0; i < b.N; i++ {
 		n := rand.Intn(10000)
 		nodeArr = append(nodeArr, h.Insert(n, n))

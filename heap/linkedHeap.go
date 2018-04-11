@@ -12,7 +12,7 @@ type LinkedHeapList struct {
 
 type LinkedHeap struct {
 	LinkedHeapList
-	Heap
+	heap
 }
 
 func (h *LinkedHeapList) Init() {
@@ -151,7 +151,7 @@ func NewLinkedHeap() *LinkedHeap {
 	h := new(LinkedHeap)
 	h.LinkedHeapList = LinkedHeapList{}
 	h.LinkedHeapList.Init()
-	h.Heap.BinHeapArrayIf = &h.LinkedHeapList
+	h.heap.binHeapArrayIf = &h.LinkedHeapList
 	return h
 }
 
@@ -160,14 +160,14 @@ func NewLinkedHeap() *LinkedHeap {
 //T(n)=O(n)
 func (h *LinkedHeap) Union(i interface{}) interface{} {
 	h.LinkedHeapList = h.LinkedHeapList.Union(&(i.(*LinkedHeap).LinkedHeapList)).(LinkedHeapList)
-	h.Heap.BuildHeap()
+	h.heap.BuildHeap()
 	return h
 }
 
 func (h *LinkedHeap) Pop() (i interface{}) {
-	return h.Heap.Pop()
+	return h.heap.Pop()
 }
 
 func (h *LinkedHeap) Append(i interface{}) {
-	h.Heap.Append(i)
+	h.heap.Append(i)
 }

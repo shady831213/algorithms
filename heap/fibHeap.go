@@ -12,7 +12,7 @@ func (e *fibHeapElement) Init(key, value interface{}) *fibHeapElement {
 	e.p = nil
 	e.l = nil
 	e.r = nil
-	e.c = NewFabHeapElementList(e)
+	e.c = newFabHeapElementList(e)
 	e.mark = false
 	e.key = key
 	e.value = value
@@ -42,7 +42,7 @@ func (e *fibHeapElement) AddChild(child *fibHeapElement) {
 	e.c.PushRight(child)
 }
 
-func NewFabHeapElement(key, value interface{}) *fibHeapElement {
+func newFabHeapElement(key, value interface{}) *fibHeapElement {
 	return new(fibHeapElement).Init(key, value)
 }
 
@@ -131,7 +131,7 @@ func (l *fibHeapElementList) MergeLeftList(other *fibHeapElementList) *fibHeapEl
 	return l
 }
 
-func NewFabHeapElementList(p *fibHeapElement) *fibHeapElementList {
+func newFabHeapElementList(p *fibHeapElement) *fibHeapElementList {
 	return new(fibHeapElementList).Init(p)
 }
 
@@ -148,7 +148,7 @@ type fibHeap struct {
 }
 
 func (h *fibHeap) Init(self fibHeapIf) *fibHeap {
-	h.root = NewFabHeapElementList(nil)
+	h.root = newFabHeapElementList(nil)
 	h.min = nil
 	h.n = 0
 	h.fibHeapIf = self
@@ -184,7 +184,7 @@ func (h *fibHeap) Degree() int {
 }
 
 func (h *fibHeap) Insert(key, value interface{}) *fibHeapElement {
-	n := NewFabHeapElement(key, value)
+	n := newFabHeapElement(key, value)
 	h.root.PushRight(n)
 	if h.Less(n, h.min) {
 		h.min = n
@@ -219,7 +219,7 @@ func (h *fibHeap) consolidate() {
 		e = nextE
 	}
 	h.min = nil
-	h.root = NewFabHeapElementList(nil)
+	h.root = newFabHeapElementList(nil)
 	for i := range degreeArray {
 		if degreeArray[i] != nil {
 			h.root.PushRight(degreeArray[i])
@@ -281,7 +281,7 @@ func (h *fibHeap) ModifyNode(n *fibHeapElement, key, value interface{}) {
 	}
 }
 
-func NewFibHeap() *fibHeap {
+func newFibHeap() *fibHeap {
 	h := new(fibHeap)
 	return h.Init(h)
 }

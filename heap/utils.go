@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func BasicTestHeap(t *testing.T, h HeapIf) {
+func BasicTestHeap(t *testing.T, h heapIf) {
 	arr := []int{1, 3, 2, 2, 4, 5}
 	sortedArr := make([]int, 0, 0)
 	for _, v := range arr {
@@ -24,7 +24,7 @@ func BasicTestHeap(t *testing.T, h HeapIf) {
 	}
 }
 
-func TestHeap(t *testing.T, h HeapIf) {
+func TestHeap(t *testing.T, h heapIf) {
 	arrSize := rand.Intn(100) + 50
 	arr := make([]int, arrSize, arrSize)
 	for i := range arr {
@@ -44,7 +44,7 @@ func TestHeap(t *testing.T, h HeapIf) {
 	}
 }
 
-func TestHeapUnion(t *testing.T, h1 HeapIf, h2 HeapIf) {
+func TestHeapUnion(t *testing.T, h1 heapIf, h2 heapIf) {
 	arrSize := rand.Intn(100) + 50
 	arrSize1 := rand.Intn(arrSize)
 	arr := make([]int, arrSize, arrSize)
@@ -59,7 +59,7 @@ func TestHeapUnion(t *testing.T, h1 HeapIf, h2 HeapIf) {
 			h2.Append(v)
 		}
 	}
-	h1 = h1.Union(h2).(HeapIf)
+	h1 = h1.Union(h2).(heapIf)
 	for h1.Len() > 0 {
 		sortedArr = append(sortedArr, h1.Pop().(int))
 	}
@@ -70,7 +70,7 @@ func TestHeapUnion(t *testing.T, h1 HeapIf, h2 HeapIf) {
 	}
 }
 
-func BenchmarkHeap(b *testing.B, h HeapIf) {
+func BenchmarkHeap(b *testing.B, h heapIf) {
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		arrSize := 10000

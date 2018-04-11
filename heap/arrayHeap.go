@@ -1,8 +1,10 @@
 package heap
 
 type heapIntArrays []int
+
+//cross package
 type HeapIntArray struct {
-	Heap
+	heap
 	heapIntArrays
 }
 
@@ -67,24 +69,27 @@ func (h *heapIntArrays) Union(i interface{}) interface{} {
 //merge:O(n)
 //rebuild:O(n)
 //T(n)=O(n)
+
+
+//Union cross package
 func (h *HeapIntArray) Union(i interface{}) interface{} {
 	h.heapIntArrays = h.heapIntArrays.Union(&(i.(*HeapIntArray).heapIntArrays)).(heapIntArrays)
-	h.Heap.BuildHeap()
+	h.heap.BuildHeap()
 	return h
 }
-
+//Pop cross package
 func (h *HeapIntArray) Pop() (i interface{}) {
-	return h.Heap.Pop()
+	return h.heap.Pop()
 }
-
+//Append cross package
 func (h *HeapIntArray) Append(i interface{}) {
-	h.Heap.Append(i)
+	h.heap.Append(i)
 }
-
+//NewHeapIntArray cross package
 func NewHeapIntArray(arr []int) *HeapIntArray {
 	h := new(HeapIntArray)
 	h.heapIntArrays = arr
-	h.Heap.BinHeapArrayIf = &h.heapIntArrays
+	h.heap.binHeapArrayIf = &h.heapIntArrays
 	h.BuildHeap()
 	return h
 }
