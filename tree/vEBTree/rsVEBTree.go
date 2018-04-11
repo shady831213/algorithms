@@ -126,9 +126,8 @@ func (e *rsVEBTreeElement) Successor(key interface{}) (interface{}, *list.List) 
 	} else if e.lgu == 1 {
 		if e.min != nil && key == e.min.key && key != e.max.key {
 			return e.Max()
-		} else {
-			return nil, nil
 		}
+		return nil, nil
 	} else {
 		var maxLow interface{}
 		cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]
@@ -154,9 +153,8 @@ func (e *rsVEBTreeElement) Predecessor(key interface{}) (interface{}, *list.List
 	} else if e.lgu == 1 {
 		if e.max != nil && key == e.max.key && key != e.min.key {
 			return e.Min()
-		} else {
-			return nil, nil
 		}
+		return nil, nil
 	} else {
 		var minLow interface{}
 		cluster, ok := e.cluster[e.mixin.High(e.lgu, key)]
