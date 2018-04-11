@@ -1,3 +1,5 @@
+
+package sort
 /*
 merge sort O(nlgn):
 T(n) = 2T(n/2) + O(n)
@@ -6,8 +8,6 @@ a = 2, b = 2, f(n) = n
 logb(a) = lg2 = 1 f(n) = f(n^logb(a)) = f(n^1)
 so, O(n) = O(n^logb(a)lgn) = O(nlgn)
 */
-package sort
-
 import (
 	"sync"
 )

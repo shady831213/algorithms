@@ -11,17 +11,17 @@ import (
 
 var debug = flag.Bool("debug", false, "debug flag")
 
-func GetRand() *rand.Rand {
+func getRand() *rand.Rand {
 	return rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
-func RandomSlice(start int, end int, count int) []int {
+func randomSlice(start int, end int, count int) []int {
 	if end < start || (end-start) < count {
 		return nil
 	}
 	nums := make([]int, 0)
 	for len(nums) < count {
-		num := GetRand().Intn((end - start)) + start
+		num := getRand().Intn((end - start)) + start
 		exist := false
 		for _, v := range nums {
 			if v == num {
@@ -36,9 +36,9 @@ func RandomSlice(start int, end int, count int) []int {
 	return nums
 }
 
-func checkBst(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interface{}) bool {
-	return func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+func checkBst(t *testing.T, nodeCnt *int, debug bool) func(binaryTreeIf, interface{}) bool {
+	return func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*bstElement)
 		if n.left != nil && n.left.Key >= n.Key {
 			t.Log(fmt.Sprintf("left child %+v of node: %+v is more than or equal to n!", n.left, n))
 			t.Fail()
@@ -57,21 +57,21 @@ func checkBst(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interfa
 	}
 }
 
-func checkBstPreOrder(t *testing.T, bst BinaryTreeIf) {
+func checkBstPreOrder(t *testing.T, bst binaryTreeIf) {
 	resultArr := make([]int, 0, 0)
 
-	bst.PreOrderWalk(bst.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	bst.PreOrderWalk(bst.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*bstElement)
 		resultArr = append(resultArr, int(n.Key))
 		return false
 	})
 
-	if bst.Root().(*BstElement).Key != uint32(resultArr[0]) {
-		t.Log("first element is expected to be root ", bst.Root().(*BstElement).Key, " but get ", uint32(resultArr[0]))
+	if bst.Root().(*bstElement).Key != uint32(resultArr[0]) {
+		t.Log("first element is expected to be root ", bst.Root().(*bstElement).Key, " but get ", uint32(resultArr[0]))
 		t.Fail()
 	}
 
-	min := int(bst.Min(bst.Root()).(*BstElement).Key)
+	min := int(bst.Min(bst.Root()).(*bstElement).Key)
 	for i := range resultArr[:len(resultArr)-1] {
 		if resultArr[i] > resultArr[i+1] {
 			//expect decreasing numbers down to min
@@ -88,30 +88,29 @@ func checkBstPreOrder(t *testing.T, bst BinaryTreeIf) {
 				return
 			}
 			//next min value should be the min of the nearest right sub tree
-			nextMin := int(bst.Min(bst.Search(uint32(resultArr[i+1]))).(*BstElement).Key)
+			nextMin := int(bst.Min(bst.Search(uint32(resultArr[i+1]))).(*bstElement).Key)
 			if nextMin <= min {
 				t.Log("next min", nextMin, "of element ", resultArr[i+1], " @", i+1, "is expected to be more than ", min)
 				t.Fail()
 				return
-			} else {
-				min = nextMin
 			}
+			min = nextMin
 		}
 	}
 }
 
-func checkBstPostOrder(t *testing.T, bst BinaryTreeIf) {
+func checkBstPostOrder(t *testing.T, bst binaryTreeIf) {
 	resultArr := make([]int, 0, 0)
 	expArr := make([]int, 0, 0)
-	bst.PostOrderWalk(bst.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	bst.PostOrderWalk(bst.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*bstElement)
 		resultArr = append(resultArr, int(n.Key))
 		return false
 	})
 
-	curNode := bst.Min(bst.Root()).(*BstElement)
+	curNode := bst.Min(bst.Root()).(*bstElement)
 	for curNode.right != nil {
-		curNode = bst.Min(curNode.right).(*BstElement)
+		curNode = bst.Min(curNode.right).(*bstElement)
 	}
 	expArr = append(expArr, int(curNode.Key))
 	for curNode.parent != nil {
@@ -119,7 +118,7 @@ func checkBstPostOrder(t *testing.T, bst BinaryTreeIf) {
 		nextNode := curNode.parent
 		if curNode == nextNode.left {
 			for nextNode.right != nil {
-				nextNode = bst.Min(nextNode.right).(*BstElement)
+				nextNode = bst.Min(nextNode.right).(*bstElement)
 			}
 		}
 		curNode = nextNode
@@ -132,9 +131,9 @@ func checkBstPostOrder(t *testing.T, bst BinaryTreeIf) {
 	}
 }
 
-func CheckGBT(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interface{}) bool {
-	return func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*GBTElement)
+func checkGBT(t *testing.T, nodeCnt *int, debug bool) func(binaryTreeIf, interface{}) bool {
+	return func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*gbtElement)
 		if !tree.IsNil(n.Left) && n.Left.Key >= n.Key {
 			t.Log(fmt.Sprintf("Left child %+v of node: %+v is more than or equal to n!", n.Left, n))
 			t.Fail()
@@ -153,21 +152,21 @@ func CheckGBT(t *testing.T, nodeCnt *int, debug bool) func(BinaryTreeIf, interfa
 	}
 }
 
-func checkGBTPreOrder(t *testing.T, tree BinaryTreeIf, data []int) {
+func checkGBTPreOrder(t *testing.T, tree binaryTreeIf, data []int) {
 	resultArr := make([]int, 0, 0)
 	expArr := make([]int, 0, 0)
-	tree.PreOrderWalk(tree.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*GBTElement)
+	tree.PreOrderWalk(tree.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*gbtElement)
 		resultArr = append(resultArr, int(n.Key))
 		return false
 	})
 
-	expBst := NewBstRecrusive()
+	expBst := newBstRecrusive()
 	for _, v := range data {
 		expBst.Insert(uint32(v))
 	}
-	expBst.PreOrderWalk(expBst.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	expBst.PreOrderWalk(expBst.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*bstElement)
 		expArr = append(expArr, int(n.Key))
 		return false
 	})
@@ -177,20 +176,20 @@ func checkGBTPreOrder(t *testing.T, tree BinaryTreeIf, data []int) {
 	}
 }
 
-func checkGBTPostOrder(t *testing.T, tree BinaryTreeIf, data []int) {
+func checkGBTPostOrder(t *testing.T, tree binaryTreeIf, data []int) {
 	resultArr := make([]int, 0, 0)
 	expArr := make([]int, 0, 0)
-	tree.PostOrderWalk(tree.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*GBTElement)
+	tree.PostOrderWalk(tree.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*gbtElement)
 		resultArr = append(resultArr, int(n.Key))
 		return false
 	})
-	expBst := NewBstRecrusive()
+	expBst := newBstRecrusive()
 	for _, v := range data {
 		expBst.Insert(uint32(v))
 	}
-	expBst.PostOrderWalk(expBst.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		n := node.(*BstElement)
+	expBst.PostOrderWalk(expBst.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		n := node.(*bstElement)
 		expArr = append(expArr, int(n.Key))
 		return false
 	})
@@ -200,7 +199,7 @@ func checkGBTPostOrder(t *testing.T, tree BinaryTreeIf, data []int) {
 	}
 }
 
-func checkRBTRoot(t *testing.T, tree *RBT, n *GBTElement) {
+func checkRBTRoot(t *testing.T, tree *rbt, n *gbtElement) {
 	//root must be black
 	if n == tree.Root() {
 		if !tree.color(n) {
@@ -210,7 +209,7 @@ func checkRBTRoot(t *testing.T, tree *RBT, n *GBTElement) {
 	}
 }
 
-func checkRBTRedNode(t *testing.T, tree *RBT, n *GBTElement) {
+func checkRBTRedNode(t *testing.T, tree *rbt, n *gbtElement) {
 	//children of red node must be both black
 	if !tree.color(n) {
 		if !tree.IsNil(n.Left) && !tree.color(n.Left) {
@@ -224,7 +223,7 @@ func checkRBTRedNode(t *testing.T, tree *RBT, n *GBTElement) {
 	}
 }
 
-func checkRBTBlackPath(t *testing.T, tree *RBT, n *GBTElement, blackCntQ *[]int) {
+func checkRBTBlackPath(t *testing.T, tree *rbt, n *gbtElement, blackCntQ *[]int) {
 	//check blackcnt, leaves to root path must be the same
 	blackCnt := 0
 	if tree.IsNil(n.Right) && tree.IsNil(n.Left) {
@@ -248,13 +247,13 @@ func checkRBTBlackPath(t *testing.T, tree *RBT, n *GBTElement, blackCntQ *[]int)
 	}
 }
 
-func checkRBT(t *testing.T, rbt *RBT) bool {
+func checkRBT(t *testing.T, rbTree *rbt) bool {
 	blackCntQ := make([]int, 0, 0)
 
-	stop := rbt.PreOrderWalk(rbt.Root(), func(tree BinaryTreeIf, node interface{}) bool {
-		checkRBTRoot(t, tree.(*RBT), node.(*GBTElement))
-		checkRBTRedNode(t, tree.(*RBT), node.(*GBTElement))
-		checkRBTBlackPath(t, tree.(*RBT), node.(*GBTElement), &blackCntQ)
+	stop := rbTree.PreOrderWalk(rbTree.Root(), func(tree binaryTreeIf, node interface{}) bool {
+		checkRBTRoot(t, tree.(*rbt), node.(*gbtElement))
+		checkRBTRedNode(t, tree.(*rbt), node.(*gbtElement))
+		checkRBTBlackPath(t, tree.(*rbt), node.(*gbtElement), &blackCntQ)
 		return false
 	})
 

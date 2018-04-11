@@ -5,12 +5,12 @@ import (
 )
 
 func TestRBT_Insert(t *testing.T) {
-	arr := RandomSlice(0, 20, 10)
+	arr := randomSlice(0, 20, 10)
 	nodeCnt := 0
-	rbt := NewRBT()
+	rbt := newRBT()
 	for i, v := range arr {
 		rbt.Insert(uint32(v))
-		stop := rbt.PreOrderWalk(rbt.Root(), CheckGBT(t, &nodeCnt, *debug))
+		stop := rbt.PreOrderWalk(rbt.Root(), checkGBT(t, &nodeCnt, *debug))
 		if stop {
 			return
 		}
@@ -27,16 +27,16 @@ func TestRBT_Insert(t *testing.T) {
 }
 
 func TestRBT_Delete(t *testing.T) {
-	arr := RandomSlice(0, 20, 10)
-	deleteSequence := RandomSlice(0, 10, 10)
+	arr := randomSlice(0, 20, 10)
+	deleteSequence := randomSlice(0, 10, 10)
 	nodeCnt := 0
-	rbt := NewRBT()
+	rbt := newRBT()
 	for _, v := range arr {
 		rbt.Insert(uint32(v))
 	}
 	for i, v := range deleteSequence {
 		rbt.Delete(uint32(arr[v]))
-		stop := rbt.PreOrderWalk(rbt.Root(), CheckGBT(t, &nodeCnt, *debug))
+		stop := rbt.PreOrderWalk(rbt.Root(), checkGBT(t, &nodeCnt, *debug))
 		if stop {
 			return
 		}

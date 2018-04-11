@@ -42,16 +42,16 @@ func (h *intArrayForHeapSort) right(i int) int {
 }
 
 func (h *intArrayForHeapSort) maxHeaplify(i int) {
-	largest, largest_idx := (*h)[i], i
+	largest, largestIdx := (*h)[i], i
 	if (*h).left(i) < len((*h)) && (*h)[(*h).left(i)] > largest {
-		largest, largest_idx = (*h)[(*h).left(i)], (*h).left(i)
+		largest, largestIdx = (*h)[(*h).left(i)], (*h).left(i)
 	}
 	if h.right(i) < len((*h)) && (*h)[h.right(i)] > largest {
-		_, largest_idx = (*h)[h.right(i)], h.right(i)
+		_, largestIdx = (*h)[h.right(i)], h.right(i)
 	}
-	if i != largest_idx {
-		(*h)[largest_idx], (*h)[i] = (*h)[i], (*h)[largest_idx]
-		h.maxHeaplify(largest_idx)
+	if i != largestIdx {
+		(*h)[largestIdx], (*h)[i] = (*h)[i], (*h)[largestIdx]
+		h.maxHeaplify(largestIdx)
 	}
 }
 

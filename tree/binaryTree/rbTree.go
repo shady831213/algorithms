@@ -6,56 +6,53 @@ const (
 	left  = true
 )
 
-type RBT struct {
-	GBT
+type rbt struct {
+	gbt
 }
 
-func (t *RBT) setColor(node *GBTElement, color bool) {
+func (t *rbt) setColor(node *gbtElement, color bool) {
 	node.SideValue = color
 }
 
-func (t *RBT) color(node *GBTElement) (black bool) {
+func (t *rbt) color(node *gbtElement) (black bool) {
 	return t.IsNil(node) || node.SideValue.(bool)
 }
 
-func (t *RBT) otherSideNode(side bool, node *GBTElement) *GBTElement {
+func (t *rbt) otherSideNode(side bool, node *gbtElement) *gbtElement {
 	if side == left {
 		return node.Right
-	} else {
-		return node.Left
 	}
+	return node.Left
 }
-func (t *RBT) invDirRotation(side bool, node *GBTElement) interface{} {
+func (t *rbt) invDirRotation(side bool, node *gbtElement) interface{} {
 	if side == left {
 		return t.RightRotate(node)
-	} else {
-		return t.LeftRotate(node)
 	}
+	return t.LeftRotate(node)
 }
-func (t *RBT) sameSideNode(side bool, node *GBTElement) *GBTElement {
+func (t *rbt) sameSideNode(side bool, node *gbtElement) *gbtElement {
 	if side == left {
 		return node.Left
-	} else {
-		return node.Right
 	}
-}
-func (t *RBT) sameDirRotation(side bool, node *GBTElement) interface{} {
-	if side == left {
-		return t.LeftRotate(node)
-	} else {
-		return t.RightRotate(node)
-	}
+	return node.Right
 }
 
-func (t *RBT) Insert(node interface{}) interface{} {
-	n := t.GBT.Insert(node).(*GBTElement)
+func (t *rbt) sameDirRotation(side bool, node *gbtElement) interface{} {
+	if side == left {
+		return t.LeftRotate(node)
+	}
+	return t.RightRotate(node)
+}
+
+func (t *rbt) Insert(node interface{}) interface{} {
+	n := t.gbt.Insert(node).(*gbtElement)
 	t.setColor(n, red)
 	t.insertFix(n)
 	return n
 }
 
-func (t *RBT) insertFix(node interface{}) {
-	n := node.(*GBTElement)
+func (t *rbt) insertFix(node interface{}) {
+	n := node.(*gbtElement)
 	//only can violate property 3: both left and right children of red node must be black
 	for !t.color(n.Parent) && !t.color(n) {
 		grandNode := n.Parent.Parent //must be black
@@ -82,12 +79,12 @@ func (t *RBT) insertFix(node interface{}) {
 			t.invDirRotation(side, grandNode)
 		}
 	}
-	t.setColor(t.Root().(*GBTElement), black)
+	t.setColor(t.Root().(*gbtElement), black)
 }
 
-func (t *RBT) Delete(key uint32) interface{} {
-	deleteNonCompletedNode := func(node *GBTElement) (deletedNode *GBTElement, nextNode *GBTElement) {
-		var reConnectedNode *GBTElement
+func (t *rbt) Delete(key uint32) interface{} {
+	deleteNonCompletedNode := func(node *gbtElement) (deletedNode *gbtElement, nextNode *gbtElement) {
+		var reConnectedNode *gbtElement
 		if t.IsNil(node.Left) {
 			reConnectedNode = node.Right
 		} else {
@@ -105,15 +102,15 @@ func (t *RBT) Delete(key uint32) interface{} {
 		}
 		return node, reConnectedNode
 	}
-	node := t.Search(key).(*GBTElement)
+	node := t.Search(key).(*gbtElement)
 	if t.IsNil(node) {
 		return node
 	}
-	var deletedNode, reConnectedNode *GBTElement
+	var deletedNode, reConnectedNode *gbtElement
 	if t.IsNil(node.Left) || t.IsNil(node.Right) {
 		deletedNode, reConnectedNode = deleteNonCompletedNode(node)
 	} else {
-		successor := t.Successor(node, t.Root()).(*GBTElement)
+		successor := t.Successor(node, t.Root()).(*gbtElement)
 		_key, _value := successor.Key, successor.Value
 		node.Key, node.Value = _key, _value
 		deletedNode, reConnectedNode = deleteNonCompletedNode(successor)
@@ -127,8 +124,8 @@ func (t *RBT) Delete(key uint32) interface{} {
 	return node
 }
 
-func (t *RBT) deleteFix(node interface{}) {
-	n := node.(*GBTElement)
+func (t *rbt) deleteFix(node interface{}) {
+	n := node.(*gbtElement)
 	//n always points to the black-black or black-red node.The purpose is to remove the additional black color,
 	//which means add a black color in the same side or reduce a black color in the other side
 	for n != t.Root() && t.color(n) {
@@ -156,7 +153,7 @@ func (t *RBT) deleteFix(node interface{}) {
 				t.setColor(n.Parent, black)
 				t.setColor(t.otherSideNode(side, brotherNode), black)
 				t.sameDirRotation(side, n.Parent)
-				n = t.Root().(*GBTElement)
+				n = t.Root().(*gbtElement)
 			}
 		}
 
@@ -165,9 +162,9 @@ func (t *RBT) deleteFix(node interface{}) {
 
 }
 
-func NewRBT() *RBT {
-	t := new(RBT)
+func newRBT() *rbt {
+	t := new(rbt)
 	t.Init()
-	t.GBT.Object = t
+	t.gbt.Object = t
 	return t
 }

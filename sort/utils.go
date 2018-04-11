@@ -23,10 +23,10 @@ func (i ints) Iter() func() (int, bool) {
 
 func basicTestSort(t *testing.T, testFunc func(arr []int)) {
 	arr := []int{5, 4, 2, 1, 2}
-	exp_arr := []int{1, 2, 2, 4, 5}
+	expArr := []int{1, 2, 2, 4, 5}
 	testFunc(arr)
-	if !reflect.DeepEqual(arr, exp_arr) {
-		t.Log(fmt.Sprintf("expect:%v", exp_arr) + fmt.Sprintf("but get:%v", arr))
+	if !reflect.DeepEqual(arr, expArr) {
+		t.Log(fmt.Sprintf("expect:%v", expArr) + fmt.Sprintf("but get:%v", arr))
 		t.Fail()
 	}
 }
@@ -34,15 +34,15 @@ func basicTestSort(t *testing.T, testFunc func(arr []int)) {
 func testSort(t *testing.T, testFunc func(arr []int)) {
 	arrSize := rand.Intn(100)
 	arr := make([]int, arrSize, arrSize)
-	exp_arr := make([]int, arrSize, arrSize)
+	expArr := make([]int, arrSize, arrSize)
 	for i := range arr {
 		arr[i] = rand.Intn(100)
 	}
-	copy(exp_arr, arr)
-	insertionSort(exp_arr)
+	copy(expArr, arr)
+	insertionSort(expArr)
 	testFunc(arr)
-	if !reflect.DeepEqual(arr, exp_arr) {
-		t.Log(fmt.Sprintf("expect:\n%v\n", exp_arr) + fmt.Sprintf("but get:\n%v\n", arr))
+	if !reflect.DeepEqual(arr, expArr) {
+		t.Log(fmt.Sprintf("expect:\n%v\n", expArr) + fmt.Sprintf("but get:\n%v\n", arr))
 		t.Fail()
 	}
 }

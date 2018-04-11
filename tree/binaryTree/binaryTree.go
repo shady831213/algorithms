@@ -1,11 +1,11 @@
 package binaryTree
 
-type BinaryTreeElement struct {
+type binaryTreeElement struct {
 	Key   uint32
 	Value interface{}
 }
 
-type BinaryTreeIf interface {
+type binaryTreeIf interface {
 	IsNil(interface{}) bool
 	Root() interface{}
 	Search(uint32) interface{}
@@ -17,7 +17,7 @@ type BinaryTreeIf interface {
 	RightRotate(interface{}) interface{}
 	Min(interface{}) interface{}
 	Max(interface{}) interface{}
-	InOrderWalk(interface{}, func(BinaryTreeIf, interface{}) bool) bool
-	PreOrderWalk(interface{}, func(BinaryTreeIf, interface{}) bool) bool
-	PostOrderWalk(interface{}, func(BinaryTreeIf, interface{}) bool) bool
+	InOrderWalk(interface{}, func(binaryTreeIf, interface{}) bool) bool
+	PreOrderWalk(interface{}, func(binaryTreeIf, interface{}) bool) bool
+	PostOrderWalk(interface{}, func(binaryTreeIf, interface{}) bool) bool
 }
