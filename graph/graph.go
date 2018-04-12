@@ -22,7 +22,7 @@ type graph interface {
 	AllVertices() []interface{}
 	AllEdges() []edge
 	AllConnectedVertices(interface{}) []interface{}
-	IterConnectedVertices(interface{}) chan interface{}
+	IterConnectedVertices(interface{}) <-chan interface{}
 	Transpose() graph
 	GetGraph() interface{}
 }
@@ -153,7 +153,7 @@ func (g *adjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 	return keys
 }
 
-func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) chan interface{} {
+func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) <-chan interface{} {
 	if _, ok := g.chs[v]; !ok {
 		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
 		go func() {
@@ -244,7 +244,7 @@ func (g *adjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 	return value
 }
 
-func (g *adjacencyList) IterConnectedVertices(v interface{}) chan interface{} {
+func (g *adjacencyList) IterConnectedVertices(v interface{}) <-chan interface{} {
 	if _, ok := g.chs[v]; !ok {
 		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
 		go func() {
