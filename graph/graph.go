@@ -2,6 +2,7 @@ package graph
 
 import (
 	"container/list"
+	"sync"
 )
 
 const (
@@ -24,6 +25,11 @@ type graph interface {
 	IterConnectedVertices(interface{}) chan interface{}
 	Transpose() graph
 	GetGraph() interface{}
+}
+
+type chanWithStatus struct {
+	ch    chan interface{}
+	close bool
 }
 
 type linkedMap struct {
@@ -89,12 +95,14 @@ func (m *linkedMap) nextKey(key interface{}) interface{} {
 
 type adjacencyMatrix struct {
 	matrix linkedMap
+	sync.RWMutex
+	chs map[interface{}]*chanWithStatus
 	graph
 }
 
 func (g *adjacencyMatrix) init() *adjacencyMatrix {
 	g.matrix = *new(linkedMap).init()
-
+	g.chs = make(map[interface{}]*chanWithStatus)
 	return g
 }
 
@@ -146,16 +154,25 @@ func (g *adjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 }
 
 func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) chan interface{} {
-	ch := make(chan interface{})
-	go func() {
-		if g.matrix.exist(v) {
-			for key := g.matrix.get(v).(*linkedMap).frontKey(); key != nil; key = g.matrix.get(v).(*linkedMap).nextKey(key) {
-				ch <- key
+	if _, ok := g.chs[v]; !ok {
+		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
+		go func() {
+			if g.matrix.exist(v) {
+				for key := g.matrix.get(v).(*linkedMap).frontKey(); key != nil; key = g.matrix.get(v).(*linkedMap).nextKey(key) {
+					g.chs[v].ch <- key
+				}
 			}
-		}
-		close(ch)
-	}()
-	return ch
+			g.Lock()
+			close(g.chs[v].ch)
+			g.chs[v].close = true
+			g.Unlock()
+		}()
+	} else if g.chs[v].close {
+		lastChan := g.chs[v].ch
+		delete(g.chs, v)
+		return lastChan
+	}
+	return g.chs[v].ch
 }
 
 func (g *adjacencyMatrix) Transpose() graph {
@@ -176,11 +193,14 @@ func newAdjacencyMatrix() *adjacencyMatrix {
 
 type adjacencyList struct {
 	matrix linkedMap
+	sync.RWMutex
+	chs map[interface{}]*chanWithStatus
 	graph
 }
 
 func (g *adjacencyList) init() *adjacencyList {
 	g.matrix = *new(linkedMap).init()
+	g.chs = make(map[interface{}]*chanWithStatus)
 	return g
 }
 
@@ -225,17 +245,26 @@ func (g *adjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 }
 
 func (g *adjacencyList) IterConnectedVertices(v interface{}) chan interface{} {
-	ch := make(chan interface{})
-	go func() {
-		if g.matrix.exist(v) {
-			for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
-				ch <- e.Value
+	if _, ok := g.chs[v]; !ok {
+		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
+		go func() {
+			if g.matrix.exist(v) {
+				for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
+					g.chs[v].ch <- e.Value
+				}
 			}
-		}
-		close(ch)
-	}()
+			g.Lock()
+			close(g.chs[v].ch)
+			g.chs[v].close = true
+			g.Unlock()
+		}()
+	} else if g.chs[v].close {
+		lastChan := g.chs[v].ch
+		delete(g.chs, v)
+		return lastChan
+	}
 
-	return ch
+	return g.chs[v].ch
 }
 
 func (g *adjacencyList) AllEdges() []edge {
