@@ -2,7 +2,6 @@ package graph
 
 import (
 	"container/list"
-	"fmt"
 )
 
 type eulerVertex struct {
@@ -22,27 +21,28 @@ func newEulerVertex(vertex interface{}) *eulerVertex {
 	return new(eulerVertex).init(vertex)
 }
 
+func checkDegree(v *eulerVertex, oriented bool) bool {
+	if v.iDegree == 0 || v.oDegree == 0 {
+		return false
+	}
+	if oriented {
+		return v.iDegree == v.oDegree
+	}
+	return v.iDegree%2 == 0
+}
+
+func checkVertexAndEdgeCnt(vCnt, eCnt int, oriented bool) bool {
+	if oriented {
+		return eCnt == vCnt+1
+	}
+	return eCnt == (vCnt+1)<<1
+}
+
 func eulerCircuit(g graph, oriented bool) []edge {
 	vertices := make(map[interface{}]*eulerVertex)
 	vertexStack := list.New()
-	edgeQueue := list.New()
+	path := make([]edge, 0, 0)
 	vCnt, eCnt := 0, 0
-	checkDegree := func(v interface{}) bool {
-		if vertices[v].iDegree == 0 || vertices[v].oDegree == 0 {
-			return false
-		}
-		if oriented {
-			return vertices[v].iDegree == vertices[v].oDegree
-		}
-		return vertices[v].iDegree%2 == 0
-	}
-
-	checkVertexAndEdgeCnt := func() bool {
-		if oriented {
-			return eCnt == vCnt+1
-		}
-		return eCnt == (vCnt+1)<<1
-	}
 
 	pushVertexStack := func(vertex interface{}) {
 		vertices[vertex] = newEulerVertex(vertex)
@@ -65,13 +65,13 @@ func eulerCircuit(g graph, oriented bool) []edge {
 					pushVertexStack(e)
 					vertices[e].iDegree = 1
 					vertices[e].p = top
-					edgeQueue.PushBack(edge{top, e})
+					path = append(path, edge{top, e})
 					break
 				} else {
 					vertices[e].iDegree++
 					if oriented || vertices[top].p != e {
 						//ignore redundant edge of undirectedGraph
-						edgeQueue.PushBack(edge{top, e})
+						path = append(path, edge{top, e})
 					}
 				}
 			}
@@ -82,20 +82,15 @@ func eulerCircuit(g graph, oriented bool) []edge {
 	}
 
 	//for single vertex condition
-	if !checkVertexAndEdgeCnt() {
+	if !checkVertexAndEdgeCnt(vCnt, eCnt, oriented) {
 		return nil
 	}
-	path := make([]edge, 0, 0)
 	//check and output path, O(E)
-	for top := edgeQueue.Front(); top != nil; top = edgeQueue.Front() {
-		e := top.Value.(edge)
-		edgeQueue.Remove(top)
-		fmt.Println(e)
-		if !checkDegree(e.Start) || !checkDegree(e.End) {
+	for _, e := range path {
+		if !checkDegree(vertices[e.Start], oriented) || !checkDegree(vertices[e.End], oriented) {
 			//check degree rules
 			return nil
 		}
-		path = append(path, e)
 	}
 
 	return path
