@@ -33,3 +33,6 @@
 # 双向连通组件
   点双连通和边双连通，用栈
   https://blog.csdn.net/STILLxjy/article/details/70176689
+
+# 欧拉回路
+  https://blog.csdn.net/qq_35649707/article/details/75578102#uoj117%E6%B1%82%E7%BB%99%E5%AE%9A%E5%9B%BE%E7%9A%84%E6%AC%A7%E6%8B%89%E5%9B%9E%E8%B7%AF
