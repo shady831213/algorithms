@@ -7,6 +7,7 @@ import (
 type eulerVertex struct {
 	vertex, p        interface{}
 	iDegree, oDegree int
+	iter             iterator
 }
 
 func (e *eulerVertex) init(vertex interface{}) *eulerVertex {
@@ -14,6 +15,7 @@ func (e *eulerVertex) init(vertex interface{}) *eulerVertex {
 	e.iDegree = 0
 	e.oDegree = 0
 	e.p = nil
+	e.iter = nil
 	return e
 }
 
@@ -46,6 +48,7 @@ func eulerCircuit(g graph, oriented bool) []edge {
 
 	pushVertexStack := func(vertex interface{}) {
 		vertices[vertex] = newEulerVertex(vertex)
+		vertices[vertex].iter = g.IterConnectedVertices(vertex)
 		vertexStack.PushBack(vertex)
 	}
 	//dfs O(E)
@@ -56,7 +59,7 @@ func eulerCircuit(g graph, oriented bool) []edge {
 		}
 		for vertexStack.Len() != 0 {
 			top := vertexStack.Back().Value
-			for e := range g.IterConnectedVertices(top) {
+			for e := vertices[top].iter.Value(); e != nil; {
 				eCnt++
 				//it means top has a new output
 				vertices[top].oDegree++
@@ -66,6 +69,7 @@ func eulerCircuit(g graph, oriented bool) []edge {
 					vertices[e].iDegree = 1
 					vertices[e].p = top
 					path = append(path, edge{top, e})
+					vertices[top].iter.Next()
 					break
 				} else {
 					vertices[e].iDegree++
@@ -73,18 +77,21 @@ func eulerCircuit(g graph, oriented bool) []edge {
 						//ignore redundant edge of undirectedGraph
 						path = append(path, edge{top, e})
 					}
+					e = vertices[top].iter.Next()
 				}
+
 			}
 			if top == vertexStack.Back().Value {
+				vertices[top].iter = nil
 				vertexStack.Remove(vertexStack.Back())
 			}
 		}
 	}
-
 	//for single vertex condition
 	if !checkVertexAndEdgeCnt(vCnt, eCnt, oriented) {
 		return nil
 	}
+
 	//check and output path, O(E)
 	for _, e := range path {
 		if !checkDegree(vertices[e.Start], oriented) || !checkDegree(vertices[e.End], oriented) {

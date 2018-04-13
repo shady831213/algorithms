@@ -41,40 +41,6 @@ func bccSetupGraph(g graph) {
 	g.AddEdgeBi(edge{17, 22})
 }
 
-func cutsAndBridgeGolden(dfsGraph graph) (cuts, bridges graph) {
-	cuts, bridges = createGraphByType(dfsGraph), createGraphByType(dfsGraph)
-	vertices := make(map[interface{}]*dfsElement)
-	for _, v := range dfsGraph.AllVertices() {
-		vertices[v.(*dfsElement).V] = v.(*dfsElement)
-	}
-	cuts.AddVertex(vertices[19])
-	cuts.AddVertex(vertices[17])
-	cuts.AddVertex(vertices[14])
-	cuts.AddVertex(vertices[12])
-	cuts.AddVertex(vertices[10])
-	cuts.AddVertex(vertices[7])
-	cuts.AddVertex(vertices[4])
-	cuts.AddVertex(vertices[0])
-
-	bridges.AddEdgeBi(edge{vertices[19], vertices[17]})
-	bridges.AddEdgeBi(edge{vertices[17], vertices[22]})
-	bridges.AddEdgeBi(edge{vertices[12], vertices[14]})
-	bridges.AddEdgeBi(edge{vertices[10], vertices[4]})
-	bridges.AddEdgeBi(edge{vertices[7], vertices[9]})
-	bridges.AddEdgeBi(edge{vertices[0], vertices[4]})
-	return
-}
-
-func TestGetCutsAndBridgesFromComponent(t *testing.T) {
-	g := newAdjacencyList()
-	bccSetupGraph(g)
-	dfsForest := dfs(g, nil)
-	cuts, bridges := getCutsAndBridgesFromComponent(dfsForest)
-	cutsExp, bridgesExp := cutsAndBridgeGolden(dfsForest.Trees)
-	checkDFSGraphOutOfOrder(t, cuts, cutsExp)
-	checkDFSGraphOutOfOrder(t, bridges, bridgesExp)
-}
-
 func vertexBCCGolden(g graph) (cuts graph, comps []graph) {
 	cuts = createGraphByType(g)
 	comps = make([]graph, 12, 12)

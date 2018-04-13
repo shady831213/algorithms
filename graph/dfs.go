@@ -9,6 +9,7 @@ type dfsElement struct {
 	D, F    int
 	P, Root *dfsElement
 	V       interface{}
+	iter    iterator
 }
 
 func (e *dfsElement) Init(v interface{}) *dfsElement {
@@ -18,6 +19,7 @@ func (e *dfsElement) Init(v interface{}) *dfsElement {
 	e.F = 0
 	e.P = nil
 	e.Root = e
+	e.iter = nil
 	return e
 }
 
@@ -171,6 +173,7 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 		elements.get(v).(*dfsElement).Color = gray
 		timer++
 		elements.get(v).(*dfsElement).D = timer
+		elements.get(v).(*dfsElement).iter = g.IterConnectedVertices(v)
 		dfsForest.AddVertex(elements.get(v).(*dfsElement))
 		stack.PushBack(elements.get(v).(*dfsElement))
 	}
@@ -180,7 +183,7 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 
 			for stack.Len() != 0 {
 				e := stack.Back().Value.(*dfsElement)
-				for c := range g.IterConnectedVertices(e.V) {
+				for c := elements.get(e.V).(*dfsElement).iter.Value(); c != nil; {
 					if elements.get(c).(*dfsElement).Color == white {
 						// parent in deeper path always override that in shallower
 						elements.get(c).(*dfsElement).P = e
@@ -188,6 +191,7 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 						pushStack(c)
 						//tree edge definition. First time visit
 						dfsForest.AddTreeEdge(edge{e, elements.get(c).(*dfsElement)})
+						elements.get(e.V).(*dfsElement).iter.Next()
 						break
 					} else if elements.get(c).(*dfsElement).Color == gray {
 						// if color is already gray, it's a back edge
@@ -199,12 +203,14 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 						// if color is already black, it's a cross edge,d(e) < d(elements.get(c).(*dfsElement)) - 1
 						dfsForest.AddForwardEdge(edge{e, elements.get(c).(*dfsElement)})
 					}
+					c = elements.get(e.V).(*dfsElement).iter.Next()
 				}
 				if e == stack.Back().Value.(*dfsElement) {
 					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
 					e.Color = black
 					timer++
 					e.F = timer
+					e.iter = nil
 					stack.Remove(stack.Back())
 				}
 			}

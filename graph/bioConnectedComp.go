@@ -2,52 +2,7 @@ package graph
 
 import (
 	"container/list"
-	"sort"
 )
-
-func getCutsAndBridgesFromComponent(dfsForest *dfsForest) (cuts, bridges graph) {
-	cuts, bridges = createGraphByType(dfsForest.Trees), createGraphByType(dfsForest.Trees)
-	vertices := dfsForest.AllVertices()
-	lows := make(map[*dfsElement]int)
-	//sort in order of decreasing D. it means from deepest to root
-	sort.Slice(vertices, func(i, j int) bool {
-		return vertices[i].(*dfsElement).D > vertices[j].(*dfsElement).D
-	})
-	for i := range vertices {
-		connections := dfsForest.Trees.AllConnectedVertices(vertices[i])
-		for _, v := range connections {
-			//for leaf vertex
-			if _, ok := lows[v.(*dfsElement)]; !ok {
-				lows[v.(*dfsElement)] = v.(*dfsElement).D
-			}
-			//update back edges
-			for _, bv := range dfsForest.BackEdges.AllConnectedVertices(v) {
-				if bv != v.(*dfsElement).P && bv.(*dfsElement).D < lows[v.(*dfsElement)] {
-					lows[v.(*dfsElement)] = bv.(*dfsElement).D
-				}
-			}
-
-			if _, ok := lows[vertices[i].(*dfsElement)]; !ok {
-				lows[vertices[i].(*dfsElement)] = vertices[i].(*dfsElement).D
-			}
-			if lows[v.(*dfsElement)] < lows[vertices[i].(*dfsElement)] {
-				lows[vertices[i].(*dfsElement)] = lows[v.(*dfsElement)]
-			}
-
-			if lows[v.(*dfsElement)] >= vertices[i].(*dfsElement).D {
-				//Cuts, excluding root that has less than 2 children
-				if !(vertices[i].(*dfsElement).P == nil && len(connections) < 2) {
-					cuts.AddVertex(vertices[i])
-				}
-			}
-			if lows[v.(*dfsElement)] > vertices[i].(*dfsElement).D {
-				//bridges
-				bridges.AddEdgeBi(edge{vertices[i], v})
-			}
-		}
-	}
-	return
-}
 
 func vertexBCC(g graph) (cuts graph, comps []graph) {
 	cuts = createGraphByType(g)
@@ -55,6 +10,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 	lows := make(map[interface{}]int)
 	disc := make(map[interface{}]int)
 	children := make(map[interface{}]int)
+	iterators := make(map[interface{}]iterator)
 	timer := 0
 	vertexStack := list.New()
 	edgeStack := list.New()
@@ -62,6 +18,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 		timer++
 		disc[v] = timer
 		lows[v] = disc[v]
+		iterators[v] = g.IterConnectedVertices(v)
 		vertexStack.PushBack(v)
 	}
 	for _, v := range g.AllVertices() {
@@ -69,17 +26,19 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 			pushVertexStack(v)
 			for vertexStack.Len() != 0 {
 				top := vertexStack.Back().Value
-				for e := range g.IterConnectedVertices(top) {
+				for e := iterators[top].Value(); e != nil; {
 					if _, ok := disc[e]; !ok {
 						children[top]++
 						pushVertexStack(e)
 						edgeStack.PushBack(edge{top, e})
+						iterators[top].Next()
 						break
 					} else if disc[e] < lows[top] {
 						//back edge
 						edgeStack.PushBack(edge{top, e})
 						lows[top] = disc[e]
 					}
+					e = iterators[top].Next()
 				}
 				if top == vertexStack.Back().Value {
 					vertexStack.Remove(vertexStack.Back())
@@ -116,6 +75,7 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 	lows := make(map[interface{}]int)
 	disc := make(map[interface{}]int)
 	parent := make(map[interface{}]interface{})
+	iterators := make(map[interface{}]iterator)
 	timer := 0
 	vertexStack := list.New()
 	edgeStack := list.New()
@@ -123,6 +83,7 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 		timer++
 		disc[v] = timer
 		lows[v] = disc[v]
+		iterators[v] = g.IterConnectedVertices(v)
 		vertexStack.PushBack(v)
 	}
 	for _, v := range g.AllVertices() {
@@ -130,17 +91,19 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 			pushVertexStack(v)
 			for vertexStack.Len() != 0 {
 				top := vertexStack.Back().Value
-				for e := range g.IterConnectedVertices(top) {
+				for e := iterators[top].Value(); e != nil; {
 					if _, ok := disc[e]; !ok {
 						parent[e] = top
 						pushVertexStack(e)
 						edgeStack.PushBack(edge{top, e})
+						iterators[top].Next()
 						break
 					} else if disc[e] < lows[top] && parent[top] != e {
 						//back edge, excluding bio-dir edge
 						edgeStack.PushBack(edge{top, e})
 						lows[top] = disc[e]
 					}
+					e = iterators[top].Next()
 				}
 				if top == vertexStack.Back().Value {
 					vertexStack.Remove(vertexStack.Back())

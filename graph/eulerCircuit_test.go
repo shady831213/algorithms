@@ -25,10 +25,12 @@ func udEulerCircuitSetup(g graph) {
 func TestDiEulerCircuitOK(t *testing.T) {
 	g := newAdjacencyList()
 	diEulerCircuitSetup(g)
-	path := eulerCircuit(g, true)
-	pathExp := diEulerCircuitGolden()
-	if !reflect.DeepEqual(path, pathExp) {
-		t.Log("expect:", pathExp, ", actual :", path)
-		t.Fail()
+	for i := 0; i < 3; i++ {
+		path := eulerCircuit(g, true)
+		pathExp := diEulerCircuitGolden()
+		if !reflect.DeepEqual(path, pathExp) {
+			t.Log("expect:", pathExp, ", actual :", path)
+			t.Fail()
+		}
 	}
 }

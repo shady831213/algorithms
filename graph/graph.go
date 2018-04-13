@@ -2,7 +2,6 @@ package graph
 
 import (
 	"container/list"
-	"sync"
 )
 
 const (
@@ -22,7 +21,7 @@ type graph interface {
 	AllVertices() []interface{}
 	AllEdges() []edge
 	AllConnectedVertices(interface{}) []interface{}
-	IterConnectedVertices(interface{}) <-chan interface{}
+	IterConnectedVertices(interface{}) iterator
 	Transpose() graph
 	GetGraph() interface{}
 }
@@ -32,71 +31,9 @@ type chanWithStatus struct {
 	close bool
 }
 
-type linkedMap struct {
-	keyL *list.List
-	m    map[interface{}]interface{}
-}
-
-func (m *linkedMap) init() *linkedMap {
-	m.keyL = list.New()
-	m.m = make(map[interface{}]interface{})
-	return m
-}
-
-func (m *linkedMap) exist(key interface{}) bool {
-	_, ok := m.m[key]
-	return ok
-}
-
-func (m *linkedMap) add(key, value interface{}) {
-	if !m.exist(key) {
-		e := m.keyL.PushBack(key)
-		m.m[key] = []interface{}{e, value}
-	} else {
-		m.m[key].([]interface{})[1] = value
-	}
-}
-
-func (m *linkedMap) get(key interface{}) interface{} {
-	if m.exist(key) {
-		return m.m[key].([]interface{})[1]
-	}
-	return nil
-}
-
-func (m *linkedMap) delete(key interface{}) {
-	if m.exist(key) {
-		i := m.m[key].([]interface{})
-		m.keyL.Remove(i[0].(*list.Element))
-		delete(m.m, key)
-	}
-}
-
-func (m *linkedMap) frontKey() interface{} {
-	if m.keyL.Len() == 0 {
-		return nil
-	}
-	return m.keyL.Front().Value
-}
-
-func (m *linkedMap) backKey() interface{} {
-	if m.keyL.Len() == 0 {
-		return nil
-	}
-	return m.keyL.Back().Value
-}
-
-func (m *linkedMap) nextKey(key interface{}) interface{} {
-	if e := m.m[key].([]interface{})[0].(*list.Element).Next(); e != nil {
-		return e.Value
-	}
-	return nil
-}
-
 type adjacencyMatrix struct {
 	matrix linkedMap
-	sync.RWMutex
-	chs map[interface{}]*chanWithStatus
+	chs    map[interface{}]*chanWithStatus
 	graph
 }
 
@@ -153,26 +90,11 @@ func (g *adjacencyMatrix) AllConnectedVertices(v interface{}) []interface{} {
 	return keys
 }
 
-func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) <-chan interface{} {
-	if _, ok := g.chs[v]; !ok {
-		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
-		go func() {
-			if g.matrix.exist(v) {
-				for key := g.matrix.get(v).(*linkedMap).frontKey(); key != nil; key = g.matrix.get(v).(*linkedMap).nextKey(key) {
-					g.chs[v].ch <- key
-				}
-			}
-			g.Lock()
-			close(g.chs[v].ch)
-			g.chs[v].close = true
-			g.Unlock()
-		}()
-	} else if g.chs[v].close {
-		lastChan := g.chs[v].ch
-		delete(g.chs, v)
-		return lastChan
+func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) iterator {
+	if g.matrix.exist(v) {
+		return newLinkedMapIterator(g.matrix.get(v).(*linkedMap))
 	}
-	return g.chs[v].ch
+	return nil
 }
 
 func (g *adjacencyMatrix) Transpose() graph {
@@ -193,8 +115,7 @@ func newAdjacencyMatrix() *adjacencyMatrix {
 
 type adjacencyList struct {
 	matrix linkedMap
-	sync.RWMutex
-	chs map[interface{}]*chanWithStatus
+	chs    map[interface{}]*chanWithStatus
 	graph
 }
 
@@ -244,27 +165,11 @@ func (g *adjacencyList) AllConnectedVertices(v interface{}) []interface{} {
 	return value
 }
 
-func (g *adjacencyList) IterConnectedVertices(v interface{}) <-chan interface{} {
-	if _, ok := g.chs[v]; !ok {
-		g.chs[v] = &chanWithStatus{make(chan interface{}), false}
-		go func() {
-			if g.matrix.exist(v) {
-				for e := g.matrix.get(v).(*list.List).Front(); e != nil; e = e.Next() {
-					g.chs[v].ch <- e.Value
-				}
-			}
-			g.Lock()
-			close(g.chs[v].ch)
-			g.chs[v].close = true
-			g.Unlock()
-		}()
-	} else if g.chs[v].close {
-		lastChan := g.chs[v].ch
-		delete(g.chs, v)
-		return lastChan
+func (g *adjacencyList) IterConnectedVertices(v interface{}) iterator {
+	if g.matrix.exist(v) {
+		return newListIterator(g.matrix.get(v).(*list.List))
 	}
-
-	return g.chs[v].ch
+	return nil
 }
 
 func (g *adjacencyList) AllEdges() []edge {
