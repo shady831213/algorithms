@@ -27,6 +27,10 @@ func checkDegree(v *eulerVertex, oriented bool) bool {
 	if v.iDegree == 0 || v.oDegree == 0 {
 		return false
 	}
+	if v.iter.Len() == 1 && v.iter.Value() == v.vertex {
+		//check single vertex loop
+		return false
+	}
 	if oriented {
 		return v.iDegree == v.oDegree
 	}
@@ -73,7 +77,7 @@ func eulerCircuit(g graph, oriented bool) []edge {
 					break
 				} else {
 					vertices[e].iDegree++
-					if oriented || vertices[top].p != e {
+					if oriented || vertices[top].p != e && vertices[top].p != nil {
 						//ignore redundant edge of undirectedGraph
 						path = append(path, edge{top, e})
 					}
@@ -82,7 +86,7 @@ func eulerCircuit(g graph, oriented bool) []edge {
 
 			}
 			if top == vertexStack.Back().Value {
-				vertices[top].iter = nil
+				vertices[top].iter = g.IterConnectedVertices(top)
 				vertexStack.Remove(vertexStack.Back())
 			}
 		}

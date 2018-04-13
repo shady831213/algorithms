@@ -91,9 +91,6 @@ func TestDFS(t *testing.T) {
 		})
 	})
 	expDfsGraph := dfsGolden(g)
-	for _, v := range dfsGraph.Trees.AllVertices() {
-		t.Log(v)
-	}
 	checkDFSGraphOutOfOrder(t, dfsGraph.Trees, expDfsGraph.Trees)
 	checkDFSGraphOutOfOrder(t, dfsGraph.BackEdges, expDfsGraph.BackEdges)
 	checkDFSGraphOutOfOrder(t, dfsGraph.ForwardEdges, expDfsGraph.ForwardEdges)
