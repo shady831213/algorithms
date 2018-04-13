@@ -33,13 +33,14 @@ go version: >= 1.9.3
   - [Disjoint-Set-Tree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/disjointSetTree.svg?tag=golang-1.10)
   
-- [Graph](https://github.com/shady831213/algorithms/tree/master/graph) (including linkedMap)
+- [Graph](https://github.com/shady831213/algorithms/tree/master/graph) (including linkedMap, iterator)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/graph.svg?tag=golang-1.10)
   - [AdjacencyMatrix and AdjacencyList](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
   - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
   - [DFS](https://github.com/shady831213/algorithms/blob/master/graph/dfs.go)(use stack)
   - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
   - [BioConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/bioConnectedComp.go)(vertex bcc & edge bcc, use stack)  
+  - [eulerCircuit](https://github.com/shady831213/algorithms/blob/master/graph/eulerCircuit.go)  
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/hashMap.svg?tag=golang-1.10)
