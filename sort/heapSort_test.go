@@ -1,7 +1,7 @@
 package sort
 
 import (
-	"algorithms/heap"
+	"github.com/shady831213/algorithms/heap"
 	"testing"
 )
 

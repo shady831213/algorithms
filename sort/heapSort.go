@@ -18,7 +18,7 @@ so they both can modify shared data.But they have different lenth,index and so o
 package sort
 
 import (
-	"algorithms/heap"
+	"github.com/shady831213/algorithms/heap"
 )
 
 func heapSort(arr []int) {
