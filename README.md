@@ -7,7 +7,7 @@ go version: >= 1.9.3
 
 ----------------
 
-- [Sort](https://github.com/shady831213/algorithms/tree/master/sort) 
+- [Sort](https://github.com/shady831213/algorithms/tree/master/sort) ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/sort.svg?tag=golang-1.10)
   - [CountingSort](https://github.com/shady831213/algorithms/blob/master/sort/countingSort.go)
   - [HeapSort](https://github.com/shady831213/algorithms/blob/master/sort/heapSort.go)
   - [InsertSort](https://github.com/shady831213/algorithms/blob/master/sort/insertionSort.go)
