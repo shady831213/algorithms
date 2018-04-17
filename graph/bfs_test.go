@@ -71,7 +71,7 @@ func bfsGolden(g graph) (bfsGraph graph) {
 	return
 }
 
-func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGloden graph) {
+func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGolden graph) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
@@ -83,8 +83,8 @@ func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGloden graph) {
 		return vertexes[i].(*bfsElement).V.(string) < vertexes[j].(*bfsElement).V.(string)
 	})
 
-	expEdges := gGloden.AllEdges()
-	expVertices := gGloden.AllVertices()
+	expEdges := gGolden.AllEdges()
+	expVertices := gGolden.AllVertices()
 
 	sort.Slice(expEdges, func(i, j int) bool {
 		return expEdges[i].End.(*bfsElement).V.(string) < expEdges[j].End.(*bfsElement).V.(string)

@@ -23,23 +23,16 @@ type graph interface {
 	AllConnectedVertices(interface{}) []interface{}
 	IterConnectedVertices(interface{}) iterator
 	Transpose() graph
-	GetGraph() interface{}
-}
-
-type chanWithStatus struct {
-	ch    chan interface{}
-	close bool
+	GetGraph() graph
 }
 
 type adjacencyMatrix struct {
 	matrix linkedMap
-	chs    map[interface{}]*chanWithStatus
 	graph
 }
 
 func (g *adjacencyMatrix) init() *adjacencyMatrix {
 	g.matrix = *new(linkedMap).init()
-	g.chs = make(map[interface{}]*chanWithStatus)
 	return g
 }
 
@@ -105,7 +98,7 @@ func (g *adjacencyMatrix) Transpose() graph {
 	return gt
 }
 
-func (g *adjacencyMatrix) GetGraph() interface{} {
+func (g *adjacencyMatrix) GetGraph() graph {
 	return g
 }
 
@@ -115,13 +108,11 @@ func newAdjacencyMatrix() *adjacencyMatrix {
 
 type adjacencyList struct {
 	matrix linkedMap
-	chs    map[interface{}]*chanWithStatus
 	graph
 }
 
 func (g *adjacencyList) init() *adjacencyList {
 	g.matrix = *new(linkedMap).init()
-	g.chs = make(map[interface{}]*chanWithStatus)
 	return g
 }
 
@@ -190,7 +181,7 @@ func (g *adjacencyList) Transpose() graph {
 	return gt
 }
 
-func (g *adjacencyList) GetGraph() interface{} {
+func (g *adjacencyList) GetGraph() graph {
 	return g
 }
 
