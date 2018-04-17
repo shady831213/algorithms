@@ -41,6 +41,7 @@ go version: >= 1.9.3
   - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
   - [BioConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/bioConnectedComp.go)(vertex bcc & edge bcc, use stack)  
   - [eulerCircuit](https://github.com/shady831213/algorithms/blob/master/graph/eulerCircuit.go)  
+  - [mst](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)(including Kruskal([disjointSet](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)) and Prim([fibonacci heap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go)))
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
 ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/hashMap.svg?tag=golang-1.10)
