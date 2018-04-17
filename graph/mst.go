@@ -1,7 +1,9 @@
 package graph
 
 import (
+	"github.com/shady831213/algorithms/heap"
 	"github.com/shady831213/algorithms/tree/disjointSetTree"
+	"math"
 	"sort"
 )
 
@@ -99,6 +101,52 @@ func mstKruskal(g graphWeightily) graph {
 			t.AddEdgeBi(edge{e.Start.(*dfsElement).V, e.End.(*dfsElement).V})
 			disjointSetTree.Union(verticesSet[e.Start], verticesSet[e.End])
 		}
+	}
+
+	return t
+}
+
+type fibHeapLessIntMixin struct {
+	heap.FibHeapMixin
+}
+
+func (m *fibHeapLessIntMixin) LessKey(i, j interface{}) bool {
+	return i.(int) < j.(int)
+}
+
+func newFibHeapKeyInt() *heap.FibHeap {
+	return new(heap.FibHeap).Init(new(fibHeapLessIntMixin))
+}
+
+func mstPrim(g graphWeightily) graph {
+	t := createGraphByType(g.GetGraph())
+	pq := newFibHeapKeyInt()
+	elements := make(map[interface{}]*heap.FibHeapElement)
+	p := make(map[interface{}]interface{})
+	for i, v := range g.AllVertices() {
+		if i == 0 {
+			pq.Insert(-1, v)
+		} else {
+			elements[v] = pq.Insert(math.MaxInt32, v)
+		}
+	}
+
+	for pq.Degree() != 0 {
+		minElement := pq.ExtractMin()
+		v := minElement.Value
+		delete(elements, v)
+		iter := g.IterConnectedVertices(v)
+		for keyValue := iter.Value(); keyValue != nil; keyValue = iter.Next() {
+			e := keyValue.(struct{ key, value interface{} }).key
+			if element, ok := elements[e]; ok && g.Weight(edge{v, e}) < element.Key.(int) {
+				p[e] = v
+				pq.ModifyNode(element, g.Weight(edge{v, e}), element.Value)
+			}
+		}
+	}
+
+	for i := range p {
+		t.AddEdgeBi(edge{p[i], i})
 	}
 
 	return t

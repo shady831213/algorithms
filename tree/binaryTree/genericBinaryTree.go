@@ -7,7 +7,7 @@ type gbtElement struct {
 }
 
 type gbt struct {
-	NilNode *gbtElement //nil node, Left, Right point to the root, Parent point to it self, empty pointer point to th NilNode
+	NilNode *gbtElement //nil node, left, right point to the root, Parent point to it self, empty pointer point to th NilNode
 	Object  binaryTreeIf
 }
 
@@ -220,15 +220,15 @@ func (t *gbt) InOrderWalk(node interface{}, callback func(binaryTreeIf, interfac
 	return false
 }
 
-//GoDown: if the node has Left child, go through Left, otherwise if the node has Right child, go through Right. After it gets leaf node, go up
-//GoUp : Left node: find a completed node or a Right node like this:
+//GoDown: if the node has left child, go through left, otherwise if the node has right child, go through right. After it gets leaf node, go up
+//GoUp : left node: find a completed node or a right node like this:
 //                                                                 3
 //                                                                  \
 //                                                                 cur(5)
 //                                                                 /
 //                                                                4
-// Right node: remove itself from Parent, then find the successor of Parent, then recover Parent
-//During going up, when it gets root or a node has Right child , go down
+// right node: remove itself from Parent, then find the successor of Parent, then recover Parent
+//During going up, when it gets root or a node has right child , go down
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
 func (t *gbt) PreOrderWalk(node interface{}, callback func(binaryTreeIf, interface{}) bool) bool {
 	root := node.(*gbtElement)
@@ -277,9 +277,9 @@ func (t *gbt) PreOrderWalk(node interface{}, callback func(binaryTreeIf, interfa
 	return false
 }
 
-//start from the leftist node, which must be the min node or leftist leaf node of Right sub tree of min node
-//if the node is Left leaf node, find the leftist node of Right sub tree of Parent
-//if the node is Right leaf node, go bach to Parent
+//start from the leftist node, which must be the min node or leftist leaf node of right sub tree of min node
+//if the node is left leaf node, find the leftist node of right sub tree of Parent
+//if the node is right leaf node, go bach to Parent
 //O(n), all the connections(n-1) are accessed less than or equal to 2 times
 
 func (t *gbt) PostOrderWalk(node interface{}, callback func(binaryTreeIf, interface{}) bool) bool {

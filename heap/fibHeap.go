@@ -1,6 +1,6 @@
 package heap
 
-//FibHeapElement:Cross package
+//FibHeapElement :Cross package
 type FibHeapElement struct {
 	p, l, r    *FibHeapElement
 	c, list    *fibHeapElementList
@@ -8,7 +8,7 @@ type FibHeapElement struct {
 	Key, Value interface{}
 }
 
-func (e *FibHeapElement) Init(key, value interface{}) *FibHeapElement {
+func (e *FibHeapElement) init(key, value interface{}) *FibHeapElement {
 	e.p = nil
 	e.l = nil
 	e.r = nil
@@ -19,31 +19,31 @@ func (e *FibHeapElement) Init(key, value interface{}) *FibHeapElement {
 	return e
 }
 
-func (e *FibHeapElement) Right() *FibHeapElement {
+func (e *FibHeapElement) right() *FibHeapElement {
 	if p := e.r; e.list != nil && p != &e.list.root {
 		return p
 	}
 	return nil
 }
 
-func (e *FibHeapElement) Left() *FibHeapElement {
+func (e *FibHeapElement) left() *FibHeapElement {
 	if p := e.l; e.list != nil && p != &e.list.root {
 		return p
 	}
 	return nil
 }
 
-func (e *FibHeapElement) Degree() int {
+func (e *FibHeapElement) degree() int {
 	return e.c.Len()
 }
 
-func (e *FibHeapElement) AddChild(child *FibHeapElement) {
+func (e *FibHeapElement) addChild(child *FibHeapElement) {
 	child.p = e
 	e.c.PushRight(child)
 }
 
 func newFabHeapElement(key, value interface{}) *FibHeapElement {
-	return new(FibHeapElement).Init(key, value)
+	return new(FibHeapElement).init(key, value)
 }
 
 //list container
@@ -113,7 +113,7 @@ func (l *fibHeapElementList) Rightist() *FibHeapElement {
 
 func (l *fibHeapElementList) MergeRightList(other *fibHeapElementList) *fibHeapElementList {
 	for i, e := other.Len(), other.Leftist(); i > 0; i = i - 1 {
-		nextE := e.Right()
+		nextE := e.right()
 		other.Remove(e)
 		l.insert(e, l.root.l)
 		e = nextE
@@ -123,7 +123,7 @@ func (l *fibHeapElementList) MergeRightList(other *fibHeapElementList) *fibHeapE
 
 func (l *fibHeapElementList) MergeLeftList(other *fibHeapElementList) *fibHeapElementList {
 	for i, e := other.Len(), other.Rightist(); i > 0; i = i - 1 {
-		nextE := e.Left()
+		nextE := e.left()
 		other.Remove(e)
 		l.insert(e, l.root.r)
 		e = nextE
@@ -135,29 +135,30 @@ func newFabHeapElementList(p *FibHeapElement) *fibHeapElementList {
 	return new(fibHeapElementList).Init(p)
 }
 
-//FibHeapMixin: could be implements
+//FibHeapMixin : could be implements
 type FibHeapMixin interface {
 	LessKey(interface{}, interface{}) bool
 }
 
-//FibHeap:Cross package
+//FibHeap : Cross package
 type FibHeap struct {
-	root *fibHeapElementList
-	min  *FibHeapElement
-	n    int
-	FibHeapMixin
+	root  *fibHeapElementList
+	min   *FibHeapElement
+	n     int
+	mixin FibHeapMixin
 }
 
-func (h *FibHeap) Init(self FibHeapMixin) *FibHeap {
+//Init : Cross package
+func (h *FibHeap) Init(mixin FibHeapMixin) *FibHeap {
 	h.root = newFabHeapElementList(nil)
 	h.min = nil
 	h.n = 0
-	h.FibHeapMixin = self
+	h.mixin = mixin
 	return h
 }
 
-//default Less function, max heap
-func (h *FibHeap) Less(n1, n2 *FibHeapElement) bool {
+//default less function, max heap
+func (h *FibHeap) less(n1, n2 *FibHeapElement) bool {
 	if n1 == nil && n2 == nil {
 		panic("both nodes are nil!")
 	} else if n1 == nil {
@@ -165,14 +166,10 @@ func (h *FibHeap) Less(n1, n2 *FibHeapElement) bool {
 	} else if n2 == nil {
 		return true
 	}
-	return h.FibHeapMixin.LessKey(n1.Key, n2.Key)
+	return h.mixin.LessKey(n1.Key, n2.Key)
 }
 
-func (h *FibHeap) LessKey(key1, key2 interface{}) bool {
-	return key1.(int) > key2.(int)
-}
-
-//floor(lg n)
+//Degree : floor(lg n), Cross package
 func (h *FibHeap) Degree() int {
 	if h.n == 0 {
 		return 0
@@ -184,19 +181,21 @@ func (h *FibHeap) Degree() int {
 	return i - 1
 }
 
+//Insert :  Cross package
 func (h *FibHeap) Insert(key, value interface{}) *FibHeapElement {
 	n := newFabHeapElement(key, value)
 	h.root.PushRight(n)
-	if h.Less(n, h.min) {
+	if h.less(n, h.min) {
 		h.min = n
 	}
 	h.n++
 	return n
 }
 
+//Union :  Cross package
 func (h *FibHeap) Union(h1 *FibHeap) *FibHeap {
 	h.root = h.root.MergeRightList(h1.root)
-	if h.Less(h1.min, h.min) {
+	if h.less(h1.min, h.min) {
 		h.min = h1.min
 	}
 	h.n += h1.n
@@ -206,17 +205,17 @@ func (h *FibHeap) Union(h1 *FibHeap) *FibHeap {
 func (h *FibHeap) consolidate() {
 	degreeArray := make([]*FibHeapElement, h.Degree()+1, h.Degree()+1)
 	for i, e := h.root.Len(), h.root.Leftist(); i > 0; i = i - 1 {
-		nextE := e.Right()
-		for e1 := degreeArray[e.Degree()]; e1 != nil && e.Degree() < h.Degree(); e1 = degreeArray[e.Degree()] {
-			degreeArray[e.Degree()] = nil
-			if h.Less(e1, e) {
+		nextE := e.right()
+		for e1 := degreeArray[e.degree()]; e1 != nil && e.degree() < h.Degree(); e1 = degreeArray[e.degree()] {
+			degreeArray[e.degree()] = nil
+			if h.less(e1, e) {
 				e, e1 = e1, e
 			}
 			e1.mark = false
 			h.root.Remove(e1)
 			e.c.PushRight(e1)
 		}
-		degreeArray[e.Degree()] = e
+		degreeArray[e.degree()] = e
 		e = nextE
 	}
 	h.min = nil
@@ -224,27 +223,28 @@ func (h *FibHeap) consolidate() {
 	for i := range degreeArray {
 		if degreeArray[i] != nil {
 			h.root.PushRight(degreeArray[i])
-			if h.Less(degreeArray[i], h.min) {
+			if h.less(degreeArray[i], h.min) {
 				h.min = degreeArray[i]
 			}
 		}
 	}
 }
 
+//ExtractMin :  Cross package
 func (h *FibHeap) ExtractMin() *FibHeapElement {
 	n := h.min
 	if n != nil {
-		for i, e := n.Degree(), n.c.Leftist(); i > 0; i = i - 1 {
-			nextE := e.Right()
+		for i, e := n.degree(), n.c.Leftist(); i > 0; i = i - 1 {
+			nextE := e.right()
 			n.c.Remove(e)
 			h.root.PushLeft(e)
 			e = nextE
 		}
 		h.root.Remove(n)
-		if n == n.Right() {
+		if n == n.right() {
 			h.min = nil
 		} else {
-			h.min = n.Right()
+			h.min = n.right()
 			h.consolidate()
 		}
 		h.n--
@@ -265,25 +265,33 @@ func (h *FibHeap) cascadingCut(n *FibHeapElement) {
 	}
 }
 
+//ModifyNode :  Cross package
 func (h *FibHeap) ModifyNode(n *FibHeapElement, key, value interface{}) {
-	if h.FibHeapMixin.LessKey(n.Key, key) {
+	if h.mixin.LessKey(n.Key, key) {
 		panic("Key violated")
 	}
 	n.Key = key
 	n.Value = value
-	if p := n.p; n.p != nil && h.Less(n, n.p) {
+	if p := n.p; n.p != nil && h.less(n, n.p) {
 		p.c.Remove(n)
 		h.root.PushLeft(n)
 		n.mark = false
 		h.cascadingCut(p)
 	}
-	if h.Less(n, h.min) {
+	if h.less(n, h.min) {
 		h.min = n
 	}
 }
 
-//NewFibHeap:Cross package
+type defalutFibHeapLessMixin struct {
+	FibHeapMixin
+}
+
+func (m *defalutFibHeapLessMixin) LessKey(i, j interface{}) bool {
+	return i.(int) > j.(int)
+}
+
+//NewFibHeap : Cross package
 func NewFibHeap() *FibHeap {
-	h := new(FibHeap)
-	return h.Init(h)
+	return new(FibHeap).Init(new(defalutFibHeapLessMixin))
 }

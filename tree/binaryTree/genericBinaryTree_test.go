@@ -122,7 +122,7 @@ func TestGBT_LeftRotate(t *testing.T) {
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	//Left rotate randomly
+	//left rotate randomly
 	leftRotateNodes := make([]*gbtElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTreeIf, node interface{}) bool {
 		rotate := getRand().Intn(2)
@@ -164,7 +164,7 @@ func TestGBT_RightRotate(t *testing.T) {
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	//Right rotate randomly
+	//right rotate randomly
 	rightRotateNodes := make([]*gbtElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTreeIf, node interface{}) bool {
 		rotate := getRand().Intn(2)
@@ -190,7 +190,7 @@ func TestGBT_Rotate(t *testing.T) {
 	for _, v := range arr {
 		gbt.Insert(uint32(v))
 	}
-	//Right rotate randomly
+	//right rotate randomly
 	rotateNodes := make([]*gbtElement, 0, 0)
 	gbt.InOrderWalk(gbt.Root(), func(GBT binaryTreeIf, node interface{}) bool {
 		rotate := getRand().Intn(2)

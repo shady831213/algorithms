@@ -85,3 +85,11 @@ func TestMstKruskal(t *testing.T) {
 	treeExp := mstGolden(g)
 	checkMstOutOfOrder(t, tree, treeExp)
 }
+
+func TestMstPrim(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	mstSetup(g)
+	tree := mstPrim(g)
+	treeExp := mstGolden(g)
+	checkMstOutOfOrder(t, tree, treeExp)
+}

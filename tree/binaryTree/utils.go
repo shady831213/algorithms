@@ -135,12 +135,12 @@ func checkGBT(t *testing.T, nodeCnt *int, debug bool) func(binaryTreeIf, interfa
 	return func(tree binaryTreeIf, node interface{}) bool {
 		n := node.(*gbtElement)
 		if !tree.IsNil(n.Left) && n.Left.Key >= n.Key {
-			t.Log(fmt.Sprintf("Left child %+v of node: %+v is more than or equal to n!", n.Left, n))
+			t.Log(fmt.Sprintf("left child %+v of node: %+v is more than or equal to n!", n.Left, n))
 			t.Fail()
 			return true
 		}
 		if !tree.IsNil(n.Right) && n.Right.Key <= n.Key {
-			t.Log(fmt.Sprintf("Right child %+v of node: %+v is less than or equal to n!", n.Right, n))
+			t.Log(fmt.Sprintf("right child %+v of node: %+v is less than or equal to n!", n.Right, n))
 			t.Fail()
 			return true
 		}
