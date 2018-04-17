@@ -17,7 +17,7 @@ func TestFibHeapBasic(t *testing.T) {
 	}
 	for h.n > 0 {
 		min := h.ExtractMin()
-		sortedArr = append(sortedArr, min.key.(int))
+		sortedArr = append(sortedArr, min.Key.(int))
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(arr)))
 	if !reflect.DeepEqual(sortedArr, arr) {
@@ -39,7 +39,7 @@ func TestFibHeap(t *testing.T) {
 	}
 	for h.n > 0 {
 		min := h.ExtractMin()
-		sortedArr = append(sortedArr, min.key.(int))
+		sortedArr = append(sortedArr, min.Key.(int))
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(arr)))
 	if !reflect.DeepEqual(sortedArr, arr) {
@@ -68,7 +68,7 @@ func TestFibHeapUnion(t *testing.T) {
 	h2 = nil
 	for h1.n > 0 {
 		min := h1.ExtractMin()
-		sortedArr = append(sortedArr, min.key.(int))
+		sortedArr = append(sortedArr, min.Key.(int))
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(arr)))
 	if !reflect.DeepEqual(sortedArr, arr) {
@@ -97,7 +97,7 @@ func TestFibHeap_ModifyNode(t *testing.T) {
 	}
 	for h.n > 0 {
 		min := h.ExtractMin()
-		sortedArr = append(sortedArr, min.key.(int))
+		sortedArr = append(sortedArr, min.Key.(int))
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(arr)))
 	if !reflect.DeepEqual(sortedArr, arr) {

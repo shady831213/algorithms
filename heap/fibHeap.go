@@ -5,7 +5,7 @@ type FibHeapElement struct {
 	p, l, r    *FibHeapElement
 	c, list    *fibHeapElementList
 	mark       bool
-	key, value interface{}
+	Key, Value interface{}
 }
 
 func (e *FibHeapElement) Init(key, value interface{}) *FibHeapElement {
@@ -14,8 +14,8 @@ func (e *FibHeapElement) Init(key, value interface{}) *FibHeapElement {
 	e.r = nil
 	e.c = newFabHeapElementList(e)
 	e.mark = false
-	e.key = key
-	e.value = value
+	e.Key = key
+	e.Value = value
 	return e
 }
 
@@ -165,7 +165,7 @@ func (h *FibHeap) Less(n1, n2 *FibHeapElement) bool {
 	} else if n2 == nil {
 		return true
 	}
-	return h.fibHeapIf.LessKey(n1.key, n2.key)
+	return h.fibHeapIf.LessKey(n1.Key, n2.Key)
 }
 
 func (h *FibHeap) LessKey(key1, key2 interface{}) bool {
@@ -266,11 +266,11 @@ func (h *FibHeap) cascadingCut(n *FibHeapElement) {
 }
 
 func (h *FibHeap) ModifyNode(n *FibHeapElement, key, value interface{}) {
-	if h.fibHeapIf.LessKey(n.key, key) {
-		panic("key violated")
+	if h.fibHeapIf.LessKey(n.Key, key) {
+		panic("Key violated")
 	}
-	n.key = key
-	n.value = value
+	n.Key = key
+	n.Value = value
 	if p := n.p; n.p != nil && h.Less(n, n.p) {
 		p.c.Remove(n)
 		h.root.PushLeft(n)
