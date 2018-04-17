@@ -135,8 +135,8 @@ func newFabHeapElementList(p *FibHeapElement) *fibHeapElementList {
 	return new(fibHeapElementList).Init(p)
 }
 
-//heap
-type fibHeapIf interface {
+//FibHeapMixin: could be implements
+type FibHeapMixin interface {
 	LessKey(interface{}, interface{}) bool
 }
 
@@ -145,14 +145,14 @@ type FibHeap struct {
 	root *fibHeapElementList
 	min  *FibHeapElement
 	n    int
-	fibHeapIf
+	FibHeapMixin
 }
 
-func (h *FibHeap) Init(self fibHeapIf) *FibHeap {
+func (h *FibHeap) Init(self FibHeapMixin) *FibHeap {
 	h.root = newFabHeapElementList(nil)
 	h.min = nil
 	h.n = 0
-	h.fibHeapIf = self
+	h.FibHeapMixin = self
 	return h
 }
 
@@ -165,7 +165,7 @@ func (h *FibHeap) Less(n1, n2 *FibHeapElement) bool {
 	} else if n2 == nil {
 		return true
 	}
-	return h.fibHeapIf.LessKey(n1.Key, n2.Key)
+	return h.FibHeapMixin.LessKey(n1.Key, n2.Key)
 }
 
 func (h *FibHeap) LessKey(key1, key2 interface{}) bool {
@@ -266,7 +266,7 @@ func (h *FibHeap) cascadingCut(n *FibHeapElement) {
 }
 
 func (h *FibHeap) ModifyNode(n *FibHeapElement, key, value interface{}) {
-	if h.fibHeapIf.LessKey(n.Key, key) {
+	if h.FibHeapMixin.LessKey(n.Key, key) {
 		panic("Key violated")
 	}
 	n.Key = key
