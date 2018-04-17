@@ -7,81 +7,8 @@ import (
 	"sort"
 )
 
-type graphWeightily interface {
-	graph
-	Weight(edge) int
-	AddEdgeWithWeight(edge, int)
-	AddEdgeWithWeightBi(edge, int)
-}
-
-type adjacencyMatrixWithWeight struct {
-	adjacencyMatrix
-	weights map[edge]int
-}
-
-func (g *adjacencyMatrixWithWeight) Init() *adjacencyMatrixWithWeight {
-	g.adjacencyMatrix.init()
-	g.weights = make(map[edge]int)
-	return g
-}
-
-func (g *adjacencyMatrixWithWeight) AddEdgeWithWeight(e edge, w int) {
-	g.adjacencyMatrix.AddEdge(e)
-	g.weights[e] = w
-}
-
-func (g *adjacencyMatrixWithWeight) AddEdgeWithWeightBi(e edge, w int) {
-	g.adjacencyMatrix.AddEdgeBi(e)
-	g.weights[e] = w
-	g.weights[edge{e.End, e.Start}] = w
-}
-
-func (g *adjacencyMatrixWithWeight) Weight(e edge) int {
-	if value, ok := g.weights[e]; ok {
-		return value
-	}
-	return -1
-}
-
-func newAdjacencyMatrixWithWeight() *adjacencyMatrixWithWeight {
-	return new(adjacencyMatrixWithWeight).Init()
-}
-
-type adjacencyListWithWeight struct {
-	weights map[edge]int
-	adjacencyList
-}
-
-func (g *adjacencyListWithWeight) Init() *adjacencyListWithWeight {
-	g.adjacencyList.init()
-	g.weights = make(map[edge]int)
-	return g
-}
-
-func (g *adjacencyListWithWeight) AddEdgeWithWeight(e edge, w int) {
-	g.adjacencyList.AddEdge(e)
-	g.weights[e] = w
-}
-
-func (g *adjacencyListWithWeight) AddEdgeWithWeightBi(e edge, w int) {
-	g.adjacencyList.AddEdgeBi(e)
-	g.weights[e] = w
-	g.weights[edge{e.End, e.Start}] = w
-}
-
-func (g *adjacencyListWithWeight) Weight(e edge) int {
-	if value, ok := g.weights[e]; ok {
-		return value
-	}
-	return -1
-}
-
-func newAdjacencyListWithWeight() *adjacencyListWithWeight {
-	return new(adjacencyListWithWeight).Init()
-}
-
-func mstKruskal(g graphWeightily) graph {
-	t := createGraphByType(g.GetGraph())
+func mstKruskal(g graphWeightily) graphWeightily {
+	t := createGraphWithWeightByType(g)
 	dfsForest := dfs(g.GetGraph(), nil)
 	edges := append(dfsForest.AllTreeEdges(), dfsForest.AllForwardEdges()...)
 	verticesSet := make(map[interface{}]*disjointSetTree.DisjointSet)
@@ -98,7 +25,8 @@ func mstKruskal(g graphWeightily) graph {
 			verticesSet[e.End] = disjointSetTree.MakeSet(e.End)
 		}
 		if disjointSetTree.FindSet(verticesSet[e.Start]) != disjointSetTree.FindSet(verticesSet[e.End]) {
-			t.AddEdgeBi(edge{e.Start.(*dfsElement).V, e.End.(*dfsElement).V})
+			edge := edge{e.Start.(*dfsElement).V, e.End.(*dfsElement).V}
+			t.AddEdgeWithWeightBi(edge, g.Weight(edge))
 			disjointSetTree.Union(verticesSet[e.Start], verticesSet[e.End])
 		}
 	}
@@ -118,8 +46,8 @@ func newFibHeapKeyInt() *heap.FibHeap {
 	return new(heap.FibHeap).Init(new(fibHeapLessIntMixin))
 }
 
-func mstPrim(g graphWeightily) graph {
-	t := createGraphByType(g.GetGraph())
+func mstPrim(g graphWeightily) graphWeightily {
+	t := createGraphWithWeightByType(g)
 	pq := newFibHeapKeyInt()
 	elements := make(map[interface{}]*heap.FibHeapElement)
 	p := make(map[interface{}]interface{})
@@ -139,14 +67,15 @@ func mstPrim(g graphWeightily) graph {
 		for keyValue := iter.Value(); keyValue != nil; keyValue = iter.Next() {
 			e := keyValue.(struct{ key, value interface{} }).key
 			if element, ok := elements[e]; ok && g.Weight(edge{v, e}) < element.Key.(int) {
+				if _, ok := p[e]; ok {
+					t.DeleteEdgeBi(edge{p[e], e})
+				}
 				p[e] = v
-				pq.ModifyNode(element, g.Weight(edge{v, e}), element.Value)
+				edge := edge{p[e], e}
+				t.AddEdgeWithWeightBi(edge, g.Weight(edge))
+				pq.ModifyNode(element, g.Weight(edge), element.Value)
 			}
 		}
-	}
-
-	for i := range p {
-		t.AddEdgeBi(edge{p[i], i})
 	}
 
 	return t

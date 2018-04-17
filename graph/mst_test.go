@@ -32,21 +32,21 @@ func mstSetup(g graphWeightily) {
 	g.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 }
 
-func mstGolden(g graph) graph {
-	t := createGraphByType(g)
-	t.AddEdgeBi(edge{"a", "b"})
-	t.AddEdgeBi(edge{"a", "h"})
-	t.AddEdgeBi(edge{"c", "l"})
-	t.AddEdgeBi(edge{"g", "h"})
-	t.AddEdgeBi(edge{"g", "f"})
-	t.AddEdgeBi(edge{"c", "f"})
-	t.AddEdgeBi(edge{"c", "d"})
-	t.AddEdgeBi(edge{"d", "e"})
+func mstGolden(g graphWeightily) graphWeightily {
+	t := createGraphWithWeightByType(g)
+	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
+	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
+	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
+	t.AddEdgeWithWeightBi(edge{"g", "h"}, 1)
+	t.AddEdgeWithWeightBi(edge{"g", "f"}, 2)
+	t.AddEdgeWithWeightBi(edge{"c", "f"}, 4)
+	t.AddEdgeWithWeightBi(edge{"c", "d"}, 7)
+	t.AddEdgeWithWeightBi(edge{"d", "e"}, 9)
 
 	return t
 }
 
-func checkMstOutOfOrder(t *testing.T, g, gGolden graph) {
+func checkMstOutOfOrder(t *testing.T, g, gGolden graphWeightily) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
@@ -76,6 +76,11 @@ func checkMstOutOfOrder(t *testing.T, g, gGolden graph) {
 	})
 
 	compareGraph(t, vertexes, expVertices, edges, expEdges)
+
+	if g.TotalWeight() != gGolden.TotalWeight() {
+		t.Log("expect totalWeight :", gGolden.TotalWeight(), "actaul :", g.TotalWeight())
+		t.Fail()
+	}
 }
 
 func TestMstKruskal(t *testing.T) {

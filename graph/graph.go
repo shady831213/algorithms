@@ -16,8 +16,11 @@ type edge struct {
 
 type graph interface {
 	AddVertex(interface{})
+	DeleteVertex(interface{})
 	AddEdge(edge)
+	DeleteEdge(edge)
 	AddEdgeBi(edge)
+	DeleteEdgeBi(edge)
 	AllVertices() []interface{}
 	AllEdges() []edge
 	AllConnectedVertices(interface{}) []interface{}
@@ -42,10 +45,23 @@ func (g *adjacencyMatrix) AddVertex(vertex interface{}) {
 	}
 }
 
+func (g *adjacencyMatrix) DeleteVertex(vertex interface{}) {
+	g.matrix.delete(vertex)
+	for v := g.matrix.frontKey(); v != nil; v = g.matrix.nextKey(v) {
+		g.DeleteEdge(edge{v, vertex})
+	}
+}
+
 func (g *adjacencyMatrix) AddEdge(e edge) {
 	g.AddVertex(e.Start)
 	g.AddVertex(e.End)
 	g.matrix.get(e.Start).(*linkedMap).add(e.End, true)
+}
+
+func (g *adjacencyMatrix) DeleteEdge(e edge) {
+	if g.matrix.exist(e.Start) {
+		g.matrix.get(e.Start).(*linkedMap).delete(e.End)
+	}
 }
 
 func (g *adjacencyMatrix) AddEdgeBi(e edge) {
@@ -53,6 +69,11 @@ func (g *adjacencyMatrix) AddEdgeBi(e edge) {
 	g.AddVertex(e.End)
 	g.matrix.get(e.Start).(*linkedMap).add(e.End, true)
 	g.matrix.get(e.End).(*linkedMap).add(e.Start, true)
+}
+
+func (g *adjacencyMatrix) DeleteEdgeBi(e edge) {
+	g.DeleteEdge(e)
+	g.DeleteEdge(edge{e.End, e.Start})
 }
 
 func (g *adjacencyMatrix) AllVertices() []interface{} {
@@ -122,6 +143,13 @@ func (g *adjacencyList) AddVertex(vertex interface{}) {
 	}
 }
 
+func (g *adjacencyList) DeleteVertex(vertex interface{}) {
+	g.matrix.delete(vertex)
+	for v := g.matrix.frontKey(); v != nil; v = g.matrix.nextKey(v) {
+		g.DeleteEdge(edge{v, vertex})
+	}
+}
+
 func (g *adjacencyList) AddEdge(e edge) {
 	g.AddVertex(e.Start)
 	g.AddVertex(e.End)
@@ -133,9 +161,25 @@ func (g *adjacencyList) AddEdge(e edge) {
 	g.matrix.get(e.Start).(*list.List).PushBack(e.End)
 }
 
+func (g *adjacencyList) DeleteEdge(e edge) {
+	if g.matrix.exist(e.Start) {
+		for le := g.matrix.get(e.Start).(*list.List).Front(); le != nil; le = le.Next() {
+			if le.Value == e.End {
+				g.matrix.get(e.Start).(*list.List).Remove(le)
+				break
+			}
+		}
+	}
+}
+
 func (g *adjacencyList) AddEdgeBi(e edge) {
 	g.AddEdge(e)
 	g.AddEdge(edge{e.End, e.Start})
+}
+
+func (g *adjacencyList) DeleteEdgeBi(e edge) {
+	g.DeleteEdge(e)
+	g.DeleteEdge(edge{e.End, e.Start})
 }
 
 func (g *adjacencyList) AllVertices() []interface{} {
@@ -189,6 +233,130 @@ func newAdjacencyList() *adjacencyList {
 	return new(adjacencyList).init()
 }
 
+type graphWeightily interface {
+	graph
+	Weight(edge) int
+	AddEdgeWithWeight(edge, int)
+	AddEdgeWithWeightBi(edge, int)
+	TotalWeight() int
+}
+
+type adjacencyMatrixWithWeight struct {
+	adjacencyMatrix
+	weights map[edge]int
+	tw      int
+}
+
+func (g *adjacencyMatrixWithWeight) Init() *adjacencyMatrixWithWeight {
+	g.adjacencyMatrix.init()
+	g.weights = make(map[edge]int)
+	g.tw = 0
+	return g
+}
+
+func (g *adjacencyMatrixWithWeight) AddEdgeWithWeight(e edge, w int) {
+	g.adjacencyMatrix.AddEdge(e)
+	g.weights[e] = w
+	g.tw += w
+}
+
+func (g *adjacencyMatrixWithWeight) DeleteEdge(e edge) {
+	g.adjacencyMatrix.DeleteEdge(e)
+	if w, ok := g.weights[e]; ok {
+		g.tw -= w
+		delete(g.weights, e)
+	}
+}
+
+func (g *adjacencyMatrixWithWeight) AddEdgeWithWeightBi(e edge, w int) {
+	g.adjacencyMatrix.AddEdgeBi(e)
+	g.weights[e] = w
+	g.weights[edge{e.End, e.Start}] = w
+	g.tw += w
+}
+
+func (g *adjacencyMatrixWithWeight) DeleteEdgeBi(e edge) {
+	g.adjacencyMatrix.DeleteEdgeBi(e)
+	if w, ok := g.weights[e]; ok {
+		g.tw -= w
+		delete(g.weights, e)
+		delete(g.weights, edge{e.End, e.Start})
+	}
+}
+
+func (g *adjacencyMatrixWithWeight) Weight(e edge) int {
+	if value, ok := g.weights[e]; ok {
+		return value
+	}
+	return -1
+}
+
+func (g *adjacencyMatrixWithWeight) TotalWeight() int {
+	return g.tw
+}
+
+func newAdjacencyMatrixWithWeight() *adjacencyMatrixWithWeight {
+	return new(adjacencyMatrixWithWeight).Init()
+}
+
+type adjacencyListWithWeight struct {
+	weights map[edge]int
+	adjacencyList
+	tw int
+}
+
+func (g *adjacencyListWithWeight) Init() *adjacencyListWithWeight {
+	g.adjacencyList.init()
+	g.weights = make(map[edge]int)
+	g.tw = 0
+	return g
+}
+
+func (g *adjacencyListWithWeight) AddEdgeWithWeight(e edge, w int) {
+	g.adjacencyList.AddEdge(e)
+	g.weights[e] = w
+	g.tw += w
+}
+
+func (g *adjacencyListWithWeight) DeleteEdge(e edge) {
+	g.adjacencyList.DeleteEdge(e)
+	if w, ok := g.weights[e]; ok {
+		g.tw -= w
+		delete(g.weights, e)
+	}
+}
+
+func (g *adjacencyListWithWeight) AddEdgeWithWeightBi(e edge, w int) {
+	g.adjacencyList.AddEdgeBi(e)
+	g.weights[e] = w
+	g.weights[edge{e.End, e.Start}] = w
+	g.tw += w
+}
+
+func (g *adjacencyListWithWeight) DeleteEdgeBi(e edge) {
+	g.adjacencyList.DeleteEdgeBi(e)
+	if w, ok := g.weights[e]; ok {
+		g.tw -= w
+		delete(g.weights, e)
+		delete(g.weights, edge{e.End, e.Start})
+	}
+}
+
+func (g *adjacencyListWithWeight) Weight(e edge) int {
+	if value, ok := g.weights[e]; ok {
+		return value
+	}
+	return -1
+}
+
+func (g *adjacencyListWithWeight) TotalWeight() int {
+	return g.tw
+}
+
+func newAdjacencyListWithWeight() *adjacencyListWithWeight {
+	return new(adjacencyListWithWeight).Init()
+}
+
 func adjacencyList2AdjacencyMatrix(l *adjacencyList) *adjacencyMatrix {
 	m := newAdjacencyMatrix()
 	for v := l.matrix.frontKey(); v != nil; v = l.matrix.nextKey(v) {
@@ -214,6 +382,15 @@ func createGraphByType(g graph) (newG graph) {
 		newG = newAdjacencyList()
 	} else {
 		newG = newAdjacencyMatrix()
+	}
+	return
+}
+
+func createGraphWithWeightByType(g graphWeightily) (newG graphWeightily) {
+	if _, isList := g.GetGraph().(*adjacencyList); isList {
+		newG = newAdjacencyListWithWeight()
+	} else {
+		newG = newAdjacencyMatrixWithWeight()
 	}
 	return
 }
