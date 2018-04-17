@@ -66,14 +66,14 @@ func mstPrim(g graphWeightily) graphWeightily {
 		iter := g.IterConnectedVertices(v)
 		for keyValue := iter.Value(); keyValue != nil; keyValue = iter.Next() {
 			e := keyValue.(struct{ key, value interface{} }).key
-			if element, ok := elements[e]; ok && g.Weight(edge{v, e}) < element.Key.(int) {
+			currentEdge := edge{v, e}
+			if element, ok := elements[e]; ok && g.Weight(currentEdge) < element.Key.(int) {
 				if _, ok := p[e]; ok {
 					t.DeleteEdgeBi(edge{p[e], e})
 				}
 				p[e] = v
-				edge := edge{p[e], e}
-				t.AddEdgeWithWeightBi(edge, g.Weight(edge))
-				pq.ModifyNode(element, g.Weight(edge), element.Value)
+				t.AddEdgeWithWeightBi(currentEdge, g.Weight(currentEdge))
+				pq.ModifyNode(element, g.Weight(currentEdge), element.Value)
 			}
 		}
 	}
