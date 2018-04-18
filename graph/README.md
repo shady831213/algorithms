@@ -1,42 +1,24 @@
 # graph.go
   
-  封装了邻接矩阵和邻接表表示，以及两种表示的互相转换
+  AdjacencyMatrix and AdjacencyList
   
-# bfs.go
+# bfs
   
-  返回一个广度优先前趋子图， 前趋子图是邻接表还是邻接矩阵依赖于输入的图是邻接表还是邻接矩阵
+  https://en.wikipedia.org/wiki/Breadth-first_search
   
-# dfs.go
-  返回深度优先前森林，反向边图，正向边图和交叉边图， 用栈替换了递归。用自定义linkedMap 代替map, 以解决key的顺序随机的问题。
+# dfs
+  https://en.wikipedia.org/wiki/Depth-first_search
   
-  
-  树边：
-    白色时发现的边
-    
-    
-  反向边：
-    灰色时发现的边
-    
-    
-  交叉边：
-    黑色时发现的边，起点比终点发现的晚
-    
-    
-  正向边：
-    黑色时发现的边，终点比起点发现的晚，且时间差大于1
-    
+# StronglyConnectedComponents
 
-# 强连通组件
-
-  收缩节点后，SCC留下的便为所有交叉边
+  https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm
   
-# 双向连通组件
-  点双连通和边双连通，用栈
-  https://blog.csdn.net/STILLxjy/article/details/70176689
+# BioConnectedComponents
+  https://en.wikipedia.org/wiki/Biconnected_component
 
-# 欧拉回路
-  https://blog.csdn.net/qq_35649707/article/details/75578102#uoj117%E6%B1%82%E7%BB%99%E5%AE%9A%E5%9B%BE%E7%9A%84%E6%AC%A7%E6%8B%89%E5%9B%9E%E8%B7%AF
+# eulerCircuit
+  https://en.wikipedia.org/wiki/Eulerian_path
 
-
-# 次优最小生成树
-  对最小生成树每个顶点用bfs遍历，构造二维矩阵表明每两点间的最大权值，再遍历原图的所有边(出去最小生成树的边)，对最小生成树添加边，去掉边点间最大的权值的边，计算总权值，遍历后取最小的解决方案。
+# mst
+  https://en.wikipedia.org/wiki/Minimum_spanning_tree
+  
