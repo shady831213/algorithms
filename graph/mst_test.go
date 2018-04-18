@@ -33,7 +33,7 @@ func mstSetup(g graphWeightily) {
 }
 
 func mstGolden(g graphWeightily) graphWeightily {
-	t := createGraphWithWeightByType(g)
+	t := createGraphByType(g).(graphWeightily)
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -42,6 +42,20 @@ func mstGolden(g graphWeightily) graphWeightily {
 	t.AddEdgeWithWeightBi(edge{"c", "f"}, 4)
 	t.AddEdgeWithWeightBi(edge{"c", "d"}, 7)
 	t.AddEdgeWithWeightBi(edge{"d", "e"}, 9)
+
+	return t
+}
+
+func secondaryMstGolden(g graphWeightily) graphWeightily {
+	t := createGraphByType(g).(graphWeightily)
+	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
+	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
+	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
+	t.AddEdgeWithWeightBi(edge{"g", "h"}, 1)
+	t.AddEdgeWithWeightBi(edge{"g", "f"}, 2)
+	t.AddEdgeWithWeightBi(edge{"c", "f"}, 4)
+	t.AddEdgeWithWeightBi(edge{"c", "d"}, 7)
+	t.AddEdgeWithWeightBi(edge{"e", "f"}, 10)
 
 	return t
 }
@@ -96,5 +110,13 @@ func TestMstPrim(t *testing.T) {
 	mstSetup(g)
 	tree := mstPrim(g)
 	treeExp := mstGolden(g)
+	checkMstOutOfOrder(t, tree, treeExp)
+}
+
+func TestSecondaryMst(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	mstSetup(g)
+	tree := secondaryMst(g)
+	treeExp := secondaryMstGolden(g)
 	checkMstOutOfOrder(t, tree, treeExp)
 }

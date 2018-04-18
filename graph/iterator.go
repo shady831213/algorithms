@@ -68,18 +68,14 @@ func (i *linkedMapIterator) Next() interface{} {
 	if i.key = i.m.nextKey(i.key); i.key == nil {
 		return nil
 	}
-	return struct {
-		key, value interface{}
-	}{i.key, i.m.get(i.key)}
+	return i.key
 }
 
 func (i *linkedMapIterator) Value() interface{} {
 	if i.key == nil {
 		return nil
 	}
-	return struct {
-		key, value interface{}
-	}{i.key, i.m.get(i.key)}
+	return i.key
 }
 
 func newLinkedMapIterator(m *linkedMap) *linkedMapIterator {

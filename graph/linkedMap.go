@@ -1,6 +1,9 @@
 package graph
 
-import "container/list"
+import (
+	"container/list"
+	"fmt"
+)
 
 type linkedMap struct {
 	keyL *list.List
@@ -23,6 +26,7 @@ func (m *linkedMap) add(key, value interface{}) {
 		e := m.keyL.PushBack(key)
 		m.m[key] = []interface{}{e, value}
 	} else {
+		fmt.Println(key, "has exist")
 		m.m[key].([]interface{})[1] = value
 	}
 }
