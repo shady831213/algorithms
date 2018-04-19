@@ -79,7 +79,9 @@
   Including mstKruskal and mstPrim.
   
   Dependencies:
+  
   [disjointSet](https://github.com/shady831213/algorithms/blob/master/tree/disjointSetTree/disjointSetTree.go)  in [github.com/shady831213/algorithms/tree/disjointSetTree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
+  
   [fibHeap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go) in [github.com/shady831213/algorithms/heap](https://github.com/shady831213/algorithms/tree/master/heap)
   
   Including secondaryMst(CLRS 32-1)
