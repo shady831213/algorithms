@@ -1,5 +1,10 @@
-# Double adjustable Euclidean traveling salesman
+# Double adjustable Euclidean traveling salesman 
 --------
+
+CLRS 15-1
+
+--------
+
 [Code](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP.go)
 
 [Test](https://github.com/shady831213/algorithms/blob/master/dp/bitonicTSP_test.go)
@@ -18,6 +23,10 @@
 --------
 # Pretty Print
 --------
+
+CLRS 15-2
+
+--------
 [Code](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint.go)
 
 [Test](https://github.com/shady831213/algorithms/blob/master/dp/prettyPrint_test.go)
@@ -34,6 +43,10 @@ alignedIdx[i][j] = min(alignedIdx[i][k], alignedIdx[k+1][j]) i<=k<j
 
 --------
 # Levenshtein Distance
+--------
+
+CLRS 15-3
+
 --------
 [Code](https://github.com/shady831213/algorithms/blob/master/dp/levenshteinDistance.go)
 
@@ -106,6 +119,10 @@ op = &newCopy(1).lDOperation
 
 --------
 # Chess Game
+--------
+
+CLRS 15-6
+
 --------
 [Code](https://github.com/shady831213/algorithms/blob/master/dp/chessGame.go)
 
