@@ -28,7 +28,7 @@ go version: >= 1.9.3
     - [RedBlackTree](https://github.com/shady831213/algorithms/blob/master/tree/binaryTree/rbTree.go)
   - [B-Tree](https://github.com/shady831213/algorithms/tree/master/tree/bTree)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/bTree.svg?tag=golang-1.10)
-  - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/vEBTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity)
+  - [RS-vEB-Tree](https://github.com/shady831213/algorithms/tree/master/tree/vEBTree)(Support single key multi value.Lazy hashtable is used to instead of array to reduce space complexity.Including Go Mixin design pattern)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/vEBTree.svg?tag=golang-1.10)
   - [Disjoint-Set-Tree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
   ![cover.run go](https://cover.run/go/github.com/shady831213/algorithms/tree/disjointSetTree.svg?tag=golang-1.10)
