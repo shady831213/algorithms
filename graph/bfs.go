@@ -10,6 +10,7 @@ type bfsElement struct {
 	Dist  int
 	P     *bfsElement
 	V     interface{}
+	Iter  iterator
 }
 
 func (e *bfsElement) Init(v interface{}) *bfsElement {
@@ -17,6 +18,7 @@ func (e *bfsElement) Init(v interface{}) *bfsElement {
 	e.Color = white
 	e.Dist = math.MaxInt32
 	e.P = nil
+	e.Iter = nil
 	return e
 }
 
@@ -24,34 +26,65 @@ func newBFSElement(v interface{}) *bfsElement {
 	return new(bfsElement).Init(v)
 }
 
-func bfs(g graph, s interface{}) (bfsGraph graph) {
-	bfsGraph = createGraphByType(g)
+type bfsVisitHandler struct {
+	BeforeBfsHandler, AfterBfsHandler func(*bfsElement)
+	EdgeHandler                       func(*bfsElement, *bfsElement)
+	Elements                          map[interface{}]*bfsElement
+}
 
-	elements := make(map[interface{}]*bfsElement)
+func (h *bfsVisitHandler) init() *bfsVisitHandler {
+	h.EdgeHandler = func(start *bfsElement, end *bfsElement) {}
+	h.BeforeBfsHandler = func(*bfsElement) {}
+	h.AfterBfsHandler = func(*bfsElement) {}
+	h.Elements = make(map[interface{}]*bfsElement)
+	return h
+}
+
+func newBFSVisitHandler() *bfsVisitHandler {
+	return new(bfsVisitHandler).init()
+}
+
+func bfsVisit(g graph, s interface{}, handler *bfsVisitHandler) {
+	if handler == nil {
+		panic("handler is nil!")
+	}
 	queue := list.New()
-	for _, v := range g.AllVertices() {
-		elements[v] = newBFSElement(v)
-		bfsGraph.AddVertex(elements[v])
+
+	pushQueue := func(v interface{}) *bfsElement {
+		handler.Elements[v] = newBFSElement(v)
+		handler.Elements[v].Color = gray
+		handler.Elements[v].Iter = g.IterConnectedVertices(v)
+		queue.PushBack(handler.Elements[v])
+		handler.BeforeBfsHandler(handler.Elements[v])
+		return handler.Elements[v]
 	}
 
-	elements[s].Color = gray
-	elements[s].Dist = 0
-	queue.PushBack(s)
+	pushQueue(s).Dist = 0
 
 	for queue.Len() != 0 {
-		qe := queue.Front()
-		iter := g.IterConnectedVertices(qe.Value)
-		for v := iter.Value(); v != nil; v = iter.Next() {
-			if elements[v].Color == white {
-				elements[v].Color = gray
-				elements[v].Dist = elements[qe.Value].Dist + 1
-				elements[v].P = elements[qe.Value]
-				bfsGraph.AddEdge(edge{elements[qe.Value], elements[v]})
-				queue.PushBack(v)
+		v := queue.Front().Value.(*bfsElement)
+		for c := v.Iter.Value(); c != nil; c = v.Iter.Next() {
+			if _, ok := handler.Elements[c]; !ok {
+				newE := pushQueue(c)
+				newE.Dist = v.Dist + 1
+				newE.P = v
+				handler.EdgeHandler(v, newE)
 			}
 		}
-		elements[qe.Value].Color = black
-		queue.Remove(qe)
+		v.Color = black
+		v.Iter = g.IterConnectedVertices(v.V)
+		queue.Remove(queue.Front())
+		handler.AfterBfsHandler(v)
+
 	}
+}
+
+func bfs(g graph, s interface{}) (bfsGraph graph) {
+	bfsGraph = createGraphByType(g)
+	handler := newBFSVisitHandler()
+	handler.EdgeHandler = func(start, end *bfsElement) {
+		bfsGraph.AddEdge(edge{start, end})
+	}
+	bfsVisit(g, s, handler)
 	return
 }

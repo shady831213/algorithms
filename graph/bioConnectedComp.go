@@ -11,7 +11,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 	children := make(map[interface{}]int)
 	edgeStack := list.New()
 	handler := newDFSVisitHandler()
-	handler.BeforeBfsHandler = func(v *dfsElement) {
+	handler.BeforeDfsHandler = func(v *dfsElement) {
 		lows[v.V] = v.D
 	}
 	handler.TreeEdgeHandler = func(start, end *dfsElement) {
@@ -24,7 +24,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 			lows[start.V] = end.D
 		}
 	}
-	handler.AfterBfsHandler = func(v *dfsElement) {
+	handler.AfterDfsHandler = func(v *dfsElement) {
 		p := v.P
 		if p == nil {
 			return
@@ -61,7 +61,7 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 	lows := make(map[interface{}]int)
 	edgeStack := list.New()
 	handler := newDFSVisitHandler()
-	handler.BeforeBfsHandler = func(v *dfsElement) {
+	handler.BeforeDfsHandler = func(v *dfsElement) {
 		lows[v.V] = v.D
 	}
 	handler.TreeEdgeHandler = func(start, end *dfsElement) {
@@ -73,7 +73,7 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 			lows[start.V] = end.D
 		}
 	}
-	handler.AfterBfsHandler = func(v *dfsElement) {
+	handler.AfterDfsHandler = func(v *dfsElement) {
 		p := v.P
 		if p == nil {
 			return

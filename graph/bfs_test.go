@@ -31,34 +31,42 @@ func bfsGolden(g graph) (bfsGraph graph) {
 	vertexes := make(map[interface{}]*bfsElement)
 	vertexes["s"] = newBFSElement("s")
 	vertexes["s"].Dist = 0
+	vertexes["s"].Iter = g.IterConnectedVertices("s")
 
 	vertexes["r"] = newBFSElement("r")
 	vertexes["r"].Dist = 1
 	vertexes["r"].P = vertexes["s"]
+	vertexes["r"].Iter = g.IterConnectedVertices("r")
 
 	vertexes["w"] = newBFSElement("w")
 	vertexes["w"].Dist = 1
 	vertexes["w"].P = vertexes["s"]
+	vertexes["w"].Iter = g.IterConnectedVertices("w")
 
 	vertexes["t"] = newBFSElement("t")
 	vertexes["t"].Dist = 2
 	vertexes["t"].P = vertexes["w"]
+	vertexes["t"].Iter = g.IterConnectedVertices("t")
 
 	vertexes["v"] = newBFSElement("v")
 	vertexes["v"].Dist = 2
 	vertexes["v"].P = vertexes["r"]
+	vertexes["v"].Iter = g.IterConnectedVertices("v")
 
 	vertexes["x"] = newBFSElement("x")
 	vertexes["x"].Dist = 2
 	vertexes["x"].P = vertexes["w"]
+	vertexes["x"].Iter = g.IterConnectedVertices("x")
 
 	vertexes["u"] = newBFSElement("u")
 	vertexes["u"].Dist = 3
 	vertexes["u"].P = vertexes["t"]
+	vertexes["u"].Iter = g.IterConnectedVertices("u")
 
 	vertexes["y"] = newBFSElement("y")
 	vertexes["y"].Dist = 3
 	vertexes["y"].P = vertexes["x"]
+	vertexes["y"].Iter = g.IterConnectedVertices("y")
 
 	for v := range vertexes {
 		vertexes[v].Color = black

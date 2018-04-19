@@ -1,7 +1,5 @@
 package graph
 
-import "fmt"
-
 type vertexDegree struct {
 	iDegree, oDegree int
 }
@@ -44,7 +42,7 @@ func eulerCircuit(g graph) []edge {
 		}
 	}
 	handler := newDFSVisitHandler()
-	handler.BeforeBfsHandler = func(v *dfsElement) {
+	handler.BeforeDfsHandler = func(v *dfsElement) {
 		degrees[v.V] = newEulerVertex(v.V)
 	}
 	handler.TreeEdgeHandler = func(start, end *dfsElement) {
@@ -62,7 +60,6 @@ func eulerCircuit(g graph) []edge {
 			dfsVisit(g, v, handler)
 		}
 	}
-	fmt.Println(vCnt, eCnt)
 	//for single vertex condition
 	if !checkVertexAndEdgeCnt(vCnt, eCnt) {
 		return nil

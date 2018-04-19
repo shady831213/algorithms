@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"container/list"
 	"github.com/shady831213/algorithms/heap"
 	"github.com/shady831213/algorithms/tree/disjointSetTree"
 	"math"
@@ -90,31 +89,25 @@ func secondaryMst(g graphWeightily) graphWeightily {
 	t := mstPrim(g)
 	//dynamic programming, use BFS to visit all the [i,j] path
 	maxEdge := make(map[interface{}]map[interface{}]edge)
-	for _, v := range t.AllVertices() {
-		maxEdge[v] = make(map[interface{}]edge)
-	}
 
 	for _, v := range t.AllVertices() {
-		q := list.New()
-		iterators := make(map[interface{}]iterator)
-		iterators[v] = t.IterConnectedVertices(v)
-		q.PushBack(v)
-		for q.Len() != 0 {
-			start := q.Front().Value
-			q.Remove(q.Front())
-			for end := iterators[start].Value(); end != nil; end = iterators[start].Next() {
-				if _, ok := iterators[end]; !ok {
-					iterators[end] = t.IterConnectedVertices(end)
-					q.PushBack(end)
-					maxEdge[v][end] = edge{v, end}
-					if t.Weight(maxEdge[v][end]) < t.Weight(maxEdge[v][start]) {
-						maxEdge[v][end] = maxEdge[v][start]
-					}
-					maxEdge[end][v] = edge{maxEdge[v][end].End, maxEdge[v][end].Start}
-				}
-			}
+		if _, ok := maxEdge[v]; !ok {
+			maxEdge[v] = make(map[interface{}]edge)
 		}
+		handler := newBFSVisitHandler()
+		handler.EdgeHandler = func(start, end *bfsElement) {
+			maxEdge[v][end.V] = edge{v, end.V}
+			if t.Weight(maxEdge[v][end.V]) < t.Weight(maxEdge[v][start.V]) {
+				maxEdge[v][end.V] = maxEdge[v][start.V]
+			}
+			if _, ok := maxEdge[end.V]; !ok {
+				maxEdge[end.V] = make(map[interface{}]edge)
+			}
+			maxEdge[end.V][v] = edge{maxEdge[v][end.V].End, maxEdge[v][end.V].Start}
+		}
+		bfsVisit(t, v, handler)
 	}
+
 	//iterate all the edge and find the minimum total weight
 	minWeight := math.MaxInt32
 	var edgePair struct{ origin, replace edge }

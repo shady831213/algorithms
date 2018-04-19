@@ -156,7 +156,7 @@ func newDFSForest(g graph) *dfsForest {
 
 type dfsVisitHandler struct {
 	TreeEdgeHandler, BackEdgeHandler, ForwardEdgeHandler, CrossEdgeHandler func(*dfsElement, *dfsElement)
-	BeforeBfsHandler, AfterBfsHandler                                      func(*dfsElement)
+	BeforeDfsHandler, AfterDfsHandler                                      func(*dfsElement)
 	Elements                                                               *linkedMap
 	timer                                                                  int
 }
@@ -166,8 +166,8 @@ func (h *dfsVisitHandler) init() *dfsVisitHandler {
 	h.BackEdgeHandler = func(start *dfsElement, end *dfsElement) {}
 	h.CrossEdgeHandler = func(start *dfsElement, end *dfsElement) {}
 	h.ForwardEdgeHandler = func(start *dfsElement, end *dfsElement) {}
-	h.BeforeBfsHandler = func(*dfsElement) {}
-	h.AfterBfsHandler = func(*dfsElement) {}
+	h.BeforeDfsHandler = func(*dfsElement) {}
+	h.AfterDfsHandler = func(*dfsElement) {}
 	h.Elements = new(linkedMap).init()
 	h.timer = 0
 	return h
@@ -197,7 +197,7 @@ func dfsVisit(g graph, v interface{}, handler *dfsVisitHandler) {
 		newE.Iter = g.IterConnectedVertices(v)
 		handler.Elements.add(v, newE)
 		stack.PushBack(newE)
-		handler.BeforeBfsHandler(newE)
+		handler.BeforeDfsHandler(newE)
 		return newE
 	}
 
@@ -206,7 +206,7 @@ func dfsVisit(g graph, v interface{}, handler *dfsVisitHandler) {
 		e.F = handler.Counting()
 		e.Iter = g.IterConnectedVertices(e.V)
 		stack.Remove(stack.Back())
-		handler.AfterBfsHandler(e)
+		handler.AfterDfsHandler(e)
 	}
 
 	pushStack(v)
@@ -245,7 +245,7 @@ func dfsVisit(g graph, v interface{}, handler *dfsVisitHandler) {
 func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 	dfsForest = newDFSForest(g)
 	handler := newDFSVisitHandler()
-	handler.BeforeBfsHandler = func(v *dfsElement) {
+	handler.BeforeDfsHandler = func(v *dfsElement) {
 		dfsForest.AddVertex(v)
 	}
 	handler.TreeEdgeHandler = func(start, end *dfsElement) {
