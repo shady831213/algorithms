@@ -31,36 +31,42 @@ func dfsGolden(g graph) *dfsForest {
 	vertexes["u"].F = 8
 	vertexes["u"].P = nil
 	vertexes["u"].Root = vertexes["u"]
+	vertexes["u"].Iter = g.IterConnectedVertices("u")
 
 	vertexes["v"] = newDFSElement("v")
 	vertexes["v"].D = 2
 	vertexes["v"].F = 7
 	vertexes["v"].P = vertexes["u"]
 	vertexes["v"].Root = vertexes["u"]
+	vertexes["v"].Iter = g.IterConnectedVertices("v")
 
 	vertexes["y"] = newDFSElement("y")
 	vertexes["y"].D = 3
 	vertexes["y"].F = 6
 	vertexes["y"].P = vertexes["v"]
 	vertexes["y"].Root = vertexes["u"]
+	vertexes["y"].Iter = g.IterConnectedVertices("y")
 
 	vertexes["x"] = newDFSElement("x")
 	vertexes["x"].D = 4
 	vertexes["x"].F = 5
 	vertexes["x"].P = vertexes["y"]
 	vertexes["x"].Root = vertexes["u"]
+	vertexes["x"].Iter = g.IterConnectedVertices("x")
 
 	vertexes["w"] = newDFSElement("w")
 	vertexes["w"].D = 9
 	vertexes["w"].F = 12
 	vertexes["w"].P = nil
 	vertexes["w"].Root = vertexes["w"]
+	vertexes["w"].Iter = g.IterConnectedVertices("w")
 
 	vertexes["z"] = newDFSElement("z")
 	vertexes["z"].D = 10
 	vertexes["z"].F = 11
 	vertexes["z"].P = vertexes["w"]
 	vertexes["z"].Root = vertexes["w"]
+	vertexes["z"].Iter = g.IterConnectedVertices("z")
 
 	for v := range vertexes {
 		vertexes[v].Color = black

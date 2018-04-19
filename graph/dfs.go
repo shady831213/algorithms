@@ -9,7 +9,7 @@ type dfsElement struct {
 	D, F    int
 	P, Root *dfsElement
 	V       interface{}
-	iter    iterator
+	Iter    iterator
 }
 
 func (e *dfsElement) Init(v interface{}) *dfsElement {
@@ -19,7 +19,7 @@ func (e *dfsElement) Init(v interface{}) *dfsElement {
 	e.F = 0
 	e.P = nil
 	e.Root = e
-	e.iter = nil
+	e.Iter = nil
 	return e
 }
 
@@ -154,66 +154,120 @@ func newDFSForest(g graph) *dfsForest {
 	return new(dfsForest).Init(g)
 }
 
+type dfsVisitHandler struct {
+	TreeEdgeHandler, BackEdgeHandler, ForwardEdgeHandler, CrossEdgeHandler func(*dfsElement, *dfsElement)
+	BeforeBfsHandler, AfterBfsHandler                                      func(*dfsElement)
+	Elements                                                               *linkedMap
+	timer                                                                  int
+}
+
+func (h *dfsVisitHandler) init() *dfsVisitHandler {
+	h.TreeEdgeHandler = func(start *dfsElement, end *dfsElement) {}
+	h.BackEdgeHandler = func(start *dfsElement, end *dfsElement) {}
+	h.CrossEdgeHandler = func(start *dfsElement, end *dfsElement) {}
+	h.ForwardEdgeHandler = func(start *dfsElement, end *dfsElement) {}
+	h.BeforeBfsHandler = func(*dfsElement) {}
+	h.AfterBfsHandler = func(*dfsElement) {}
+	h.Elements = new(linkedMap).init()
+	h.timer = 0
+	return h
+}
+
+func (h *dfsVisitHandler) Counting() int {
+	h.timer++
+	return h.timer
+}
+
+func newDFSVisitHandler() *dfsVisitHandler {
+	return new(dfsVisitHandler).init()
+}
+
+func dfsVisit(g graph, v interface{}, handler *dfsVisitHandler) {
+	if handler == nil {
+		panic("handler is nil!")
+	}
+	stack := list.New()
+	//handle handlers
+	pushStack := func(v interface{}) *dfsElement {
+		//push root vertex to stack
+
+		newE := newDFSElement(v)
+		newE.Color = gray
+		newE.D = handler.Counting()
+		newE.Iter = g.IterConnectedVertices(v)
+		handler.Elements.add(v, newE)
+		stack.PushBack(newE)
+		handler.BeforeBfsHandler(newE)
+		return newE
+	}
+
+	popStack := func(e *dfsElement) {
+		e.Color = black
+		e.F = handler.Counting()
+		e.Iter = g.IterConnectedVertices(e.V)
+		stack.Remove(stack.Back())
+		handler.AfterBfsHandler(e)
+	}
+
+	pushStack(v)
+	for stack.Len() != 0 {
+		e := stack.Back().Value.(*dfsElement)
+		for c := handler.Elements.get(e.V).(*dfsElement).Iter.Value(); c != nil; {
+			if !handler.Elements.exist(c) {
+				// parent in deeper path always override that in shallower
+				newE := pushStack(c)
+				newE.P = e
+				newE.Root = e
+				//tree edge definition. First time visit
+				if handler != nil {
+					handler.TreeEdgeHandler(e, newE)
+				}
+				break
+			} else if handler.Elements.get(c).(*dfsElement).Color == gray {
+				// if color is already gray, it's a back edge
+				handler.BackEdgeHandler(e, handler.Elements.get(c).(*dfsElement))
+			} else if e.D > handler.Elements.get(c).(*dfsElement).D {
+				// if color is already black, it's a cross edge,d(e) > d(Elements.get(c).(*dfsElement))
+				handler.CrossEdgeHandler(e, handler.Elements.get(c).(*dfsElement))
+			} else if handler.Elements.get(c).(*dfsElement).D-e.D > 1 {
+				// if color is already black, it's a forward edge,d(e) < d(Elements.get(c).(*dfsElement)) - 1
+				handler.ForwardEdgeHandler(e, handler.Elements.get(c).(*dfsElement))
+			}
+			c = handler.Elements.get(e.V).(*dfsElement).Iter.Next()
+		}
+		if e == stack.Back().Value.(*dfsElement) {
+			// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
+			popStack(e)
+		}
+	}
+}
+
 func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 	dfsForest = newDFSForest(g)
-	timer := 0
-	stack := list.New()
-	//to keep vertices order
-	elements := new(linkedMap).init()
+	handler := newDFSVisitHandler()
+	handler.BeforeBfsHandler = func(v *dfsElement) {
+		dfsForest.AddVertex(v)
+	}
+	handler.TreeEdgeHandler = func(start, end *dfsElement) {
+		dfsForest.AddTreeEdge(edge{start, end})
+	}
+	handler.BackEdgeHandler = func(start, end *dfsElement) {
+		dfsForest.AddBackEdge(edge{start, end})
+	}
+	handler.ForwardEdgeHandler = func(start, end *dfsElement) {
+		dfsForest.AddForwardEdge(edge{start, end})
+	}
+	handler.CrossEdgeHandler = func(start, end *dfsElement) {
+		dfsForest.AddCrossEdge(edge{start, end})
+	}
 	//init
 	vertices := g.AllVertices()
 	if sorter != nil {
 		sorter(vertices)
 	}
 	for _, v := range vertices {
-		elements.add(v, newDFSElement(v))
-	}
-	pushStack := func(v interface{}) {
-		//push root vertex to stack
-		elements.get(v).(*dfsElement).Color = gray
-		timer++
-		elements.get(v).(*dfsElement).D = timer
-		elements.get(v).(*dfsElement).iter = g.IterConnectedVertices(v)
-		dfsForest.AddVertex(elements.get(v).(*dfsElement))
-		stack.PushBack(elements.get(v).(*dfsElement))
-	}
-	for v := elements.frontKey(); v != nil; v = elements.nextKey(v) {
-		if elements.get(v).(*dfsElement).Color == white {
-			pushStack(v)
-
-			for stack.Len() != 0 {
-				e := stack.Back().Value.(*dfsElement)
-				for c := elements.get(e.V).(*dfsElement).iter.Value(); c != nil; {
-					if elements.get(c).(*dfsElement).Color == white {
-						// parent in deeper path always override that in shallower
-						elements.get(c).(*dfsElement).P = e
-						elements.get(c).(*dfsElement).Root = e
-						pushStack(c)
-						//tree edge definition. First time visit
-						dfsForest.AddTreeEdge(edge{e, elements.get(c).(*dfsElement)})
-						elements.get(e.V).(*dfsElement).iter.Next()
-						break
-					} else if elements.get(c).(*dfsElement).Color == gray {
-						// if color is already gray, it's a back edge
-						dfsForest.AddBackEdge(edge{e, elements.get(c).(*dfsElement)})
-					} else if e.D > elements.get(c).(*dfsElement).D {
-						// if color is already black, it's a cross edge,d(e) > d(elements.get(c).(*dfsElement))
-						dfsForest.AddCrossEdge(edge{e, elements.get(c).(*dfsElement)})
-					} else if elements.get(c).(*dfsElement).D-e.D > 1 {
-						// if color is already black, it's a cross edge,d(e) < d(elements.get(c).(*dfsElement)) - 1
-						dfsForest.AddForwardEdge(edge{e, elements.get(c).(*dfsElement)})
-					}
-					c = elements.get(e.V).(*dfsElement).iter.Next()
-				}
-				if e == stack.Back().Value.(*dfsElement) {
-					// if the stack did not grow, it is end-point vertex, finish visit process and pop stack
-					e.Color = black
-					timer++
-					e.F = timer
-					e.iter = nil
-					stack.Remove(stack.Back())
-				}
-			}
+		if !handler.Elements.exist(v) {
+			dfsVisit(g, v, handler)
 		}
 	}
 	return

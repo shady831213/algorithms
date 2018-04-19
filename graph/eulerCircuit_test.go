@@ -31,7 +31,7 @@ func TestDiEulerCircuitOK(t *testing.T) {
 	g := newAdjacencyList()
 	diEulerCircuitSetup(g)
 	for i := 0; i < 3; i++ {
-		path := eulerCircuit(g, true)
+		path := eulerCircuit(g)
 		pathExp := eulerCircuitGolden()
 		if !reflect.DeepEqual(path, pathExp) {
 			t.Log("expect:", pathExp, ", actual :", path)
@@ -44,7 +44,7 @@ func TestDiEulerCircuitWithSingleVertex(t *testing.T) {
 	g := newAdjacencyList()
 	diEulerCircuitSetup(g)
 	g.AddVertex(6)
-	path := eulerCircuit(g, true)
+	path := eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()
@@ -55,7 +55,7 @@ func TestDiEulerCircuitWithSingleVertexLoop(t *testing.T) {
 	g := newAdjacencyList()
 	diEulerCircuitSetup(g)
 	g.AddEdgeBi(edge{6, 6})
-	path := eulerCircuit(g, true)
+	path := eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()
@@ -66,7 +66,7 @@ func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
 	g := newAdjacencyList()
 	diEulerCircuitSetup(g)
 	g.AddEdge(edge{6, 1})
-	path := eulerCircuit(g, true)
+	path := eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()
@@ -75,7 +75,7 @@ func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
 	g = newAdjacencyList()
 	diEulerCircuitSetup(g)
 	g.AddEdge(edge{1, 6})
-	path = eulerCircuit(g, true)
+	path = eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()
@@ -85,7 +85,7 @@ func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
 func TestUdEulerCircuitOK(t *testing.T) {
 	g := newAdjacencyList()
 	udEulerCircuitSetup(g)
-	path := eulerCircuit(g, false)
+	path := eulerCircuit(g)
 	pathExp := eulerCircuitGolden()
 	if !reflect.DeepEqual(path, pathExp) {
 		t.Log("expect:", pathExp, ", actual :", path)
@@ -97,7 +97,7 @@ func TestUdEulerCircuitWithSingleVertex(t *testing.T) {
 	g := newAdjacencyList()
 	udEulerCircuitSetup(g)
 	g.AddVertex(6)
-	path := eulerCircuit(g, false)
+	path := eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()
@@ -108,7 +108,7 @@ func TestUdEulerCircuitWithNonCircuit(t *testing.T) {
 	g := newAdjacencyList()
 	udEulerCircuitSetup(g)
 	g.AddEdgeBi(edge{1, 6})
-	path := eulerCircuit(g, false)
+	path := eulerCircuit(g)
 	if path != nil {
 		t.Log("expect: nil", ", actual :", path)
 		t.Fail()

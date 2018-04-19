@@ -1,104 +1,77 @@
 package graph
 
-import (
-	"container/list"
-)
+import "fmt"
 
-type eulerVertex struct {
-	vertex, p        interface{}
+type vertexDegree struct {
 	iDegree, oDegree int
-	iter             iterator
 }
 
-func (e *eulerVertex) init(vertex interface{}) *eulerVertex {
-	e.vertex = vertex
+func (e *vertexDegree) init(vertex interface{}) *vertexDegree {
 	e.iDegree = 0
 	e.oDegree = 0
-	e.p = nil
-	e.iter = nil
 	return e
 }
 
-func newEulerVertex(vertex interface{}) *eulerVertex {
-	return new(eulerVertex).init(vertex)
+func newEulerVertex(vertex interface{}) *vertexDegree {
+	return new(vertexDegree).init(vertex)
 }
 
-func checkDegree(v *eulerVertex, oriented bool) bool {
-	if v.iDegree == 0 || v.oDegree == 0 {
+func checkDegree(degree *vertexDegree, e *dfsElement) bool {
+	if degree.iDegree == 0 || degree.oDegree == 0 {
 		return false
 	}
-	if v.iter.Len() == 1 && v.iter.Value() == v.vertex {
+	if e.Iter.Len() == 1 && e.Iter.Value() == e.V {
 		//check single vertex loop
 		return false
 	}
-	if oriented {
-		return v.iDegree == v.oDegree
-	}
-	return v.iDegree%2 == 0
+	return degree.iDegree == degree.oDegree
 }
 
-func checkVertexAndEdgeCnt(vCnt, eCnt int, oriented bool) bool {
-	if oriented {
-		return eCnt == vCnt+1
-	}
-	return eCnt == (vCnt+1)<<1
+func checkVertexAndEdgeCnt(vCnt, eCnt int) bool {
+	return eCnt == vCnt+1
 }
 
-func eulerCircuit(g graph, oriented bool) []edge {
-	vertices := make(map[interface{}]*eulerVertex)
-	vertexStack := list.New()
+func eulerCircuit(g graph) []edge {
+	degrees := make(map[interface{}]*vertexDegree)
 	path := make([]edge, 0, 0)
 	vCnt, eCnt := 0, 0
-
-	pushVertexStack := func(vertex interface{}) {
-		vertices[vertex] = newEulerVertex(vertex)
-		vertices[vertex].iter = g.IterConnectedVertices(vertex)
-		vertexStack.PushBack(vertex)
+	nonTreeEdgeHandler := func(start, end *dfsElement) {
+		if start.P != nil && start.P != end {
+			degrees[start.V].oDegree++
+			degrees[end.V].iDegree++
+			eCnt++
+			path = append(path, edge{start.V, end.V})
+		}
 	}
+	handler := newDFSVisitHandler()
+	handler.BeforeBfsHandler = func(v *dfsElement) {
+		degrees[v.V] = newEulerVertex(v.V)
+	}
+	handler.TreeEdgeHandler = func(start, end *dfsElement) {
+		eCnt++
+		degrees[start.V].oDegree++
+		degrees[end.V].iDegree = 1
+		path = append(path, edge{start.V, end.V})
+	}
+	handler.BackEdgeHandler = nonTreeEdgeHandler
+
 	//dfs O(E)
 	for _, v := range g.AllVertices() {
 		vCnt++
-		if _, ok := vertices[v]; !ok {
-			pushVertexStack(v)
-		}
-		for vertexStack.Len() != 0 {
-			top := vertexStack.Back().Value
-			for e := vertices[top].iter.Value(); e != nil; {
-				eCnt++
-				//it means top has a new output
-				vertices[top].oDegree++
-				if _, ok := vertices[e]; !ok {
-					//e is first time discovered, and has a input.Then link new vertices to the ring
-					pushVertexStack(e)
-					vertices[e].iDegree = 1
-					vertices[e].p = top
-					path = append(path, edge{top, e})
-					vertices[top].iter.Next()
-					break
-				} else {
-					vertices[e].iDegree++
-					if oriented || vertices[top].p != e && vertices[top].p != nil {
-						//ignore redundant edge of undirectedGraph
-						path = append(path, edge{top, e})
-					}
-					e = vertices[top].iter.Next()
-				}
-
-			}
-			if top == vertexStack.Back().Value {
-				vertices[top].iter = g.IterConnectedVertices(top)
-				vertexStack.Remove(vertexStack.Back())
-			}
+		if !handler.Elements.exist(v) {
+			dfsVisit(g, v, handler)
 		}
 	}
+	fmt.Println(vCnt, eCnt)
 	//for single vertex condition
-	if !checkVertexAndEdgeCnt(vCnt, eCnt, oriented) {
+	if !checkVertexAndEdgeCnt(vCnt, eCnt) {
 		return nil
 	}
 
 	//check and output path, O(E)
 	for _, e := range path {
-		if !checkDegree(vertices[e.Start], oriented) || !checkDegree(vertices[e.End], oriented) {
+		if !checkDegree(degrees[e.Start], handler.Elements.get(e.Start).(*dfsElement)) ||
+			!checkDegree(degrees[e.End], handler.Elements.get(e.End).(*dfsElement)) {
 			//check degree rules
 			return nil
 		}
