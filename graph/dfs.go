@@ -277,4 +277,3 @@ func checkConnectivity(g graph) bool {
 	dfsForest := dfs(g, nil)
 	return len(dfsForest.Comps) == 1
 }
-
