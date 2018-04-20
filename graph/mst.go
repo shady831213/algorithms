@@ -133,3 +133,77 @@ func secondaryMst(g graphWeightily) graphWeightily {
 	t.AddEdgeWithWeightBi(edgePair.replace, g.Weight(edgePair.replace))
 	return t
 }
+
+func mstReduceOnce(g, t graphWeightily, origin map[edge]edge) (graphWeightily, map[edge]edge) {
+	newG := createGraphByType(g).(graphWeightily)
+	newOrigin := make(map[edge]edge)
+	set := make(map[interface{}]*disjointSetTree.DisjointSet)
+	mark := make(map[interface{}]bool)
+	for _, v := range g.AllVertices() {
+		if _, ok := set[v]; !ok {
+			set[v] = disjointSetTree.MakeSet(v)
+		}
+		if _, ok := mark[v]; !ok {
+			iter := g.IterConnectedVertices(v)
+			minWeight := math.MaxInt32
+			var minEnd interface{}
+			for e := iter.Value(); e != nil; e = iter.Next() {
+				if _, ok := set[e]; !ok {
+					set[e] = disjointSetTree.MakeSet(e)
+				}
+				if g.Weight(edge{v, e}) < minWeight {
+					minWeight = g.Weight(edge{v, e})
+					minEnd = e
+				}
+			}
+			//shirk and add minimum weight edge to sub graph and tree
+			t.AddEdgeWithWeightBi(origin[edge{v, minEnd}], minWeight)
+			disjointSetTree.Union(set[v], set[minEnd])
+			mark[v] = true
+			mark[minEnd] = true
+		}
+	}
+
+	for _, e := range g.AllEdges() {
+		rootStart := disjointSetTree.FindSet(set[e.Start]).Value
+		rootEnd := disjointSetTree.FindSet(set[e.End]).Value
+		if rootStart != rootEnd {
+			newE := edge{rootStart, rootEnd}
+			//if start and end don't have same root
+			if !newG.CheckEdge(newE) {
+				// if the edge is not in new graph, add to new graph, use origin weight
+				newG.AddEdgeWithWeight(newE, g.Weight(e))
+				newOrigin[newE] = origin[e]
+			} else if g.Weight(e) < newG.Weight(newE) {
+				//update new Weight which is less , and update new origin
+				newG.AddEdgeWithWeight(newE, g.Weight(e))
+				newOrigin[newE] = origin[e]
+			}
+		}
+	}
+
+	return newG, newOrigin
+}
+
+func mstReducedPrim(g graphWeightily, k int) graphWeightily {
+
+	t := createGraphByType(g).(graphWeightily)
+
+	origin := make(map[edge]edge)
+	for _, e := range g.AllEdges() {
+		origin[e] = e
+	}
+
+	newG := g
+
+	for i := 0; i < k; i++ {
+		newG, origin = mstReduceOnce(newG, t, origin)
+	}
+
+	newT := mstPrim(newG)
+
+	for _, e := range newT.AllEdges() {
+		t.AddEdgeWithWeight(origin[e], newT.Weight(origin[e]))
+	}
+	return t
+}

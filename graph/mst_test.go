@@ -120,3 +120,11 @@ func TestSecondaryMst(t *testing.T) {
 	treeExp := secondaryMstGolden(g)
 	checkMstOutOfOrder(t, tree, treeExp)
 }
+
+func TestMstReducedPrim(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	mstSetup(g)
+	tree := mstReducedPrim(g, 2)
+	treeExp := mstGolden(g)
+	checkMstOutOfOrder(t, tree, treeExp)
+}
