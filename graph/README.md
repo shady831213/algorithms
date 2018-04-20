@@ -76,17 +76,31 @@
   CLRS Sec23
   
   --------------
-  Including mstKruskal and mstPrim.
+  --------------
+  ## Including mstKruskal and mstPrim.
   
-  Dependencies:
+   Dependencies:
   
-  [disjointSet](https://github.com/shady831213/algorithms/blob/master/tree/disjointSetTree/disjointSetTree.go)  in [github.com/shady831213/algorithms/tree/disjointSetTree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
+   [disjointSet](https://github.com/shady831213/algorithms/blob/master/tree/disjointSetTree/disjointSetTree.go)  in [github.com/shady831213/algorithms/tree/disjointSetTree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
   
-  [fibHeap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go) in [github.com/shady831213/algorithms/heap](https://github.com/shady831213/algorithms/tree/master/heap)
+   [fibHeap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go) in [github.com/shady831213/algorithms/heap](https://github.com/shady831213/algorithms/tree/master/heap)
+    
   
-  Including secondaryMst(CLRS 32-1)
+   [Code-mstKruskal](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
   
-  [Code](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
+   [Test-mstPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
+   
+  ----------------
+  ## Including secondaryMst(CLRS 32-1)
   
-  [Test](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
+   [Code-secondaryMst](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
+  
+   [Test-secondaryMst](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
+   
+  -----------------
+  ## Including mst reduce for Prim (CLRS 32-1)
+  
+   [Code-mstReduceOnce-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
+  
+   [Test-mstReduceOnce-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
   
