@@ -40,3 +40,33 @@
 
 # 次优最小生成树
   对最小生成树每个顶点用bfs遍历，构造二维矩阵表明每两点间的最大权值，再遍历原图的所有边(出去最小生成树的边)，对最小生成树添加边，去掉边点间最大的权值的边，计算总权值，遍历后取最小的解决方案。
+
+# 23-3 稀疏图的最小生成树
+  https://blog.csdn.net/zilingxiyue/article/details/44730607
+  
+  但是原文说书中算法更新T不用origin是不对的，CLRS中的算法没有问题，因为mst-reduce需要多次调用，origin中的引用边在第一次之后的调用和并查集中指的边很可能不一样。
+  最终的mstReducedPrim这样：
+  ```go
+  func mstReducedPrim(g graphWeightily, k int) graphWeightily {
+
+	t := createGraphByType(g).(graphWeightily)
+
+	origin := make(map[edge]edge)
+	for _, e := range g.AllEdges() {
+		origin[e] = e
+	}
+
+	newG := g
+
+	for i := 0; i < k; i++ {
+		newG, origin = mstReduceOnce(newG, t, origin)
+	}
+
+	newT := mstPrim(newG)
+
+	for _, e := range newT.AllEdges() {
+		t.AddEdgeWithWeight(origin[e], newT.Weight(origin[e]))
+	}
+	return t
+}
+  ```
