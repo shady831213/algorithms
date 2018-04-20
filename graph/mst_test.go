@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func mstSetup(g graphWeightily) {
+func mstSetup(g weightedGraph) {
 	g.AddVertex("a")
 	g.AddVertex("b")
 	g.AddVertex("c")
@@ -32,8 +32,8 @@ func mstSetup(g graphWeightily) {
 	g.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 }
 
-func mstGolden(g graphWeightily) graphWeightily {
-	t := createGraphByType(g).(graphWeightily)
+func mstGolden(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -46,8 +46,8 @@ func mstGolden(g graphWeightily) graphWeightily {
 	return t
 }
 
-func secondaryMstGolden(g graphWeightily) graphWeightily {
-	t := createGraphByType(g).(graphWeightily)
+func secondaryMstGolden(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -60,7 +60,21 @@ func secondaryMstGolden(g graphWeightily) graphWeightily {
 	return t
 }
 
-func checkMstOutOfOrder(t *testing.T, g, gGolden graphWeightily) {
+func bottleNeckSpanningTreeGolden(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
+	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
+	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
+	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
+	t.AddEdgeWithWeightBi(edge{"g", "h"}, 1)
+	t.AddEdgeWithWeightBi(edge{"g", "f"}, 2)
+	t.AddEdgeWithWeightBi(edge{"l", "g"}, 6)
+	t.AddEdgeWithWeightBi(edge{"c", "d"}, 7)
+	t.AddEdgeWithWeightBi(edge{"d", "e"}, 9)
+
+	return t
+}
+
+func checkMstOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
@@ -126,5 +140,13 @@ func TestMstReducedPrim(t *testing.T) {
 	mstSetup(g)
 	tree := mstReducedPrim(g, 2)
 	treeExp := mstGolden(g)
+	checkMstOutOfOrder(t, tree, treeExp)
+}
+
+func TestBottleNeckSpanningTree(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	mstSetup(g)
+	tree := bottleNeckSpanningTree(g)
+	treeExp := bottleNeckSpanningTreeGolden(g)
 	checkMstOutOfOrder(t, tree, treeExp)
 }

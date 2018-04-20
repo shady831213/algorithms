@@ -272,3 +272,9 @@ func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
 	}
 	return
 }
+
+func checkConnectivity(g graph) bool {
+	dfsForest := dfs(g, nil)
+	return len(dfsForest.Comps) == 1
+}
+

@@ -5,10 +5,11 @@ import (
 	"github.com/shady831213/algorithms/tree/disjointSetTree"
 	"math"
 	"sort"
+	"fmt"
 )
 
-func mstKruskal(g graphWeightily) graphWeightily {
-	t := createGraphByType(g).(graphWeightily)
+func mstKruskal(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
 	dfsForest := dfs(g, nil)
 	edges := append(dfsForest.AllTreeEdges(), dfsForest.AllForwardEdges()...)
 	verticesSet := make(map[interface{}]*disjointSetTree.DisjointSet)
@@ -51,8 +52,8 @@ type mstElement struct {
 	pqElement *heap.FibHeapElement
 }
 
-func mstPrim(g graphWeightily) graphWeightily {
-	t := createGraphByType(g).(graphWeightily)
+func mstPrim(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
 	pq := newFibHeapKeyInt()
 	elements := make(map[interface{}]*heap.FibHeapElement)
 	p := make(map[interface{}]interface{})
@@ -85,7 +86,7 @@ func mstPrim(g graphWeightily) graphWeightily {
 	return t
 }
 
-func secondaryMst(g graphWeightily) graphWeightily {
+func secondaryMst(g weightedGraph) weightedGraph {
 	t := mstPrim(g)
 	//dynamic programming, use BFS to visit all the [i,j] path
 	maxEdge := make(map[interface{}]map[interface{}]edge)
@@ -134,8 +135,8 @@ func secondaryMst(g graphWeightily) graphWeightily {
 	return t
 }
 
-func mstReduceOnce(g, t graphWeightily, origin map[edge]edge) (graphWeightily, map[edge]edge) {
-	newG := createGraphByType(g).(graphWeightily)
+func mstReduceOnce(g, t weightedGraph, origin map[edge]edge) (weightedGraph, map[edge]edge) {
+	newG := createGraphByType(g).(weightedGraph)
 	newOrigin := make(map[edge]edge)
 	set := make(map[interface{}]*disjointSetTree.DisjointSet)
 	mark := make(map[interface{}]bool)
@@ -172,12 +173,14 @@ func mstReduceOnce(g, t graphWeightily, origin map[edge]edge) (graphWeightily, m
 			//if start and end don't have same root
 			if !newG.CheckEdge(newE) {
 				// if the edge is not in new graph, add to new graph, use origin weight
-				newG.AddEdgeWithWeight(newE, g.Weight(e))
+				newG.AddEdgeWithWeightBi(newE, g.Weight(e))
 				newOrigin[newE] = origin[e]
+				newOrigin[edge{newE.End, newE.Start}] = origin[edge{e.End, e.Start}]
 			} else if g.Weight(e) < newG.Weight(newE) {
 				//update new Weight which is less , and update new origin
-				newG.AddEdgeWithWeight(newE, g.Weight(e))
+				newG.AddEdgeWithWeightBi(newE, g.Weight(e))
 				newOrigin[newE] = origin[e]
+				newOrigin[edge{newE.End, newE.Start}] = origin[edge{e.End, e.Start}]
 			}
 		}
 	}
@@ -185,9 +188,9 @@ func mstReduceOnce(g, t graphWeightily, origin map[edge]edge) (graphWeightily, m
 	return newG, newOrigin
 }
 
-func mstReducedPrim(g graphWeightily, k int) graphWeightily {
+func mstReducedPrim(g weightedGraph, k int) weightedGraph {
 
-	t := createGraphByType(g).(graphWeightily)
+	t := createGraphByType(g).(weightedGraph)
 
 	origin := make(map[edge]edge)
 	for _, e := range g.AllEdges() {
@@ -205,5 +208,140 @@ func mstReducedPrim(g graphWeightily, k int) graphWeightily {
 	for _, e := range newT.AllEdges() {
 		t.AddEdgeWithWeight(origin[e], newT.Weight(origin[e]))
 	}
+	return t
+}
+
+/*
+bottleNeck Spanning Tree
+*/
+
+//partitionGraph : O(E)
+func partitionGraph(g weightedGraph) (g1, g2 weightedGraph) {
+	edges := g.AllEdges()
+	if len(edges) == 2 {
+		return g, nil
+	}
+
+	g1, g2 = createGraphByType(g).(weightedGraph), createGraphByType(g).(weightedGraph)
+
+	mid, idx := len(edges)/2, 0
+	for end, start := len(edges)-1, 0; idx != mid; {
+		sanity := g.Weight(edges[end])
+		idx = start
+		for i := start; i <= end; i++ {
+			if g.Weight(edges[i]) < sanity {
+				edges[i], edges[idx] = edges[idx], edges[i]
+				idx++
+			}
+		}
+		edges[idx], edges[end] = edges[end], edges[idx]
+		if idx < mid {
+			start = idx + 1
+		} else {
+			end = idx - 1
+		}
+	}
+
+	for _, v := range g.AllVertices() {
+		g1.AddVertex(v)
+		g2.AddVertex(v)
+	}
+
+	for i := range edges {
+		if i < mid {
+			g1.AddEdgeWithWeight(edges[i], g.Weight(edges[i]))
+		} else {
+			g2.AddEdgeWithWeight(edges[i], g.Weight(edges[i]))
+		}
+	}
+	return
+}
+
+func bottleNeckSpanningTreeHandle(g, t weightedGraph, origin map[edge]edge) (weightedGraph) {
+	g1, g2 := partitionGraph(g)
+	if g2 == nil {
+		for _, e := range g1.AllEdges() {
+			fmt.Println("add to  tree", e, origin[e])
+			t.AddEdgeWithWeight(origin[e], g1.Weight(e))
+		}
+		return g1
+	}
+
+	//dfs g1
+	comps := make(map[interface{}]weightedGraph)
+	roots := make(map[interface{}]interface{})
+	treeEdge := createGraphByType(g).(weightedGraph)
+	handler := newDFSVisitHandler()
+	handler.TreeEdgeHandler = func(start, end *dfsElement) {
+		e := edge{start.V, end.V}
+		fmt.Println(end.V, end.FindRoot().V, comps)
+		comps[end.FindRoot().V].AddEdgeWithWeightBi(e, g1.Weight(e))
+		treeEdge.AddEdgeWithWeightBi(e, g1.Weight(e))
+	}
+	handler.AfterDfsHandler = func(v *dfsElement) {
+		roots[v.V] = v.FindRoot().V
+	}
+
+	for _, v := range g1.AllVertices() {
+		if ! handler.Elements.exist(v) {
+			comps[v] = createGraphByType(g1).(weightedGraph)
+			dfsVisit(g1, v, handler)
+		}
+	}
+
+	fmt.Println("edges:", len(g1.AllEdges()), len(g2.AllEdges()))
+
+	if len(comps) == 1 {
+		fmt.Println("comps == 1")
+		return bottleNeckSpanningTreeHandle(g1, t, origin)
+	}
+
+	//add comps' edges to the tree, reclusive other edges which are cross comps
+	reducedG := createGraphByType(g).(weightedGraph)
+	newOrigin := make(map[edge]edge)
+	for _, e := range g.AllEdges() {
+		if treeEdge.CheckEdge(e) {
+			fmt.Println("add to  tree", e, origin[e])
+			t.AddEdgeWithWeight(origin[e], g.Weight(e))
+		} else {
+			//for vertex not in g1
+			if _, ok := roots[e.Start]; !ok {
+				roots[e.Start] = e.Start
+			}
+			if _, ok := roots[e.End]; !ok {
+				roots[e.End] = e.End
+			}
+			fmt.Println(e.Start, e.End, roots[e.Start], roots[e.End])
+			if roots[e.Start] != roots[e.End] {
+				newE := edge{roots[e.Start], roots[e.End]}
+				if !reducedG.CheckEdge(newE) {
+					reducedG.AddEdgeWithWeightBi(newE, g.Weight(e))
+					newOrigin[newE] = origin[e]
+					newOrigin[edge{newE.End, newE.Start}] = origin[edge{e.End, e.Start}]
+				} else if g.Weight(e) < reducedG.Weight(newE) {
+					reducedG.AddEdgeWithWeightBi(newE, g.Weight(e))
+					newOrigin[newE] = origin[e]
+					newOrigin[edge{newE.End, newE.Start}] = origin[edge{e.End, e.Start}]
+				}
+			}
+		}
+	}
+	for _, e := range t.AllEdges() {
+		fmt.Println("t:", e)
+	}
+
+	for _, e := range reducedG.AllEdges() {
+		fmt.Println("cross:", e)
+	}
+	return bottleNeckSpanningTreeHandle(reducedG, t, newOrigin)
+}
+
+func bottleNeckSpanningTree(g weightedGraph) weightedGraph {
+	t := createGraphByType(g).(weightedGraph)
+	origin := make(map[edge]edge)
+	for _, e := range g.AllEdges() {
+		origin[e] = e
+	}
+	bottleNeckSpanningTreeHandle(g, t, origin)
 	return t
 }

@@ -253,7 +253,7 @@ func newAdjacencyList() *adjacencyList {
 	return new(adjacencyList).init()
 }
 
-type graphWeightily interface {
+type weightedGraph interface {
 	graph
 	Weight(edge) int
 	AddEdgeWithWeight(edge, int)
