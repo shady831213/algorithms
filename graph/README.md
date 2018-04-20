@@ -100,7 +100,16 @@
   -----------------
   ## Including mst reduce for Prim (CLRS 32-2)
   
-   [Code-mstReduceOnce-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
+   [Code-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
   
-   [Test-mstReduceOnce-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
+   [Test-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
+   
+   -----------------
+  ## Including Linear time bottleneck spanning tree (CLRS 32-3)
+  
+  https://stackoverflow.com/questions/22875799/how-to-compute-a-minimum-bottleneck-spanning-tree-in-linear-time
+  
+   [Code-bottleNeckSpanningTree](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
+  
+   [Test-bottleNeckSpanningTree](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
   
