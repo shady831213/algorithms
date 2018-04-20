@@ -98,7 +98,7 @@
    [Test-secondaryMst](https://github.com/shady831213/algorithms/blob/master/graph/mst_test.go)
    
   -----------------
-  ## Including mst reduce for Prim (CLRS 32-1)
+  ## Including mst reduce for Prim (CLRS 32-2)
   
    [Code-mstReduceOnce-mstReducedPrim](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)
   
