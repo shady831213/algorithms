@@ -86,3 +86,11 @@ func TestBellManFord(t *testing.T) {
 	ssspGExp := ssspGolden(g)
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
+
+func TestSpfa(t *testing.T) {
+	g := newAdjacencyListWithWeight()
+	ssspSetup(g)
+	ssspG := spfa(g, "s", math.MaxInt32, new(defaultRelax))
+	ssspGExp := ssspGolden(g)
+	checkSsspOutOfOrder(t, ssspG, ssspGExp)
+}
