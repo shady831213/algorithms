@@ -172,30 +172,27 @@ func gabow(g weightedGraph, s interface{}, r relax, k uint32) weightedGraph {
 	if degree == 0 {
 		degree = 32
 	}
+
 	ssspE := initSingleSource(g, r.InitValue())
-	gi := func(j uint32) weightedGraph {
-		gLast := createGraphByType(g).(weightedGraph)
-		for _, e := range g.AllEdges() {
-			gLast.AddEdgeWithWeight(e, (g.Weight(e)>>j)+((ssspE[e.Start].D-ssspE[e.End].D)<<1))
-		}
-		return gLast
-	}
 	updateSsspE := func(currentSspE map[interface{}]*ssspElement) {
 		for v := range currentSspE {
-			if ssspE[v].D == r.InitValue() {
-				ssspE[v].D = currentSspE[v].D
-			} else {
-				ssspE[v].D = currentSspE[v].D + (ssspE[v].D << 1)
+			if ssspE[v].D != r.InitValue() {
+				currentSspE[v].D = currentSspE[v].D + (ssspE[v].D << 1)
 			}
-			if currentSspE[v].P != nil {
-				ssspE[v].P = ssspE[currentSspE[v].P.V]
-			}
+			ssspE[v] = currentSspE[v]
+		}
+	}
+
+	gi := createGraphByType(g).(weightedGraph)
+	updateGi := func(j uint32) {
+		for _, e := range g.AllEdges() {
+			gi.AddEdgeWithWeight(e, (g.Weight(e)>>j)+((ssspE[e.Start].D-ssspE[e.End].D)<<1))
 		}
 	}
 
 	for i := uint32(0); i < degree; i++ {
-		currentG := gi(degree - i - 1)
-		currentSspE := spfaCore(currentG, s, r)
+		updateGi(degree - i - 1)
+		currentSspE := spfaCore(gi, s, r)
 		updateSsspE(currentSspE)
 	}
 
