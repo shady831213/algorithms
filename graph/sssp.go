@@ -1,6 +1,9 @@
 package graph
 
-import "container/list"
+import (
+	"container/list"
+	"github.com/shady831213/algorithms/heap"
+)
 
 type relax interface {
 	Compare(*ssspElement, *ssspElement, int) bool
@@ -97,5 +100,38 @@ func spfa(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
 			return nil
 		}
 	}
+	return ssspG
+}
+
+func dijkstra(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
+	ssspG := createGraphByType(g).(weightedGraph)
+	ssspE := initSingleSource(g, init)
+	ssspE[s].D = 0
+
+	//use fibonacci heap
+	pq := newFibHeapKeyInt()
+	pqElement := make(map[interface{}]*heap.FibHeapElement)
+
+	for v := range ssspE {
+		pqElement[v] = pq.Insert(ssspE[v].D, v)
+	}
+
+	for pq.Len() != 0 {
+		minElement := pq.ExtractMin()
+		v := minElement.Value
+		delete(pqElement, v)
+		iter := g.IterConnectedVertices(v)
+		if ssspE[v].P != nil {
+			ssspG.AddEdgeWithWeight(edge{ssspE[v].P, ssspE[v]}, g.Weight(edge{ssspE[v].P.V, v}))
+		}
+		for e := iter.Value(); e != nil; e = iter.Next() {
+			if _, ok := pqElement[e]; ok {
+				currentEdge := edge{v, e}
+				r.Relax(ssspE[v], ssspE[e], g.Weight(currentEdge))
+				pq.ModifyNode(pqElement[e], ssspE[e].D, e)
+			}
+		}
+	}
+
 	return ssspG
 }

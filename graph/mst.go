@@ -34,18 +34,6 @@ func mstKruskal(g weightedGraph) weightedGraph {
 	return t
 }
 
-type fibHeapLessIntMixin struct {
-	heap.FibHeapMixin
-}
-
-func (m *fibHeapLessIntMixin) LessKey(i, j interface{}) bool {
-	return i.(int) < j.(int)
-}
-
-func newFibHeapKeyInt() *heap.FibHeap {
-	return new(heap.FibHeap).Init(new(fibHeapLessIntMixin))
-}
-
 type mstElement struct {
 	p         *mstElement
 	pqElement *heap.FibHeapElement
@@ -64,7 +52,7 @@ func mstPrim(g weightedGraph) weightedGraph {
 		}
 	}
 
-	for pq.Degree() != 0 {
+	for pq.Len() != 0 {
 		minElement := pq.ExtractMin()
 		v := minElement.Value
 		delete(elements, v)

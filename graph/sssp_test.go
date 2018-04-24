@@ -19,6 +19,19 @@ func ssspSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{"z", "s"}, 2)
 }
 
+func ssspPosSetup(g weightedGraph) {
+	g.AddEdgeWithWeight(edge{"s", "t"}, 10)
+	g.AddEdgeWithWeight(edge{"s", "y"}, 5)
+	g.AddEdgeWithWeight(edge{"t", "y"}, 2)
+	g.AddEdgeWithWeight(edge{"y", "t"}, 3)
+	g.AddEdgeWithWeight(edge{"t", "x"}, 1)
+	g.AddEdgeWithWeight(edge{"y", "x"}, 9)
+	g.AddEdgeWithWeight(edge{"y", "z"}, 2)
+	g.AddEdgeWithWeight(edge{"x", "z"}, 4)
+	g.AddEdgeWithWeight(edge{"z", "x"}, 6)
+	g.AddEdgeWithWeight(edge{"z", "s"}, 7)
+}
+
 func ssspGolden(g weightedGraph) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
 	ssspE := make(map[interface{}]*ssspElement)
@@ -36,6 +49,33 @@ func ssspGolden(g weightedGraph) weightedGraph {
 
 	ssspE["z"] = newSsspElement("z", -2)
 	ssspE["z"].P = ssspE["t"]
+
+	for v := range ssspE {
+		if ssspE[v].P != nil {
+			ssspG.AddEdgeWithWeight(edge{ssspE[v].P, ssspE[v]}, ssspE[v].D-ssspE[v].P.D)
+		}
+	}
+
+	return ssspG
+}
+
+func ssspPosGolden(g weightedGraph) weightedGraph {
+	ssspG := createGraphByType(g).(weightedGraph)
+	ssspE := make(map[interface{}]*ssspElement)
+
+	ssspE["s"] = newSsspElement("s", 0)
+
+	ssspE["y"] = newSsspElement("y", 5)
+	ssspE["y"].P = ssspE["s"]
+
+	ssspE["t"] = newSsspElement("t", 8)
+	ssspE["t"].P = ssspE["y"]
+
+	ssspE["x"] = newSsspElement("x", 9)
+	ssspE["x"].P = ssspE["t"]
+
+	ssspE["z"] = newSsspElement("z", 7)
+	ssspE["z"].P = ssspE["y"]
 
 	for v := range ssspE {
 		if ssspE[v].P != nil {
@@ -92,5 +132,13 @@ func TestSpfa(t *testing.T) {
 	ssspSetup(g)
 	ssspG := spfa(g, "s", math.MaxInt32, new(defaultRelax))
 	ssspGExp := ssspGolden(g)
+	checkSsspOutOfOrder(t, ssspG, ssspGExp)
+}
+
+func TestDijkstra(t *testing.T) {
+	g := newAdjacencyListWithWeight()
+	ssspPosSetup(g)
+	ssspG := dijkstra(g, "s", math.MaxInt32, new(defaultRelax))
+	ssspGExp := ssspPosGolden(g)
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
