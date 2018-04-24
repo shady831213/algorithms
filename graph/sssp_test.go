@@ -143,6 +143,14 @@ func TestDijkstra(t *testing.T) {
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
+func TestGabow(t *testing.T) {
+	g := newAdjacencyListWithWeight()
+	ssspPosSetup(g)
+	ssspG := gabow(g, "s", new(defaultRelax), 4)
+	ssspGExp := ssspPosGolden(g)
+	checkSsspOutOfOrder(t, ssspG, ssspGExp)
+}
+
 /*
 problems
 */

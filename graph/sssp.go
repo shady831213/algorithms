@@ -58,8 +58,44 @@ func (r *defaultRelax) Relax(start, end *ssspElement, weight int) bool {
 	return false
 }
 
-func bellmanFord(g weightedGraph, s interface{}, r relax) weightedGraph {
+func addSsspGEdge(g, ssspG weightedGraph, ssspE *ssspElement) {
+	if ssspE.P != nil {
+		ssspG.AddEdgeWithWeight(edge{ssspE.P, ssspE}, g.Weight(edge{ssspE.P, ssspE}))
+	}
+}
+
+func checkOrGetSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r relax) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
+	for _, e := range g.AllEdges() {
+		if r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
+			return nil
+		}
+		addSsspGEdge(g, ssspG, ssspE[e.End])
+	}
+	return ssspG
+}
+
+func getSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r relax) weightedGraph {
+	ssspG := createGraphByType(g).(weightedGraph)
+	for _, e := range g.AllEdges() {
+		addSsspGEdge(g, ssspG, ssspE[e.End])
+	}
+	return ssspG
+}
+
+func ssspWrapper(core func(weightedGraph, interface{}, relax) map[interface{}]*ssspElement) func(weightedGraph, interface{}, relax) weightedGraph {
+	return func(g weightedGraph, s interface{}, r relax) weightedGraph {
+		return checkOrGetSsspGEdge(g, core(g, s, r), r)
+	}
+}
+
+func ssspPosWeightWrapper(core func(weightedGraph, interface{}, relax) map[interface{}]*ssspElement) func(weightedGraph, interface{}, relax) weightedGraph {
+	return func(g weightedGraph, s interface{}, r relax) weightedGraph {
+		return getSsspGEdge(g, core(g, s, r), r)
+	}
+}
+
+func bellmanFordCore(g weightedGraph, s interface{}, r relax) map[interface{}]*ssspElement {
 	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 	//dp
@@ -68,20 +104,14 @@ func bellmanFord(g weightedGraph, s interface{}, r relax) weightedGraph {
 			r.Relax(ssspE[e.Start], ssspE[e.End], g.Weight(e))
 		}
 	}
-	for _, e := range g.AllEdges() {
-		if !r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
-			if ssspE[e.End].P != nil {
-				ssspG.AddEdgeWithWeight(edge{ssspE[e.End].P, ssspE[e.End]}, g.Weight(e))
-			}
-		} else {
-			return nil
-		}
-	}
-	return ssspG
+
+	return ssspE
+}
+func bellmanFord(g weightedGraph, s interface{}, r relax) weightedGraph {
+	return ssspWrapper(bellmanFordCore)(g, s, r)
 }
 
-func spfa(g weightedGraph, s interface{}, r relax) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+func spfaCore(g weightedGraph, s interface{}, r relax) map[interface{}]*ssspElement {
 	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 	//use queue
@@ -97,20 +127,14 @@ func spfa(g weightedGraph, s interface{}, r relax) weightedGraph {
 		}
 		queue.Remove(queue.Front())
 	}
-	for _, e := range g.AllEdges() {
-		if !r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
-			if ssspE[e.End].P != nil {
-				ssspG.AddEdgeWithWeight(edge{ssspE[e.End].P, ssspE[e.End]}, g.Weight(e))
-			}
-		} else {
-			return nil
-		}
-	}
-	return ssspG
+	return ssspE
 }
 
-func dijkstra(g weightedGraph, s interface{}, r relax) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+func spfa(g weightedGraph, s interface{}, r relax) weightedGraph {
+	return ssspWrapper(spfaCore)(g, s, r)
+}
+
+func dijkstraCore(g weightedGraph, s interface{}, r relax) map[interface{}]*ssspElement {
 	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 
@@ -127,9 +151,6 @@ func dijkstra(g weightedGraph, s interface{}, r relax) weightedGraph {
 		v := minElement.Value
 		delete(pqElement, v)
 		iter := g.IterConnectedVertices(v)
-		if ssspE[v].P != nil {
-			ssspG.AddEdgeWithWeight(edge{ssspE[v].P, ssspE[v]}, g.Weight(edge{ssspE[v].P.V, v}))
-		}
 		for e := iter.Value(); e != nil; e = iter.Next() {
 			if _, ok := pqElement[e]; ok {
 				currentEdge := edge{v, e}
@@ -139,7 +160,46 @@ func dijkstra(g weightedGraph, s interface{}, r relax) weightedGraph {
 		}
 	}
 
-	return ssspG
+	return ssspE
+}
+
+func dijkstra(g weightedGraph, s interface{}, r relax) weightedGraph {
+	return ssspPosWeightWrapper(dijkstraCore)(g, s, r)
+}
+
+func gabow(g weightedGraph, s interface{}, r relax, k uint32) weightedGraph {
+	degree := k
+	if degree == 0 {
+		degree = 32
+	}
+	ssspE := initSingleSource(g, r.InitValue())
+	gi := func(j uint32) weightedGraph {
+		gLast := createGraphByType(g).(weightedGraph)
+		for _, e := range g.AllEdges() {
+			gLast.AddEdgeWithWeight(e, (g.Weight(e)>>j)+((ssspE[e.Start].D-ssspE[e.End].D)<<1))
+		}
+		return gLast
+	}
+	updateSsspE := func(currentSspE map[interface{}]*ssspElement) {
+		for v := range currentSspE {
+			if ssspE[v].D == r.InitValue() {
+				ssspE[v].D = currentSspE[v].D
+			} else {
+				ssspE[v].D = currentSspE[v].D + (ssspE[v].D << 1)
+			}
+			if currentSspE[v].P != nil {
+				ssspE[v].P = ssspE[currentSspE[v].P.V]
+			}
+		}
+	}
+
+	for i := uint32(0); i < degree; i++ {
+		currentG := gi(degree - i - 1)
+		currentSspE := spfaCore(currentG, s, r)
+		updateSsspE(currentSspE)
+	}
+
+	return getSsspGEdge(g, ssspE, r)
 }
 
 /*
