@@ -181,6 +181,11 @@ func (h *FibHeap) Degree() int {
 	return i - 1
 }
 
+//Len : n, Cross package
+func (h *FibHeap) Len() int {
+	return h.n
+}
+
 //Insert :  Cross package
 func (h *FibHeap) Insert(key, value interface{}) *FibHeapElement {
 	n := newFabHeapElement(key, value)
