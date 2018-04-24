@@ -3,9 +3,11 @@ package graph
 import (
 	"container/list"
 	"github.com/shady831213/algorithms/heap"
+	"math"
 )
 
 type relax interface {
+	InitValue() int
 	Compare(*ssspElement, *ssspElement, int) bool
 	Relax(*ssspElement, *ssspElement, int) bool
 }
@@ -39,6 +41,10 @@ type defaultRelax struct {
 	relax
 }
 
+func (r *defaultRelax) InitValue() int {
+	return math.MaxInt32
+}
+
 func (r *defaultRelax) Compare(start, end *ssspElement, weight int) bool {
 	return end.D > start.D+weight
 }
@@ -52,9 +58,9 @@ func (r *defaultRelax) Relax(start, end *ssspElement, weight int) bool {
 	return false
 }
 
-func bellmanFord(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
+func bellmanFord(g weightedGraph, s interface{}, r relax) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
-	ssspE := initSingleSource(g, init)
+	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 	//dp
 	for i := 0; i < len(ssspE)-1; i++ {
@@ -74,9 +80,9 @@ func bellmanFord(g weightedGraph, s interface{}, init int, r relax) weightedGrap
 	return ssspG
 }
 
-func spfa(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
+func spfa(g weightedGraph, s interface{}, r relax) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
-	ssspE := initSingleSource(g, init)
+	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 	//use queue
 	queue := list.New()
@@ -103,9 +109,9 @@ func spfa(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
 	return ssspG
 }
 
-func dijkstra(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
+func dijkstra(g weightedGraph, s interface{}, r relax) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
-	ssspE := initSingleSource(g, init)
+	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
 
 	//use fibonacci heap
@@ -134,4 +140,68 @@ func dijkstra(g weightedGraph, s interface{}, init int, r relax) weightedGraph {
 	}
 
 	return ssspG
+}
+
+/*
+problems
+*/
+
+type nestedBoxesRelax struct {
+	maxLen int
+	lastE  *ssspElement
+	defaultRelax
+}
+
+func (r *nestedBoxesRelax) init() *nestedBoxesRelax {
+	r.maxLen = 0
+	r.lastE = nil
+	return r
+}
+
+func (r *nestedBoxesRelax) Relax(start, end *ssspElement, weight int) bool {
+	update := r.defaultRelax.Relax(start, end, weight)
+	if update {
+		if end.D < r.maxLen {
+			r.maxLen, r.lastE = end.D, end
+		}
+	}
+	return update
+}
+
+func nestedBoxes(boxes [][]int) [][]int {
+	g := newAdjacencyListWithWeight()
+	nested := func(box1, box2 []int) bool {
+		if len(box1) != len(box2) {
+			return false
+		}
+		for i := range box1 {
+			if box1[i] >= box2[i] {
+				return false
+			}
+		}
+		return true
+	}
+	//build graph
+	root := struct{}{}
+	for i := range boxes {
+		g.AddEdgeWithWeight(edge{root, &boxes[i]}, 0)
+		for j := i + 1; j < len(boxes); j++ {
+			if nested(boxes[i], boxes[j]) {
+				g.AddEdgeWithWeight(edge{&boxes[i], &boxes[j]}, -1)
+			} else if nested(boxes[j], boxes[i]) {
+				g.AddEdgeWithWeight(edge{&boxes[j], &boxes[i]}, -1)
+			}
+		}
+	}
+
+	//dijkstra
+	nestedBoxesR := new(nestedBoxesRelax).init()
+	dijkstra(g, root, nestedBoxesR)
+	//output sequence
+	seq := make([][]int, 0, 0)
+	for e := nestedBoxesR.lastE; e.V != root; e = e.P {
+		seq = append(seq, *e.V.(*[]int))
+	}
+
+	return seq
 }

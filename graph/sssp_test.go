@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"math"
+	"reflect"
 	"sort"
 	"testing"
 )
@@ -122,7 +122,7 @@ func checkSsspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 func TestBellManFord(t *testing.T) {
 	g := newAdjacencyListWithWeight()
 	ssspSetup(g)
-	ssspG := bellmanFord(g, "s", math.MaxInt32, new(defaultRelax))
+	ssspG := bellmanFord(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden(g)
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
@@ -130,7 +130,7 @@ func TestBellManFord(t *testing.T) {
 func TestSpfa(t *testing.T) {
 	g := newAdjacencyListWithWeight()
 	ssspSetup(g)
-	ssspG := spfa(g, "s", math.MaxInt32, new(defaultRelax))
+	ssspG := spfa(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden(g)
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
@@ -138,7 +138,37 @@ func TestSpfa(t *testing.T) {
 func TestDijkstra(t *testing.T) {
 	g := newAdjacencyListWithWeight()
 	ssspPosSetup(g)
-	ssspG := dijkstra(g, "s", math.MaxInt32, new(defaultRelax))
+	ssspG := dijkstra(g, "s", new(defaultRelax))
 	ssspGExp := ssspPosGolden(g)
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
+}
+
+/*
+problems
+*/
+
+func TestNestedBoxes(t *testing.T) {
+	boxes := make([][]int, 9, 9)
+	boxes[0] = []int{0, 10, 20, 30, 40}
+	boxes[1] = []int{9, 10, 11, 31, 41}
+	boxes[2] = []int{1, 11, 22, 33, 41}
+	boxes[3] = []int{2, 13, 24, 34, 42}
+	boxes[4] = []int{1, 13, 22, 34, 42}
+	boxes[5] = []int{10, 11, 22, 34, 42}
+	boxes[6] = []int{9, 14, 15, 32, 44}
+	boxes[7] = []int{10, 11, 12, 32, 45}
+	boxes[8] = []int{0, 10, 12, 13, 8}
+
+	expBoxes := make([][]int, 3, 3)
+	expBoxes[2] = []int{0, 10, 20, 30, 40}
+	expBoxes[1] = []int{1, 11, 22, 33, 41}
+	expBoxes[0] = []int{2, 13, 24, 34, 42}
+
+	seqs := nestedBoxes(boxes)
+
+	if !reflect.DeepEqual(seqs, expBoxes) {
+		t.Log("exp :", expBoxes, "actaul : ", seqs)
+		t.Fail()
+	}
+
 }
