@@ -202,7 +202,7 @@ func gabow(g weightedGraph, s interface{}, r relax, k uint32) weightedGraph {
 /*
 problems
 */
-
+//nested Boxes
 type nestedBoxesRelax struct {
 	maxLen int
 	lastE  *ssspElement
@@ -261,4 +261,76 @@ func nestedBoxes(boxes [][]int) [][]int {
 	}
 
 	return seq
+}
+
+//karp
+type karpElement struct {
+	k     int
+	u     float32
+	ssspE []*ssspElement //array keep for each k, dp
+}
+
+func (e *karpElement) init(n int, v interface{}, init int) *karpElement {
+	e.ssspE = make([]*ssspElement, n+1, n+1)
+	for i := range e.ssspE {
+		e.ssspE[i] = newSsspElement(v, init)
+	}
+	e.k = 0
+	e.u = math.MinInt32
+	return e
+}
+
+func (e *karpElement) getSsspE() *ssspElement {
+	return e.ssspE[e.k]
+}
+
+func (e *karpElement) summary() {
+	//max((D_n - D_k)/(n -k)) k >= 0 && k <= n - 1
+	for i := range e.ssspE[:len(e.ssspE)-1] {
+		if max := float32(e.ssspE[len(e.ssspE)-1].D-e.ssspE[i].D) / float32((len(e.ssspE) - 1 - i)); max > e.u {
+			e.u = max
+		}
+
+	}
+}
+
+func karp(g weightedGraph, s interface{}) float32 {
+	karpE := make(map[interface{}]*karpElement)
+	r := new(defaultRelax)
+	vertices := g.AllVertices()
+	for _, v := range vertices {
+		karpE[v] = new(karpElement).init(len(vertices), v, r.InitValue())
+	}
+
+	karpE[s].ssspE[0].D = 0
+	//use spfa and dp
+	queue := list.New()
+	queue.PushBack(karpE[s])
+	for queue.Len() != 0 {
+		ke := queue.Front().Value.(*karpElement)
+		v := ke.getSsspE()
+		iter := g.IterConnectedVertices(v.V)
+		for e := iter.Value(); e != nil; e = iter.Next() {
+			if ke.k < len(vertices) {
+				//count distance
+				karpE[e].k = ke.k + 1
+				if r.Relax(v, karpE[e].getSsspE(), g.Weight(edge{v.V, e})) {
+					queue.PushBack(karpE[e])
+				}
+			}
+		}
+		queue.Remove(queue.Front())
+	}
+
+	//get result
+	//min(karpE.u)
+	u := float32(math.MaxInt32)
+	for v := range karpE {
+		if karpE[v].summary(); karpE[v].u < u {
+			u = karpE[v].u
+		}
+
+	}
+
+	return u
 }

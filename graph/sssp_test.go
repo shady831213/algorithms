@@ -180,3 +180,18 @@ func TestNestedBoxes(t *testing.T) {
 	}
 
 }
+
+func TestKarp(t *testing.T) {
+	g := newAdjacencyListWithWeight()
+	g.AddEdgeWithWeight(edge{1, 2}, 1)
+	g.AddEdgeWithWeight(edge{2, 3}, 3)
+	g.AddEdgeWithWeight(edge{1, 3}, 10)
+	g.AddEdgeWithWeight(edge{3, 4}, 2)
+	g.AddEdgeWithWeight(edge{4, 1}, 8)
+	g.AddEdgeWithWeight(edge{4, 2}, 0)
+	u := karp(g, 1)
+	if u != 5.0/3.0 {
+		t.Log("exp :", 5.0/3.0, "actual:", u)
+		t.Fail()
+	}
+}
