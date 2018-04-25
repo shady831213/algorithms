@@ -253,7 +253,7 @@ func nestedBoxes(boxes [][]int) [][]int {
 
 	//dijkstra
 	nestedBoxesR := new(nestedBoxesRelax).init()
-	dijkstra(g, root, nestedBoxesR)
+	dijkstraCore(g, root, nestedBoxesR)
 	//output sequence
 	seq := make([][]int, 0, 0)
 	for e := nestedBoxesR.lastE; e.V != root; e = e.P {
