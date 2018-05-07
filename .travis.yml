@@ -6,5 +6,5 @@ go:
 
 script:
   - go test ./... -test.bench=".*" -test.benchtime 100ms -v -cover
-  - gofmt -s .
+  - gofmt -s -l .
 
