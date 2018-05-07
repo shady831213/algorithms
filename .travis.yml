@@ -4,6 +4,5 @@ go:
   - "1.10.x"
   - master
 
-script: go test ./...
+script: go test ./... -v -test.bench=".*" -test.benchtime 100ms -v -cover
 
-gobuild_args: -v -test.bench=".*" -test.benchtime 100ms -v -cover
