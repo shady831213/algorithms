@@ -5,11 +5,10 @@ env:
 language: go
 
 go:
-  - "1.9.3"
   - "1.10.x"
 
 script:
-  - go test ./... -test.bench=".*" -test.benchtime 100ms -v -cover
+  - go test ./... -test.bench=".*" -test.benchtime 100ms -v -coverprofile c.out
   - gofmt -s -l .
 
 before_script:
