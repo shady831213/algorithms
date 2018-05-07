@@ -3,7 +3,7 @@ CLRS study. Codes are written with golang.
 
 ----------------
 
-go version: >= 1.9.3
+go version: 1.10.x
 
 ----------------
 
