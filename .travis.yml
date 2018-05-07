@@ -2,7 +2,6 @@ language: go
 
 go:
   - "1.10.x"
-  - master
 
-script: go test ./... -v -test.bench=".*" -test.benchtime 100ms -v -cover
+script: go test ./... -test.bench=".*" -test.benchtime 100ms -v -cover
 
