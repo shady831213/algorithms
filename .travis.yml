@@ -7,15 +7,25 @@ language: go
 go:
   - "1.10.x"
 
+install:
+#for lint
+  - go get github.com/alecthomas/gometalinter;gometalinter --install --update
+
 script:
+#test
   - go test ./... -test.bench=".*" -test.benchtime 100ms -v -coverprofile c.out
+#lint
+  - gometalinter  --enable=golint --enable=vet --enable=gofmt ./...
   - gofmt -s -l .
 
 before_script:
+#for codeClimate coverage
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
 after_script:
+#for go report card
   - curl -d "repo=github.com/shady831213/algorithms" https://goreportcard.com/checks
+#for codeClimate coverage
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
