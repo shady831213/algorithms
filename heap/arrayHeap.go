@@ -2,8 +2,8 @@ package heap
 
 type heapIntArrays []int
 
-//HeapIntArray cross package
-type HeapIntArray struct {
+//IntArray cross package
+type IntArray struct {
 	heap
 	heapIntArrays
 }
@@ -71,25 +71,25 @@ func (h *heapIntArrays) Union(i interface{}) interface{} {
 //T(n)=O(n)
 
 //Union cross package
-func (h *HeapIntArray) Union(i interface{}) interface{} {
-	h.heapIntArrays = h.heapIntArrays.Union(&(i.(*HeapIntArray).heapIntArrays)).(heapIntArrays)
+func (h *IntArray) Union(i interface{}) interface{} {
+	h.heapIntArrays = h.heapIntArrays.Union(&(i.(*IntArray).heapIntArrays)).(heapIntArrays)
 	h.heap.BuildHeap()
 	return h
 }
 
 //Pop cross package
-func (h *HeapIntArray) Pop() (i interface{}) {
+func (h *IntArray) Pop() (i interface{}) {
 	return h.heap.Pop()
 }
 
 //Append cross package
-func (h *HeapIntArray) Append(i interface{}) {
+func (h *IntArray) Append(i interface{}) {
 	h.heap.Append(i)
 }
 
 //NewHeapIntArray cross package
-func NewHeapIntArray(arr []int) *HeapIntArray {
-	h := new(HeapIntArray)
+func NewHeapIntArray(arr []int) *IntArray {
+	h := new(IntArray)
 	h.heapIntArrays = arr
 	h.heap.binHeapArrayIf = &h.heapIntArrays
 	h.BuildHeap()
