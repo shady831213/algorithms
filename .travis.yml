@@ -8,6 +8,7 @@ go:
   - "1.10.x"
 
 script:
+  - curl -d "repo=github.com/shady831213/algorithms" https://goreportcard.com/checks
   - go test ./... -test.bench=".*" -test.benchtime 100ms -v -coverprofile c.out
   - gofmt -s -l .
 
