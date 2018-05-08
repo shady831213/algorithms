@@ -89,3 +89,5 @@
    
    http://www.columbia.edu/~cs2035/courses/ieor6614.S16/mmc.pdf
    
+ # 顶点对最短路径
+   Floyd求解最短路径矩阵的矩阵表示意义是，pi[i][j]->j,即pi[i][j]为start, j为end。pi[i]向量为以i为起点的单源最短路径树。
