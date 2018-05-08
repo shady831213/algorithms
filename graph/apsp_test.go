@@ -20,7 +20,7 @@ func floydWarShallSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{4, 3}, 6)
 }
 
-func floydWarShallGolden(g weightedGraph) weightedGraph {
+func distFloydWarShallGolden(g weightedGraph) weightedGraph {
 	golden := createGraphByType(g).(weightedGraph)
 	for i := 0; i < 5; i++ {
 		golden.AddVertex(i)
@@ -50,6 +50,39 @@ func floydWarShallGolden(g weightedGraph) weightedGraph {
 	golden.AddEdgeWithWeight(edge{4, 1}, 5)
 	golden.AddEdgeWithWeight(edge{4, 2}, 1)
 	golden.AddEdgeWithWeight(edge{4, 3}, 6)
+
+	return golden
+}
+
+func pathFloydWarShallGolden(g weightedGraph) map[interface{}]weightedGraph {
+	golden := make(map[interface{}]weightedGraph)
+	for i := 0; i < 5; i++ {
+		golden[i] = createGraphByType(g).(weightedGraph)
+	}
+	golden[0].AddEdgeWithWeight(edge{2, 1}, g.Weight(edge{2, 1}))
+	golden[0].AddEdgeWithWeight(edge{3, 2}, g.Weight(edge{3, 2}))
+	golden[0].AddEdgeWithWeight(edge{4, 3}, g.Weight(edge{4, 3}))
+	golden[0].AddEdgeWithWeight(edge{0, 4}, g.Weight(edge{0, 4}))
+
+	golden[1].AddEdgeWithWeight(edge{3, 0}, g.Weight(edge{3, 0}))
+	golden[1].AddEdgeWithWeight(edge{3, 2}, g.Weight(edge{3, 2}))
+	golden[1].AddEdgeWithWeight(edge{0, 4}, g.Weight(edge{0, 4}))
+	golden[1].AddEdgeWithWeight(edge{1, 3}, g.Weight(edge{1, 3}))
+
+	golden[2].AddEdgeWithWeight(edge{3, 0}, g.Weight(edge{3, 0}))
+	golden[2].AddEdgeWithWeight(edge{0, 4}, g.Weight(edge{0, 4}))
+	golden[2].AddEdgeWithWeight(edge{2, 1}, g.Weight(edge{2, 1}))
+	golden[2].AddEdgeWithWeight(edge{1, 3}, g.Weight(edge{1, 3}))
+
+	golden[3].AddEdgeWithWeight(edge{3, 0}, g.Weight(edge{3, 0}))
+	golden[3].AddEdgeWithWeight(edge{3, 2}, g.Weight(edge{3, 2}))
+	golden[3].AddEdgeWithWeight(edge{0, 4}, g.Weight(edge{0, 4}))
+	golden[3].AddEdgeWithWeight(edge{2, 1}, g.Weight(edge{2, 1}))
+
+	golden[4].AddEdgeWithWeight(edge{3, 0}, g.Weight(edge{3, 0}))
+	golden[4].AddEdgeWithWeight(edge{3, 2}, g.Weight(edge{3, 2}))
+	golden[4].AddEdgeWithWeight(edge{2, 1}, g.Weight(edge{2, 1}))
+	golden[4].AddEdgeWithWeight(edge{4, 3}, g.Weight(edge{4, 3}))
 
 	return golden
 }
@@ -96,6 +129,16 @@ func TestDistFloydWarShall(t *testing.T) {
 	g := newAdjacencyMatrixWithWeight()
 	floydWarShallSetup(g)
 	newG := distFloydWarShall(g)
-	goldenG := floydWarShallGolden(g)
+	goldenG := distFloydWarShallGolden(g)
 	checkFloydWarShallOutOfOrder(t, newG, goldenG)
+}
+
+func TestPathFloydWarShall(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	floydWarShallSetup(g)
+	newForest := pathFloydWarShall(g)
+	goldenForest := pathFloydWarShallGolden(g)
+	for v := range newForest {
+		checkFloydWarShallOutOfOrder(t, newForest[v], goldenForest[v])
+	}
 }
