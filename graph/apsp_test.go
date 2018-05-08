@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func floydWarShallSetup(g weightedGraph) {
+func apspSetup(g weightedGraph) {
 	for i := 0; i < 5; i++ {
 		g.AddVertex(i)
 	}
@@ -87,7 +87,7 @@ func pathFloydWarShallGolden(g weightedGraph) map[interface{}]weightedGraph {
 	return golden
 }
 
-func checkFloydWarShallOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
+func checkApspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 	edges := g.AllEdges()
 	//finish time increase order
 	vertexes := g.AllVertices()
@@ -127,18 +127,26 @@ func checkFloydWarShallOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 
 func TestDistFloydWarShall(t *testing.T) {
 	g := newAdjacencyMatrixWithWeight()
-	floydWarShallSetup(g)
+	apspSetup(g)
 	newG := distFloydWarShall(g)
 	goldenG := distFloydWarShallGolden(g)
-	checkFloydWarShallOutOfOrder(t, newG, goldenG)
+	checkApspOutOfOrder(t, newG, goldenG)
 }
 
 func TestPathFloydWarShall(t *testing.T) {
 	g := newAdjacencyMatrixWithWeight()
-	floydWarShallSetup(g)
+	apspSetup(g)
 	newForest := pathFloydWarShall(g)
 	goldenForest := pathFloydWarShallGolden(g)
 	for v := range newForest {
-		checkFloydWarShallOutOfOrder(t, newForest[v], goldenForest[v])
+		checkApspOutOfOrder(t, newForest[v], goldenForest[v])
 	}
+}
+
+func TestJohnson(t *testing.T) {
+	g := newAdjacencyMatrixWithWeight()
+	apspSetup(g)
+	newG := johnson(g)
+	goldenG := distFloydWarShallGolden(g)
+	checkApspOutOfOrder(t, newG, goldenG)
 }

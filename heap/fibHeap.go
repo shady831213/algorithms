@@ -175,10 +175,11 @@ func (h *FibHeap) Degree() int {
 		return 0
 	}
 	i := 1
-	for diff := h.n; diff != 1; i++ {
+	for diff := h.n; diff != 1; {
 		diff = h.n >> uint32(i)
+		i++
 	}
-	return i - 1
+	return i
 }
 
 //Len : n, Cross package

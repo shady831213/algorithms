@@ -67,7 +67,7 @@ func addSsspGEdge(g, ssspG weightedGraph, ssspE *ssspElement) {
 func checkOrGetSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r relax) weightedGraph {
 	ssspG := createGraphByType(g).(weightedGraph)
 	for _, e := range g.AllEdges() {
-		if r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
+		if ssspE == nil || r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
 			return nil
 		}
 		addSsspGEdge(g, ssspG, ssspE[e.End])
@@ -114,6 +114,7 @@ func bellmanFord(g weightedGraph, s interface{}, r relax) weightedGraph {
 func spfaCore(g weightedGraph, s interface{}, r relax) map[interface{}]*ssspElement {
 	ssspE := initSingleSource(g, r.InitValue())
 	ssspE[s].D = 0
+	visit := make(map[interface{}]int)
 	//use queue
 	queue := list.New()
 	queue.PushBack(ssspE[s])
@@ -122,7 +123,12 @@ func spfaCore(g weightedGraph, s interface{}, r relax) map[interface{}]*ssspElem
 		iter := g.IterConnectedVertices(v.V)
 		for e := iter.Value(); e != nil; e = iter.Next() {
 			if r.Relax(v, ssspE[e], g.Weight(edge{v.V, e})) {
+				if cnt, ok := visit[e]; ok && cnt > len(visit) {
+					// if visit cnt larger than vertices number, it means neg loop detected
+					return nil
+				}
 				queue.PushBack(ssspE[e])
+				visit[e]++
 			}
 		}
 		queue.Remove(queue.Front())
