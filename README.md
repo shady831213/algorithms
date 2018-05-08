@@ -37,7 +37,7 @@ go version: 1.10.x
   - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
   - [BioConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/bioConnectedComp.go)(vertex bcc & edge bcc, use stack)  
   - [eulerCircuit](https://github.com/shady831213/algorithms/blob/master/graph/eulerCircuit.go)  
-  - [mst](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)(including Kruskal([disjointSet](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)) , Prim([fibonacci heap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go)), secondaryMst, mst reduce for Prim, linear time bottleneck spanning tree)
+  - [mst](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)(including Kruskal([disjointSet](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)) , Prim([fibonacci heap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go)), secondaryMst, mst reduce for Prim, linear time bottleneck spanning tree)
   - [Single-Source Shortest Path](https://github.com/shady831213/algorithms/blob/master/graph/sssp.go) (including bellmanFord, SPFA, Dijkstra, Gabow )
   - [All-Pairs Shortest Path](https://github.com/shady831213/algorithms/blob/master/graph/apsp.go) (including FloydWarshall, Johnson)
   
