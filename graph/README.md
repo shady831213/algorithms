@@ -1,6 +1,6 @@
 # graph.go
   
-  AdjacencyMatrix and AdjacencyList
+  graph data structure. Adjacency Matrix implemented by linked map
   
   --------------
   
