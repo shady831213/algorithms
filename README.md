@@ -31,7 +31,7 @@ go version: 1.10.x
   - [Disjoint-Set-Tree](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)
   
 - [Graph](https://github.com/shady831213/algorithms/tree/master/graph) (including linkedMap, iterator)
-  - [AdjacencyMatrix and AdjacencyList](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
+  - [graph](https://github.com/shady831213/algorithms/blob/master/graph/graph.go)
   - [BFS](https://github.com/shady831213/algorithms/blob/master/graph/bfs.go)
   - [DFS](https://github.com/shady831213/algorithms/blob/master/graph/dfs.go)(use stack)
   - [StronglyConnectedComponents](https://github.com/shady831213/algorithms/blob/master/graph/stronglyConnectedComp.go)
