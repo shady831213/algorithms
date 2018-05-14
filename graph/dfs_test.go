@@ -89,7 +89,7 @@ func dfsGolden(g graph) *dfsForest {
 }
 
 func TestDFS(t *testing.T) {
-	g := newAdjacencyList()
+	g := newAdjacencyMatrix()
 	dfsSetupGraph(g)
 	dfsGraph := dfs(g, func(vertices []interface{}) {
 		sort.Slice(vertices, func(i, j int) bool {

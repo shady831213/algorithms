@@ -62,22 +62,6 @@ func testGraph(t *testing.T, g graph) {
 	checkGraph(t, g)
 }
 
-func TestNewAdjacencyList(t *testing.T) {
-	testGraph(t, newAdjacencyList())
-}
-
 func TestNewAdjacencyMatrix(t *testing.T) {
 	testGraph(t, newAdjacencyMatrix())
-}
-
-func TestAdjacencyList2AdjacencyMatrix(t *testing.T) {
-	l := newAdjacencyList()
-	setupGraph(l)
-	checkGraph(t, adjacencyList2AdjacencyMatrix(l))
-}
-
-func TestAdjacencyMatrix2AdjacencyList(t *testing.T) {
-	m := newAdjacencyMatrix()
-	setupGraph(m)
-	checkGraph(t, adjacencyMatrix2AdjacencyList(m))
 }

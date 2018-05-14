@@ -162,7 +162,7 @@ func checkBCCGraphOutOfOrder(t *testing.T, g graph, gGloden graph) {
 }
 
 func TestVertexBCC(t *testing.T) {
-	g := newAdjacencyList()
+	g := newAdjacencyMatrix()
 	bccSetupGraph(g)
 	cuts, comps := vertexBCC(g)
 	cutsExp, compsExp := vertexBCCGolden(g)
@@ -173,7 +173,7 @@ func TestVertexBCC(t *testing.T) {
 }
 
 func TestEdgeBCC(t *testing.T) {
-	g := newAdjacencyList()
+	g := newAdjacencyMatrix()
 	bccSetupGraph(g)
 	bridges, comps := edgeBCC(g)
 	bridgesExp, compsExp := edgeBCCGolden(g)

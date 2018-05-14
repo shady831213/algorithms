@@ -66,7 +66,7 @@ func sccGolden(g graph) (scc graph) {
 }
 
 func TestSCC(t *testing.T) {
-	g := newAdjacencyList()
+	g := newAdjacencyMatrix()
 	sccSetupGraph(g)
 	scc := scc(g)
 	expScc := sccGolden(g)

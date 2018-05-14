@@ -120,7 +120,7 @@ func checkSsspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestBellManFord(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	ssspSetup(g)
 	ssspG := bellmanFord(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden(g)
@@ -128,7 +128,7 @@ func TestBellManFord(t *testing.T) {
 }
 
 func TestSpfa(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	ssspSetup(g)
 	ssspG := spfa(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden(g)
@@ -136,7 +136,7 @@ func TestSpfa(t *testing.T) {
 }
 
 func TestDijkstra(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	ssspPosSetup(g)
 	ssspG := dijkstra(g, "s", new(defaultRelax))
 	ssspGExp := ssspPosGolden(g)
@@ -144,7 +144,7 @@ func TestDijkstra(t *testing.T) {
 }
 
 func TestGabow(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	ssspPosSetup(g)
 	ssspG := gabow(g, "s", new(defaultRelax), 4)
 	ssspGExp := ssspPosGolden(g)
@@ -182,7 +182,7 @@ func TestNestedBoxes(t *testing.T) {
 }
 
 func TestKarp(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	g.AddEdgeWithWeight(edge{1, 2}, 1)
 	g.AddEdgeWithWeight(edge{2, 3}, 3)
 	g.AddEdgeWithWeight(edge{1, 3}, 10)

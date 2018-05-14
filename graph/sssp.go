@@ -232,7 +232,7 @@ func (r *nestedBoxesRelax) Relax(start, end *ssspElement, weight int) bool {
 }
 
 func nestedBoxes(boxes [][]int) [][]int {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	nested := func(box1, box2 []int) bool {
 		if len(box1) != len(box2) {
 			return false

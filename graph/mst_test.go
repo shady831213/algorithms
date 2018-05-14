@@ -112,7 +112,7 @@ func checkMstOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestMstKruskal(t *testing.T) {
-	g := newAdjacencyListWithWeight()
+	g := newAdjacencyMatrixWithWeight()
 	mstSetup(g)
 	tree := mstKruskal(g)
 	treeExp := mstGolden(g)

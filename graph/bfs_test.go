@@ -106,7 +106,7 @@ func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGolden graph) {
 }
 
 func TestBFS(t *testing.T) {
-	g := newAdjacencyList()
+	g := newAdjacencyMatrix()
 	bfsSetupGraph(g)
 	bfsGraph := bfs(g, "s")
 	expBfsGraph := bfsGolden(g)

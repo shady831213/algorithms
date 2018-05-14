@@ -1,48 +1,9 @@
 package graph
 
-import "container/list"
-
 type iterator interface {
 	Len() int
 	Next() interface{}
 	Value() interface{}
-}
-
-type listIterator struct {
-	list *list.List
-	e    *list.Element
-	iterator
-}
-
-func (i *listIterator) init(l *list.List) *listIterator {
-	i.list = l
-	i.e = i.list.Front()
-	return i
-}
-
-func (i *listIterator) Len() int {
-	return i.list.Len()
-}
-
-func (i *listIterator) Next() interface{} {
-	if i.e == nil {
-		return nil
-	}
-	if i.e = i.e.Next(); i.e == nil {
-		return nil
-	}
-	return i.e.Value
-}
-
-func (i *listIterator) Value() interface{} {
-	if i.e == nil {
-		return nil
-	}
-	return i.e.Value
-}
-
-func newListIterator(list *list.List) *listIterator {
-	return new(listIterator).init(list)
 }
 
 type linkedMapIterator struct {
