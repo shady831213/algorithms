@@ -203,6 +203,7 @@ type flowGraph interface {
 	graph
 	Cap(edge) int
 	Flow(edge) int
+	RCap(edge) int
 	AddEdgeWithCap(edge, int)
 	AddEdgeWithFlow(edge, int)
 }
@@ -226,21 +227,26 @@ func (g *adjacencyMatrixWithFlow) AddEdgeWithCap(e edge, c int) {
 }
 
 func (g *adjacencyMatrixWithFlow) AddEdgeWithFlow(e edge, f int) {
-	if _, ok := g.cap[e]; !ok {
-		panic(fmt.Sprintln("cap of edge ", e, "has not been set yet!"))
-	} else if f > g.cap[e] {
-		panic(fmt.Sprintln("flow of ", e, "is ", f, ", larger than cap ", g.cap[e]))
-	}
 	g.adjacencyMatrix.AddEdge(e)
 	g.flow[e] = f
 }
 
 func (g *adjacencyMatrixWithFlow) Cap(e edge) int {
+	if _, ok := g.cap[e]; !ok {
+		return 0
+	}
 	return g.cap[e]
 }
 
 func (g *adjacencyMatrixWithFlow) Flow(e edge) int {
+	if _, ok := g.flow[e]; !ok {
+		return 0
+	}
 	return g.flow[e]
+}
+
+func (g *adjacencyMatrixWithFlow) RCap(e edge) int {
+	return g.Cap(e) - g.Flow(e)
 }
 
 func (g *adjacencyMatrixWithFlow) DeleteEdge(e edge) {
