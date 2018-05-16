@@ -203,7 +203,6 @@ type flowGraph interface {
 	graph
 	Cap(edge) int
 	Flow(edge) int
-	RCap(edge) int
 	AddEdgeWithCap(edge, int)
 	AddEdgeWithFlow(edge, int)
 }
@@ -214,7 +213,7 @@ type adjacencyMatrixWithFlow struct {
 	flow map[edge]int
 }
 
-func (g *adjacencyMatrixWithFlow) Init() *adjacencyMatrixWithFlow {
+func (g *adjacencyMatrixWithFlow) init() *adjacencyMatrixWithFlow {
 	g.adjacencyMatrix.init()
 	g.cap = make(map[edge]int)
 	g.flow = make(map[edge]int)
@@ -245,10 +244,6 @@ func (g *adjacencyMatrixWithFlow) Flow(e edge) int {
 	return g.flow[e]
 }
 
-func (g *adjacencyMatrixWithFlow) RCap(e edge) int {
-	return g.Cap(e) - g.Flow(e)
-}
-
 func (g *adjacencyMatrixWithFlow) DeleteEdge(e edge) {
 	g.adjacencyMatrix.DeleteEdge(e)
 	delete(g.cap, e)
@@ -264,5 +259,5 @@ func (g *adjacencyMatrixWithFlow) DeleteEdgeBi(e edge) {
 }
 
 func newFlowGraph() flowGraph {
-	return new(adjacencyMatrixWithFlow).Init()
+	return new(adjacencyMatrixWithFlow).init()
 }

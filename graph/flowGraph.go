@@ -4,7 +4,36 @@ import (
 	"math"
 )
 
-func augmentingPath(g flowGraph, s interface{}, t interface{}) (int, []edge) {
+type residualGraph interface {
+	flowGraph
+	RCap(edge) int
+}
+
+type adjacencyMatrixResidual struct {
+	adjacencyMatrixWithFlow
+}
+
+func (g *adjacencyMatrixResidual) init() *adjacencyMatrixResidual {
+	g.adjacencyMatrixWithFlow.init()
+	return g
+}
+
+func (g *adjacencyMatrixResidual) AddEdgeWithFlow(e edge, f int) {
+	g.adjacencyMatrixWithFlow.AddEdgeWithFlow(e, f)
+	if g.RCap(e) == 0 {
+		g.DeleteEdge(e)
+	}
+}
+
+func (g *adjacencyMatrixResidual) RCap(e edge) int {
+	return g.Cap(e) - g.Flow(e)
+}
+
+func newResidualGraph() residualGraph {
+	return new(adjacencyMatrixResidual).init()
+}
+
+func augmentingPath(g residualGraph, s interface{}, t interface{}) (int, []edge) {
 	augmentingEdges := make([]edge, 0, 0)
 	minRC := math.MaxInt32
 	handler := newBFSVisitHandler()
@@ -25,28 +54,18 @@ func augmentingPath(g flowGraph, s interface{}, t interface{}) (int, []edge) {
 	return minRC, augmentingEdges
 }
 
-func updateFlow(rg, g flowGraph, rc int, edges []edge) {
-	updateResidualGraph := func(g flowGraph, flow int, e edge) {
-		g.AddEdgeWithFlow(e, flow)
-		if g.RCap(e) == 0 {
-			g.DeleteEdge(e)
-		}
-		re := edge{e.End, e.Start}
-		g.AddEdgeWithFlow(re, 0-flow)
-		if g.RCap(re) == 0 {
-			g.DeleteEdge(re)
-		}
-	}
-
+func updateFlow(rg residualGraph, g flowGraph, rc int, edges []edge) {
 	for _, e := range edges {
 		flow := g.Flow(e) + rc
 		g.AddEdgeWithFlow(e, flow)
-		updateResidualGraph(rg, flow, e)
+		rg.AddEdgeWithFlow(e, flow)
+		re := edge{e.End, e.Start}
+		rg.AddEdgeWithFlow(re, 0-flow)
 	}
 }
 
 func edmondsKarp(g flowGraph, s interface{}, t interface{}) {
-	residualG := newFlowGraph()
+	residualG := newResidualGraph()
 	for _, e := range g.AllEdges() {
 		g.AddEdgeWithFlow(e, 0)
 		residualG.AddEdgeWithCap(e, g.Cap(e))
