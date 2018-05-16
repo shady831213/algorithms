@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func dfsSetupGraph(g graph) {
+func dfsSetupGraph() graph {
+	g := newGraph()
 	g.AddVertex("u")
 	g.AddVertex("v")
 	g.AddVertex("w")
@@ -20,6 +21,7 @@ func dfsSetupGraph(g graph) {
 	g.AddEdge(edge{"w", "y"})
 	g.AddEdge(edge{"w", "z"})
 	g.AddEdge(edge{"z", "z"})
+	return g
 }
 
 func dfsGolden(g graph) *dfsForest {
@@ -88,9 +90,34 @@ func dfsGolden(g graph) *dfsForest {
 	return dfsForest
 }
 
+func checkDFSGraphOutOfOrder(t *testing.T, g graph, gGolden graph) {
+	edges := g.AllEdges()
+	//finish time increase order
+	vertexes := g.AllVertices()
+	sort.Slice(edges, func(i, j int) bool {
+		return edges[i].Start.(*dfsElement).D < edges[j].Start.(*dfsElement).D
+	})
+
+	sort.Slice(vertexes, func(i, j int) bool {
+		return vertexes[i].(*dfsElement).D < vertexes[j].(*dfsElement).D
+	})
+
+	expEdges := gGolden.AllEdges()
+	expVertices := gGolden.AllVertices()
+
+	sort.Slice(expEdges, func(i, j int) bool {
+		return expEdges[i].Start.(*dfsElement).D < expEdges[j].Start.(*dfsElement).D
+	})
+
+	sort.Slice(expVertices, func(i, j int) bool {
+		return expVertices[i].(*dfsElement).D < expVertices[j].(*dfsElement).D
+	})
+
+	compareGraph(t, vertexes, expVertices, edges, expEdges)
+}
+
 func TestDFS(t *testing.T) {
-	g := newGraph()
-	dfsSetupGraph(g)
+	g := dfsSetupGraph()
 	dfsGraph := dfs(g, func(vertices []interface{}) {
 		sort.Slice(vertices, func(i, j int) bool {
 			return vertices[i].(string) < vertices[j].(string)

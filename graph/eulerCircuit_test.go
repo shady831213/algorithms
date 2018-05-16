@@ -5,31 +5,34 @@ import (
 	"testing"
 )
 
-func diEulerCircuitSetup(g graph) {
+func diEulerCircuitSetup() graph {
+	g := newGraph()
 	g.AddEdge(edge{2, 3})
 	g.AddEdge(edge{2, 5})
 	g.AddEdge(edge{3, 4})
 	g.AddEdge(edge{1, 2})
 	g.AddEdge(edge{4, 2})
 	g.AddEdge(edge{5, 1})
+	return g
 }
 
 func eulerCircuitGolden() []edge {
 	return []edge{{2, 3}, {3, 4}, {4, 2}, {2, 5}, {5, 1}, {1, 2}}
 }
 
-func udEulerCircuitSetup(g graph) {
+func udEulerCircuitSetup() graph {
+	g := newGraph()
 	g.AddEdgeBi(edge{2, 3})
 	g.AddEdgeBi(edge{2, 5})
 	g.AddEdgeBi(edge{3, 4})
 	g.AddEdgeBi(edge{1, 2})
 	g.AddEdgeBi(edge{4, 2})
 	g.AddEdgeBi(edge{5, 1})
+	return g
 }
 
 func TestDiEulerCircuitOK(t *testing.T) {
-	g := newGraph()
-	diEulerCircuitSetup(g)
+	g := diEulerCircuitSetup()
 	for i := 0; i < 3; i++ {
 		path := eulerCircuit(g)
 		pathExp := eulerCircuitGolden()
@@ -41,8 +44,7 @@ func TestDiEulerCircuitOK(t *testing.T) {
 }
 
 func TestDiEulerCircuitWithSingleVertex(t *testing.T) {
-	g := newGraph()
-	diEulerCircuitSetup(g)
+	g := diEulerCircuitSetup()
 	g.AddVertex(6)
 	path := eulerCircuit(g)
 	if path != nil {
@@ -52,8 +54,7 @@ func TestDiEulerCircuitWithSingleVertex(t *testing.T) {
 }
 
 func TestDiEulerCircuitWithSingleVertexLoop(t *testing.T) {
-	g := newGraph()
-	diEulerCircuitSetup(g)
+	g := diEulerCircuitSetup()
 	g.AddEdgeBi(edge{6, 6})
 	path := eulerCircuit(g)
 	if path != nil {
@@ -63,8 +64,7 @@ func TestDiEulerCircuitWithSingleVertexLoop(t *testing.T) {
 }
 
 func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
-	g := newGraph()
-	diEulerCircuitSetup(g)
+	g := diEulerCircuitSetup()
 	g.AddEdge(edge{6, 1})
 	path := eulerCircuit(g)
 	if path != nil {
@@ -72,8 +72,7 @@ func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
 		t.Fail()
 	}
 
-	g = newGraph()
-	diEulerCircuitSetup(g)
+	g = diEulerCircuitSetup()
 	g.AddEdge(edge{1, 6})
 	path = eulerCircuit(g)
 	if path != nil {
@@ -83,8 +82,7 @@ func TestDiEulerCircuitWithNonCircuit(t *testing.T) {
 }
 
 func TestUdEulerCircuitOK(t *testing.T) {
-	g := newGraph()
-	udEulerCircuitSetup(g)
+	g := udEulerCircuitSetup()
 	path := eulerCircuit(g)
 	pathExp := eulerCircuitGolden()
 	if !reflect.DeepEqual(path, pathExp) {
@@ -94,8 +92,7 @@ func TestUdEulerCircuitOK(t *testing.T) {
 }
 
 func TestUdEulerCircuitWithSingleVertex(t *testing.T) {
-	g := newGraph()
-	udEulerCircuitSetup(g)
+	g := udEulerCircuitSetup()
 	g.AddVertex(6)
 	path := eulerCircuit(g)
 	if path != nil {
@@ -105,8 +102,7 @@ func TestUdEulerCircuitWithSingleVertex(t *testing.T) {
 }
 
 func TestUdEulerCircuitWithNonCircuit(t *testing.T) {
-	g := newGraph()
-	udEulerCircuitSetup(g)
+	g := udEulerCircuitSetup()
 	g.AddEdgeBi(edge{1, 6})
 	path := eulerCircuit(g)
 	if path != nil {

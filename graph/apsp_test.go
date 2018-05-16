@@ -1,11 +1,11 @@
 package graph
 
 import (
-	"sort"
 	"testing"
 )
 
-func apspSetup(g weightedGraph) {
+func apspSetup() weightedGraph {
+	g := newWeightedGraph()
 	for i := 0; i < 5; i++ {
 		g.AddVertex(i)
 	}
@@ -18,6 +18,7 @@ func apspSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{3, 0}, 2)
 	g.AddEdgeWithWeight(edge{3, 2}, -5)
 	g.AddEdgeWithWeight(edge{4, 3}, 6)
+	return g
 }
 
 func distFloydWarShallGolden() weightedGraph {
@@ -88,54 +89,26 @@ func pathFloydWarShallGolden(g weightedGraph) map[interface{}]weightedGraph {
 }
 
 func checkApspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
-	edges := g.AllEdges()
-	//finish time increase order
-	vertexes := g.AllVertices()
-	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].End.(int) == edges[j].End.(int) {
-			return edges[i].Start.(int) < edges[j].Start.(int)
-		}
-		return edges[i].End.(int) < edges[j].End.(int)
-	})
-
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].(int) < vertexes[j].(int)
-	})
-
-	expEdges := gGolden.AllEdges()
-	expVertices := gGolden.AllVertices()
-
-	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].End.(int) == expEdges[j].End.(int) {
-			return expEdges[i].Start.(int) < expEdges[j].Start.(int)
-		}
-		return expEdges[i].End.(int) < expEdges[j].End.(int)
-	})
-
-	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(int) < expVertices[j].(int)
-	})
-
-	compareGraph(t, vertexes, expVertices, edges, expEdges)
-	for _, e := range expEdges {
-		if g.Weight(e) != gGolden.Weight(e) {
-			t.Log(e, "weight Error! exp :", gGolden.Weight(e), "actual: ", g.Weight(e))
-			t.FailNow()
+	comparator := func(t *testing.T, v, vExp []interface{}, e, eExp []edge) {
+		for _, e := range eExp {
+			if g.Weight(e) != gGolden.Weight(e) {
+				t.Log(e, "weight Error! exp :", gGolden.Weight(e), "actual: ", g.Weight(e))
+				t.FailNow()
+			}
 		}
 	}
+	checkGraphOutOfOrderInInt(t, g, gGolden, comparator)
 }
 
 func TestDistFloydWarShall(t *testing.T) {
-	g := newWeightedGraph()
-	apspSetup(g)
+	g := apspSetup()
 	newG := distFloydWarShall(g)
 	goldenG := distFloydWarShallGolden()
 	checkApspOutOfOrder(t, newG, goldenG)
 }
 
 func TestPathFloydWarShall(t *testing.T) {
-	g := newWeightedGraph()
-	apspSetup(g)
+	g := apspSetup()
 	newForest := pathFloydWarShall(g)
 	goldenForest := pathFloydWarShallGolden(g)
 	for v := range newForest {
@@ -144,8 +117,7 @@ func TestPathFloydWarShall(t *testing.T) {
 }
 
 func TestJohnson(t *testing.T) {
-	g := newWeightedGraph()
-	apspSetup(g)
+	g := apspSetup()
 	newG := johnson(g)
 	goldenG := distFloydWarShallGolden()
 	checkApspOutOfOrder(t, newG, goldenG)

@@ -1,11 +1,11 @@
 package graph
 
 import (
-	"sort"
 	"testing"
 )
 
-func flowGraphSetup(g flowGraph) {
+func flowGraphSetup() flowGraph {
+	g := newFlowGraph()
 	g.AddEdgeWithCap(edge{"s", "v1"}, 16)
 	g.AddEdgeWithCap(edge{"s", "v2"}, 13)
 	g.AddEdgeWithCap(edge{"v2", "v1"}, 4)
@@ -16,6 +16,7 @@ func flowGraphSetup(g flowGraph) {
 	g.AddEdgeWithCap(edge{"v4", "v3"}, 7)
 	g.AddEdgeWithCap(edge{"v3", "t"}, 20)
 	g.AddEdgeWithCap(edge{"v4", "t"}, 4)
+	return g
 }
 
 func flowGraphGolden(g flowGraph) flowGraph {
@@ -36,52 +37,52 @@ func flowGraphGolden(g flowGraph) flowGraph {
 	return flowG
 }
 
+func bioGraphMaxMatchSetup() (graph, []interface{}) {
+	g := newGraph()
+	g.AddEdgeBi(edge{"l0", "r0"})
+	g.AddEdgeBi(edge{"l1", "r0"})
+	g.AddEdgeBi(edge{"l1", "r2"})
+	g.AddEdgeBi(edge{"l2", "r1"})
+	g.AddEdgeBi(edge{"l2", "r2"})
+	g.AddEdgeBi(edge{"l2", "r3"})
+	g.AddEdgeBi(edge{"l3", "r2"})
+	g.AddEdgeBi(edge{"l4", "r2"})
+	return g, []interface{}{"l0", "l1", "l2", "l3", "l4"}
+}
+
+func bioGraphMaxMatchGolden() graph {
+	g := newGraph()
+	g.AddEdgeBi(edge{"l0", "r0"})
+	g.AddEdgeBi(edge{"l1", "r2"})
+	g.AddEdgeBi(edge{"l2", "r1"})
+	return g
+}
+
 func checkFlowGraphOutOfOrder(t *testing.T, g, gGolden flowGraph) {
-	edges := g.AllEdges()
-	//finish time increase order
-	vertexes := g.AllVertices()
-	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].End.(string) == edges[j].End.(string) {
-			return edges[i].Start.(string) < edges[j].Start.(string)
-		}
-		return edges[i].End.(string) < edges[j].End.(string)
-	})
-
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].(string) < vertexes[j].(string)
-	})
-
-	expEdges := gGolden.AllEdges()
-	expVertices := gGolden.AllVertices()
-
-	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].End.(string) == expEdges[j].End.(string) {
-			return expEdges[i].Start.(string) < expEdges[j].Start.(string)
-		}
-		return expEdges[i].End.(string) < expEdges[j].End.(string)
-	})
-
-	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(string) < expVertices[j].(string)
-	})
-
-	compareGraph(t, vertexes, expVertices, edges, expEdges)
-	for _, e := range expEdges {
-		if g.Cap(e) != gGolden.Cap(e) {
-			t.Log(e, "Cap Error! exp :", gGolden.Cap(e), "actual: ", g.Cap(e))
-			t.FailNow()
-		}
-		if g.Flow(e) != gGolden.Flow(e) {
-			t.Log(e, "Flow Error! exp :", gGolden.Flow(e), "actual: ", g.Flow(e))
-			t.FailNow()
+	comparator := func(t *testing.T, v, vExp []interface{}, e, eExp []edge) {
+		for _, e := range eExp {
+			if g.Cap(e) != gGolden.Cap(e) {
+				t.Log(e, "Cap Error! exp :", gGolden.Cap(e), "actual: ", g.Cap(e))
+				t.FailNow()
+			}
+			if g.Flow(e) != gGolden.Flow(e) {
+				t.Log(e, "Flow Error! exp :", gGolden.Flow(e), "actual: ", g.Flow(e))
+				t.FailNow()
+			}
 		}
 	}
+	checkGraphOutOfOrderInString(t, g, gGolden, comparator)
 }
 
 func TestEdmondsKarp(t *testing.T) {
-	g := newFlowGraph()
-	flowGraphSetup(g)
+	g := flowGraphSetup()
 	edmondsKarp(g, "s", "t")
 	gGolden := flowGraphGolden(g)
 	checkFlowGraphOutOfOrder(t, g, gGolden)
+}
+
+func TestBioGraphMaxMatch(t *testing.T) {
+	g := bioGraphMaxMatch(bioGraphMaxMatchSetup())
+	gGolden := bioGraphMaxMatchGolden()
+	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 }

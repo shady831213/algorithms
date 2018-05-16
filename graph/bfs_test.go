@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-func bfsSetupGraph(g graph) {
+func bfsSetupGraph() graph {
+	g := newGraph()
 	g.AddVertex("r")
 	g.AddVertex("s")
 	g.AddVertex("t")
@@ -24,6 +25,7 @@ func bfsSetupGraph(g graph) {
 	g.AddEdgeBi(edge{"x", "u"})
 	g.AddEdgeBi(edge{"x", "y"})
 	g.AddEdgeBi(edge{"u", "y"})
+	return g
 }
 
 func bfsGolden(g graph) (bfsGraph graph) {
@@ -106,8 +108,7 @@ func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGolden graph) {
 }
 
 func TestBFS(t *testing.T) {
-	g := newGraph()
-	bfsSetupGraph(g)
+	g := bfsSetupGraph()
 	bfsGraph := bfs(g, "s")
 	expBfsGraph := bfsGolden(g)
 	checkBFSGraphOutOfOrder(t, bfsGraph, expBfsGraph)

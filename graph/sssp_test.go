@@ -6,7 +6,8 @@ import (
 	"testing"
 )
 
-func ssspSetup(g weightedGraph) {
+func ssspSetup() weightedGraph {
+	g := newWeightedGraph()
 	g.AddEdgeWithWeight(edge{"s", "t"}, 6)
 	g.AddEdgeWithWeight(edge{"s", "y"}, 7)
 	g.AddEdgeWithWeight(edge{"t", "y"}, 8)
@@ -17,9 +18,11 @@ func ssspSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{"y", "z"}, 9)
 	g.AddEdgeWithWeight(edge{"z", "x"}, 7)
 	g.AddEdgeWithWeight(edge{"z", "s"}, 2)
+	return g
 }
 
-func ssspPosSetup(g weightedGraph) {
+func ssspPosSetup() weightedGraph {
+	g := newWeightedGraph()
 	g.AddEdgeWithWeight(edge{"s", "t"}, 10)
 	g.AddEdgeWithWeight(edge{"s", "y"}, 5)
 	g.AddEdgeWithWeight(edge{"t", "y"}, 2)
@@ -30,6 +33,7 @@ func ssspPosSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{"x", "z"}, 4)
 	g.AddEdgeWithWeight(edge{"z", "x"}, 6)
 	g.AddEdgeWithWeight(edge{"z", "s"}, 7)
+	return g
 }
 
 func ssspGolden() weightedGraph {
@@ -120,32 +124,28 @@ func checkSsspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestBellManFord(t *testing.T) {
-	g := newWeightedGraph()
-	ssspSetup(g)
+	g := ssspSetup()
 	ssspG := bellmanFord(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestSpfa(t *testing.T) {
-	g := newWeightedGraph()
-	ssspSetup(g)
+	g := ssspSetup()
 	ssspG := spfa(g, "s", new(defaultRelax))
 	ssspGExp := ssspGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestDijkstra(t *testing.T) {
-	g := newWeightedGraph()
-	ssspPosSetup(g)
+	g := ssspPosSetup()
 	ssspG := dijkstra(g, "s", new(defaultRelax))
 	ssspGExp := ssspPosGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestGabow(t *testing.T) {
-	g := newWeightedGraph()
-	ssspPosSetup(g)
+	g := ssspPosSetup()
 	ssspG := gabow(g, "s", new(defaultRelax), 4)
 	ssspGExp := ssspPosGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)

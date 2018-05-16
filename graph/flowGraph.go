@@ -57,3 +57,27 @@ func edmondsKarp(g flowGraph, s interface{}, t interface{}) {
 	}
 
 }
+
+func bioGraphMaxMatch(g graph, l []interface{}) graph {
+	//build flow graph
+	fG := newFlowGraph()
+	s := struct{ start string }{"s"}
+	t := struct{ end string }{"t"}
+	for _, vl := range l {
+		fG.AddEdgeWithCap(edge{s, vl}, 1)
+		iter := g.IterConnectedVertices(vl)
+		for rv := iter.Value(); rv != nil; rv = iter.Next() {
+			fG.AddEdgeWithCap(edge{vl, rv}, 1)
+			fG.AddEdgeWithCap(edge{rv, t}, 1)
+		}
+	}
+
+	edmondsKarp(fG, s, t)
+	matchG := newGraph()
+	for _, e := range fG.AllEdges() {
+		if fG.Flow(e) > 0 && e.Start != s && e.End != t {
+			matchG.AddEdgeBi(e)
+		}
+	}
+	return matchG
+}

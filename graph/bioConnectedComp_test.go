@@ -1,11 +1,11 @@
 package graph
 
 import (
-	"sort"
 	"testing"
 )
 
-func bccSetupGraph(g graph) {
+func bccSetupGraph() graph {
+	g := newGraph()
 	for i := 0; i < 23; i++ {
 		g.AddVertex(i)
 	}
@@ -39,6 +39,7 @@ func bccSetupGraph(g graph) {
 	g.AddEdgeBi(edge{20, 21})
 	g.AddEdgeBi(edge{21, 19})
 	g.AddEdgeBi(edge{17, 22})
+	return g
 }
 
 func vertexBCCGolden() (cuts graph, comps []graph) {
@@ -129,56 +130,22 @@ func edgeBCCGolden() (bridges graph, comps []graph) {
 	return
 }
 
-func checkBCCGraphOutOfOrder(t *testing.T, g graph, gGloden graph) {
-	edges := g.AllEdges()
-	//finish time increase order
-	vertexes := g.AllVertices()
-	sort.Slice(edges, func(i, j int) bool {
-		if edges[i].Start.(int) == edges[j].Start.(int) {
-			return edges[i].End.(int) < edges[j].End.(int)
-		}
-		return edges[i].Start.(int) < edges[j].Start.(int)
-	})
-
-	sort.Slice(vertexes, func(i, j int) bool {
-		return vertexes[i].(int) < vertexes[j].(int)
-	})
-
-	expEdges := gGloden.AllEdges()
-	expVertices := gGloden.AllVertices()
-
-	sort.Slice(expEdges, func(i, j int) bool {
-		if expEdges[i].Start.(int) == expEdges[j].Start.(int) {
-			return expEdges[i].End.(int) < expEdges[j].End.(int)
-		}
-		return expEdges[i].Start.(int) < expEdges[j].Start.(int)
-	})
-
-	sort.Slice(expVertices, func(i, j int) bool {
-		return expVertices[i].(int) < expVertices[j].(int)
-	})
-
-	compareGraph(t, vertexes, expVertices, edges, expEdges)
-}
-
 func TestVertexBCC(t *testing.T) {
-	g := newGraph()
-	bccSetupGraph(g)
+	g := bccSetupGraph()
 	cuts, comps := vertexBCC(g)
 	cutsExp, compsExp := vertexBCCGolden()
-	checkBCCGraphOutOfOrder(t, cuts, cutsExp)
+	checkGraphOutOfOrderInInt(t, cuts, cutsExp, nil)
 	for i := range comps {
-		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
+		checkGraphOutOfOrderInInt(t, comps[i], compsExp[i], nil)
 	}
 }
 
 func TestEdgeBCC(t *testing.T) {
-	g := newGraph()
-	bccSetupGraph(g)
+	g := bccSetupGraph()
 	bridges, comps := edgeBCC(g)
 	bridgesExp, compsExp := edgeBCCGolden()
-	checkBCCGraphOutOfOrder(t, bridges, bridgesExp)
+	checkGraphOutOfOrderInInt(t, bridges, bridgesExp, nil)
 	for i := range comps {
-		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
+		checkGraphOutOfOrderInInt(t, comps[i], compsExp[i], nil)
 	}
 }

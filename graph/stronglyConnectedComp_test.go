@@ -4,7 +4,8 @@ import (
 	"testing"
 )
 
-func sccSetupGraph(g graph) {
+func sccSetupGraph() graph {
+	g := newGraph()
 	g.AddVertex("a")
 	g.AddVertex("b")
 	g.AddVertex("c")
@@ -27,6 +28,7 @@ func sccSetupGraph(g graph) {
 	g.AddEdge(edge{"g", "h"})
 	g.AddEdge(edge{"d", "h"})
 	g.AddEdge(edge{"h", "h"})
+	return g
 }
 
 func sccGolden() (scc graph) {
@@ -66,8 +68,7 @@ func sccGolden() (scc graph) {
 }
 
 func TestSCC(t *testing.T) {
-	g := newGraph()
-	sccSetupGraph(g)
+	g := sccSetupGraph()
 	scc := scc(g)
 	expScc := sccGolden()
 	checkGraphInOrder(t, scc, expScc)

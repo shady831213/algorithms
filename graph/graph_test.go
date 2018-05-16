@@ -7,7 +7,8 @@ import (
 	"testing"
 )
 
-func setupGraph(g graph) {
+func setupGraph() graph {
+	g := newGraph()
 	g.AddVertex(2)
 	g.AddVertex(4)
 	g.AddVertex(6)
@@ -18,6 +19,7 @@ func setupGraph(g graph) {
 	g.AddEdge(edge{2, 1})
 	g.AddEdge(edge{2, 4})
 	g.AddEdge(edge{8, 7})
+	return g
 }
 
 func checkGraph(t *testing.T, g graph) {
@@ -57,11 +59,6 @@ func checkGraph(t *testing.T, g graph) {
 
 }
 
-func testGraph(t *testing.T, g graph) {
-	setupGraph(g)
-	checkGraph(t, g)
-}
-
 func TestNewAdjacencyMatrix(t *testing.T) {
-	testGraph(t, newGraph())
+	checkGraph(t, setupGraph())
 }
