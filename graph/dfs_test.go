@@ -23,7 +23,7 @@ func dfsSetupGraph(g graph) {
 }
 
 func dfsGolden(g graph) *dfsForest {
-	dfsForest := newDFSForest(g)
+	dfsForest := newDFSForest()
 	vertexes := make(map[interface{}]*dfsElement)
 
 	vertexes["u"] = newDFSElement("u")
@@ -89,7 +89,7 @@ func dfsGolden(g graph) *dfsForest {
 }
 
 func TestDFS(t *testing.T) {
-	g := newAdjacencyMatrix()
+	g := newGraph()
 	dfsSetupGraph(g)
 	dfsGraph := dfs(g, func(vertices []interface{}) {
 		sort.Slice(vertices, func(i, j int) bool {

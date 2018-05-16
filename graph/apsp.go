@@ -52,7 +52,7 @@ func distFloydHandler(array *[][][]int, k, i, j int) {
 }
 
 func distFloydWarShall(g weightedGraph) weightedGraph {
-	newG := createGraphByType(g).(weightedGraph)
+	newG := newWeightedGraph()
 	rebuild := func(vertices []interface{}, array [][]int) {
 		for i := range vertices {
 			for j := range vertices {
@@ -98,7 +98,7 @@ func pathFloydWarShall(g weightedGraph) map[interface{}]weightedGraph {
 	rebuild := func(vertices []interface{}, array [][]int) {
 		pathForest = make(map[interface{}]weightedGraph)
 		for i := range vertices {
-			pathForest[vertices[i]] = createGraphByType(g).(weightedGraph)
+			pathForest[vertices[i]] = newWeightedGraph()
 			for j := range vertices {
 				if pathArray[i][j] < math.MaxInt32 {
 					//pathArray[i][j] -> j
@@ -114,7 +114,7 @@ func pathFloydWarShall(g weightedGraph) map[interface{}]weightedGraph {
 }
 
 func johnson(g weightedGraph) weightedGraph {
-	tempG := createGraphByType(g).(weightedGraph)
+	tempG := newWeightedGraph()
 	s := struct{}{}
 	//add e{s,v}, weight is 0
 	for _, e := range g.AllEdges() {
@@ -132,7 +132,7 @@ func johnson(g weightedGraph) weightedGraph {
 		tempG.AddEdgeWithWeight(e, tempG.Weight(e)+spfaE[e.Start].D-spfaE[e.End].D)
 	}
 
-	newG := createGraphByType(g).(weightedGraph)
+	newG := newWeightedGraph()
 	//exclude dummy vertex s, and iterate vertices, recover distance
 	delete(spfaE, s)
 	for v := range spfaE {

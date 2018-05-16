@@ -20,8 +20,8 @@ func apspSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{4, 3}, 6)
 }
 
-func distFloydWarShallGolden(g weightedGraph) weightedGraph {
-	golden := createGraphByType(g).(weightedGraph)
+func distFloydWarShallGolden() weightedGraph {
+	golden := newWeightedGraph()
 	for i := 0; i < 5; i++ {
 		golden.AddVertex(i)
 		golden.AddEdgeWithWeight(edge{i, i}, 0)
@@ -57,7 +57,7 @@ func distFloydWarShallGolden(g weightedGraph) weightedGraph {
 func pathFloydWarShallGolden(g weightedGraph) map[interface{}]weightedGraph {
 	golden := make(map[interface{}]weightedGraph)
 	for i := 0; i < 5; i++ {
-		golden[i] = createGraphByType(g).(weightedGraph)
+		golden[i] = newWeightedGraph()
 	}
 	golden[0].AddEdgeWithWeight(edge{2, 1}, g.Weight(edge{2, 1}))
 	golden[0].AddEdgeWithWeight(edge{3, 2}, g.Weight(edge{3, 2}))
@@ -126,15 +126,15 @@ func checkApspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestDistFloydWarShall(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	apspSetup(g)
 	newG := distFloydWarShall(g)
-	goldenG := distFloydWarShallGolden(g)
+	goldenG := distFloydWarShallGolden()
 	checkApspOutOfOrder(t, newG, goldenG)
 }
 
 func TestPathFloydWarShall(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	apspSetup(g)
 	newForest := pathFloydWarShall(g)
 	goldenForest := pathFloydWarShallGolden(g)
@@ -144,9 +144,9 @@ func TestPathFloydWarShall(t *testing.T) {
 }
 
 func TestJohnson(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	apspSetup(g)
 	newG := johnson(g)
-	goldenG := distFloydWarShallGolden(g)
+	goldenG := distFloydWarShallGolden()
 	checkApspOutOfOrder(t, newG, goldenG)
 }

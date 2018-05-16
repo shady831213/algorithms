@@ -63,5 +63,5 @@ func testGraph(t *testing.T, g graph) {
 }
 
 func TestNewAdjacencyMatrix(t *testing.T) {
-	testGraph(t, newAdjacencyMatrix())
+	testGraph(t, newGraph())
 }

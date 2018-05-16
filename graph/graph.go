@@ -124,14 +124,14 @@ func (g *adjacencyMatrix) IterConnectedVertices(v interface{}) iterator {
 }
 
 func (g *adjacencyMatrix) Transpose() graph {
-	gt := newAdjacencyMatrix()
+	gt := newGraph()
 	for _, e := range g.AllEdges() {
 		gt.AddEdge(edge{e.End, e.Start})
 	}
 	return gt
 }
 
-func newAdjacencyMatrix() *adjacencyMatrix {
+func newGraph() graph {
 	return new(adjacencyMatrix).init()
 }
 
@@ -195,7 +195,7 @@ func (g *adjacencyMatrixWithWeight) TotalWeight() int {
 	return g.tw
 }
 
-func newAdjacencyMatrixWithWeight() *adjacencyMatrixWithWeight {
+func newWeightedGraph() weightedGraph {
 	return new(adjacencyMatrixWithWeight).Init()
 }
 
@@ -263,19 +263,6 @@ func (g *adjacencyMatrixWithFlow) DeleteEdgeBi(e edge) {
 	panic(fmt.Sprintln("not valid in flow graph!"))
 }
 
-func newAdjacencyMatrixWithFlow() *adjacencyMatrixWithFlow {
+func newFlowGraph() flowGraph {
 	return new(adjacencyMatrixWithFlow).Init()
-}
-
-func createGraphByType(g graph) graph {
-	if _, isMatrix := g.(*adjacencyMatrixWithFlow); isMatrix {
-		return newAdjacencyMatrixWithFlow()
-	}
-	if _, isMatrix := g.(*adjacencyMatrixWithWeight); isMatrix {
-		return newAdjacencyMatrixWithWeight()
-	}
-	if _, isMatrix := g.(*adjacencyMatrix); isMatrix {
-		return newAdjacencyMatrix()
-	}
-	return nil
 }

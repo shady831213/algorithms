@@ -65,7 +65,7 @@ func addSsspGEdge(g, ssspG weightedGraph, ssspE *ssspElement) {
 }
 
 func checkOrGetSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r relax) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+	ssspG := newWeightedGraph()
 	for _, e := range g.AllEdges() {
 		if ssspE == nil || r.Compare(ssspE[e.Start], ssspE[e.End], g.Weight(e)) {
 			return nil
@@ -75,8 +75,8 @@ func checkOrGetSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r 
 	return ssspG
 }
 
-func getSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement, r relax) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+func getSsspGEdge(g weightedGraph, ssspE map[interface{}]*ssspElement) weightedGraph {
+	ssspG := newWeightedGraph()
 	for _, e := range g.AllEdges() {
 		addSsspGEdge(g, ssspG, ssspE[e.End])
 	}
@@ -91,7 +91,7 @@ func ssspWrapper(core func(weightedGraph, interface{}, relax) map[interface{}]*s
 
 func ssspPosWeightWrapper(core func(weightedGraph, interface{}, relax) map[interface{}]*ssspElement) func(weightedGraph, interface{}, relax) weightedGraph {
 	return func(g weightedGraph, s interface{}, r relax) weightedGraph {
-		return getSsspGEdge(g, core(g, s, r), r)
+		return getSsspGEdge(g, core(g, s, r))
 	}
 }
 
@@ -189,7 +189,7 @@ func gabow(g weightedGraph, s interface{}, r relax, k uint32) weightedGraph {
 		}
 	}
 
-	gi := createGraphByType(g).(weightedGraph)
+	gi := newWeightedGraph()
 	updateGi := func(j uint32) {
 		for _, e := range g.AllEdges() {
 			gi.AddEdgeWithWeight(e, (g.Weight(e)>>j)+((ssspE[e.Start].D-ssspE[e.End].D)<<1))
@@ -202,7 +202,7 @@ func gabow(g weightedGraph, s interface{}, r relax, k uint32) weightedGraph {
 		updateSsspE(currentSspE)
 	}
 
-	return getSsspGEdge(g, ssspE, r)
+	return getSsspGEdge(g, ssspE)
 }
 
 /*
@@ -232,7 +232,7 @@ func (r *nestedBoxesRelax) Relax(start, end *ssspElement, weight int) bool {
 }
 
 func nestedBoxes(boxes [][]int) [][]int {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	nested := func(box1, box2 []int) bool {
 		if len(box1) != len(box2) {
 			return false

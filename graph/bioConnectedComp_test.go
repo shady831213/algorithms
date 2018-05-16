@@ -41,11 +41,11 @@ func bccSetupGraph(g graph) {
 	g.AddEdgeBi(edge{17, 22})
 }
 
-func vertexBCCGolden(g graph) (cuts graph, comps []graph) {
-	cuts = createGraphByType(g)
+func vertexBCCGolden() (cuts graph, comps []graph) {
+	cuts = newGraph()
 	comps = make([]graph, 12, 12)
 	for i := range comps {
-		comps[i] = createGraphByType(g)
+		comps[i] = newGraph()
 	}
 
 	cuts.AddVertex(19)
@@ -89,11 +89,11 @@ func vertexBCCGolden(g graph) (cuts graph, comps []graph) {
 	return
 }
 
-func edgeBCCGolden(g graph) (bridges graph, comps []graph) {
-	bridges = createGraphByType(g)
+func edgeBCCGolden() (bridges graph, comps []graph) {
+	bridges = newGraph()
 	comps = make([]graph, 6, 6)
 	for i := range comps {
-		comps[i] = createGraphByType(g)
+		comps[i] = newGraph()
 	}
 
 	bridges.AddEdgeBi(edge{19, 17})
@@ -162,10 +162,10 @@ func checkBCCGraphOutOfOrder(t *testing.T, g graph, gGloden graph) {
 }
 
 func TestVertexBCC(t *testing.T) {
-	g := newAdjacencyMatrix()
+	g := newGraph()
 	bccSetupGraph(g)
 	cuts, comps := vertexBCC(g)
-	cutsExp, compsExp := vertexBCCGolden(g)
+	cutsExp, compsExp := vertexBCCGolden()
 	checkBCCGraphOutOfOrder(t, cuts, cutsExp)
 	for i := range comps {
 		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
@@ -173,29 +173,12 @@ func TestVertexBCC(t *testing.T) {
 }
 
 func TestEdgeBCC(t *testing.T) {
-	g := newAdjacencyMatrix()
+	g := newGraph()
 	bccSetupGraph(g)
 	bridges, comps := edgeBCC(g)
-	bridgesExp, compsExp := edgeBCCGolden(g)
+	bridgesExp, compsExp := edgeBCCGolden()
 	checkBCCGraphOutOfOrder(t, bridges, bridgesExp)
 	for i := range comps {
 		checkBCCGraphOutOfOrder(t, comps[i], compsExp[i])
 	}
-	//for _, v := range bridges.AllEdges() {
-	//	t.Log(v)
-	//	t.Log(v.Start)
-	//	t.Log(v.End)
-	//}
-	//for i := range comps {
-	//	t.Log("comps ", i, "vertices:")
-	//	for _, v := range comps[i].AllVertices() {
-	//		t.Log(v)
-	//	}
-	//	t.Log("comps ", i, "edges:")
-	//	for _, v := range comps[i].AllEdges() {
-	//		t.Log(v)
-	//		t.Log(v.Start)
-	//		t.Log(v.End)
-	//	}
-	//}
 }

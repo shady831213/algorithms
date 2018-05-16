@@ -29,9 +29,9 @@ func sccSetupGraph(g graph) {
 	g.AddEdge(edge{"h", "h"})
 }
 
-func sccGolden(g graph) (scc graph) {
-	scc = createGraphByType(g)
-	bea := createGraphByType(g)
+func sccGolden() (scc graph) {
+	scc = newGraph()
+	bea := newGraph()
 	bea.AddVertex("a")
 	bea.AddVertex("e")
 	bea.AddVertex("b")
@@ -39,19 +39,19 @@ func sccGolden(g graph) (scc graph) {
 	bea.AddEdge(edge{"b", "e"})
 	bea.AddEdge(edge{"e", "a"})
 	scc.AddVertex(bea)
-	cd := createGraphByType(g)
+	cd := newGraph()
 	cd.AddVertex("c")
 	cd.AddVertex("d")
 	cd.AddEdge(edge{"c", "d"})
 	cd.AddEdge(edge{"d", "c"})
 	scc.AddVertex(cd)
-	gf := createGraphByType(g)
+	gf := newGraph()
 	gf.AddVertex("f")
 	gf.AddVertex("g")
 	gf.AddEdge(edge{"f", "g"})
 	gf.AddEdge(edge{"g", "f"})
 	scc.AddVertex(gf)
-	h := createGraphByType(g)
+	h := newGraph()
 	h.AddVertex("h")
 	h.AddEdge(edge{"h", "h"})
 	scc.AddVertex(h)
@@ -66,9 +66,9 @@ func sccGolden(g graph) (scc graph) {
 }
 
 func TestSCC(t *testing.T) {
-	g := newAdjacencyMatrix()
+	g := newGraph()
 	sccSetupGraph(g)
 	scc := scc(g)
-	expScc := sccGolden(g)
+	expScc := sccGolden()
 	checkGraphInOrder(t, scc, expScc)
 }

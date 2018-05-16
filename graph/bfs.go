@@ -80,7 +80,7 @@ func bfsVisit(g graph, s interface{}, handler *bfsVisitHandler) {
 }
 
 func bfs(g graph, s interface{}) (bfsGraph graph) {
-	bfsGraph = createGraphByType(g)
+	bfsGraph = newGraph()
 	handler := newBFSVisitHandler()
 	handler.EdgeHandler = func(start, end *bfsElement) {
 		bfsGraph.AddEdge(edge{start, end})

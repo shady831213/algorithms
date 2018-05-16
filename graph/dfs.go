@@ -45,11 +45,11 @@ type dfsForest struct {
 	Comps                                      map[*dfsElement]*dfsForest
 }
 
-func (f *dfsForest) Init(g graph) *dfsForest {
-	f.Trees = createGraphByType(g)
-	f.BackEdges = createGraphByType(g)
-	f.ForwardEdges = createGraphByType(g)
-	f.CrossEdges = createGraphByType(g)
+func (f *dfsForest) Init() *dfsForest {
+	f.Trees = newGraph()
+	f.BackEdges = newGraph()
+	f.ForwardEdges = newGraph()
+	f.CrossEdges = newGraph()
 	f.Comps = make(map[*dfsElement]*dfsForest)
 	return f
 }
@@ -80,7 +80,7 @@ func (f *dfsForest) addCrossEdge(e edge) {
 func (f *dfsForest) getRoot(e *dfsElement) *dfsElement {
 	root := e.FindRoot()
 	if _, ok := f.Comps[root]; !ok {
-		f.Comps[root] = newDFSForest(f.Trees)
+		f.Comps[root] = newDFSForest()
 	}
 	return root
 }
@@ -150,8 +150,8 @@ func (f *dfsForest) AllEdges() []edge {
 	return edges
 }
 
-func newDFSForest(g graph) *dfsForest {
-	return new(dfsForest).Init(g)
+func newDFSForest() *dfsForest {
+	return new(dfsForest).Init()
 }
 
 type dfsVisitHandler struct {
@@ -243,7 +243,7 @@ func dfsVisit(g graph, v interface{}, handler *dfsVisitHandler) {
 }
 
 func dfs(g graph, sorter func([]interface{})) (dfsForest *dfsForest) {
-	dfsForest = newDFSForest(g)
+	dfsForest = newDFSForest()
 	handler := newDFSVisitHandler()
 	handler.BeforeDfsHandler = func(v *dfsElement) {
 		dfsForest.AddVertex(v)

@@ -19,7 +19,7 @@ func flowGraphSetup(g flowGraph) {
 }
 
 func flowGraphGolden(g flowGraph) flowGraph {
-	flowG := createGraphByType(g).(flowGraph)
+	flowG := newFlowGraph()
 	for _, e := range g.AllEdges() {
 		flowG.AddEdgeWithCap(e, g.Cap(e))
 	}
@@ -79,7 +79,7 @@ func checkFlowGraphOutOfOrder(t *testing.T, g, gGolden flowGraph) {
 }
 
 func TestEdmondsKarp(t *testing.T) {
-	g := newAdjacencyMatrixWithFlow()
+	g := newFlowGraph()
 	flowGraphSetup(g)
 	edmondsKarp(g, "s", "t")
 	gGolden := flowGraphGolden(g)

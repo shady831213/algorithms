@@ -5,7 +5,7 @@ import (
 )
 
 func vertexBCC(g graph) (cuts graph, comps []graph) {
-	cuts = createGraphByType(g)
+	cuts = newGraph()
 	comps = make([]graph, 0, 0)
 	lows := make(map[interface{}]int)
 	children := make(map[interface{}]int)
@@ -36,7 +36,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 			if !(p.D == 1 && children[p.V] < 2) {
 				cuts.AddVertex(p.V)
 			}
-			comps = append(comps, createGraphByType(g))
+			comps = append(comps, newGraph())
 			curEdge := edge{p.V, v.V}
 			comps[len(comps)-1].AddEdgeBi(curEdge)
 			for e := edgeStack.Back().Value; e != curEdge; e = edgeStack.Back().Value {
@@ -56,7 +56,7 @@ func vertexBCC(g graph) (cuts graph, comps []graph) {
 }
 
 func edgeBCC(g graph) (bridges graph, comps []graph) {
-	bridges = createGraphByType(g)
+	bridges = newGraph()
 	comps = make([]graph, 0, 0)
 	lows := make(map[interface{}]int)
 	edgeStack := list.New()
@@ -82,7 +82,7 @@ func edgeBCC(g graph) (bridges graph, comps []graph) {
 			lows[p.V] = lows[v.V]
 		}
 		if lows[v.V] >= p.D {
-			comp := createGraphByType(g)
+			comp := newGraph()
 			curEdge := edge{p.V, v.V}
 			if lows[v.V] > p.D {
 				bridges.AddEdgeBi(curEdge)

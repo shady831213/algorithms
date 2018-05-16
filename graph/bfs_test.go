@@ -27,7 +27,7 @@ func bfsSetupGraph(g graph) {
 }
 
 func bfsGolden(g graph) (bfsGraph graph) {
-	bfsGraph = createGraphByType(g)
+	bfsGraph = newGraph()
 	vertexes := make(map[interface{}]*bfsElement)
 	vertexes["s"] = newBFSElement("s")
 	vertexes["s"].Dist = 0
@@ -106,7 +106,7 @@ func checkBFSGraphOutOfOrder(t *testing.T, g graph, gGolden graph) {
 }
 
 func TestBFS(t *testing.T) {
-	g := newAdjacencyMatrix()
+	g := newGraph()
 	bfsSetupGraph(g)
 	bfsGraph := bfs(g, "s")
 	expBfsGraph := bfsGolden(g)

@@ -4,7 +4,7 @@ import "sort"
 
 //need add edges to scc
 func scc(g graph) (scc graph) {
-	scc = createGraphByType(g)
+	scc = newGraph()
 	//dfs and get forest
 	dfsGraph, gT := dfs(g, nil), g.Transpose()
 	//dfs of transpose in order of decreasing finish time
@@ -21,7 +21,7 @@ func scc(g graph) (scc graph) {
 	components := make(map[*dfsElement]graph)
 
 	for i := range dfsGraphOfT.Comps {
-		components[i] = createGraphByType(g)
+		components[i] = newGraph()
 		//add all sub vertices
 		for _, v := range dfsGraphOfT.Comps[i].AllVertices() {
 			components[i].AddVertex(v.(*dfsElement).V)

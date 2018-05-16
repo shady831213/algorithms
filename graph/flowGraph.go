@@ -46,7 +46,7 @@ func updateFlow(rg, g flowGraph, rc int, edges []edge) {
 }
 
 func edmondsKarp(g flowGraph, s interface{}, t interface{}) {
-	residualG := createGraphByType(g).(flowGraph)
+	residualG := newFlowGraph()
 	for _, e := range g.AllEdges() {
 		g.AddEdgeWithFlow(e, 0)
 		residualG.AddEdgeWithCap(e, g.Cap(e))

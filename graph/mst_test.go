@@ -32,8 +32,8 @@ func mstSetup(g weightedGraph) {
 	g.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 }
 
-func mstGolden(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+func mstGolden() weightedGraph {
+	t := newWeightedGraph()
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -46,8 +46,8 @@ func mstGolden(g weightedGraph) weightedGraph {
 	return t
 }
 
-func secondaryMstGolden(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+func secondaryMstGolden() weightedGraph {
+	t := newWeightedGraph()
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -60,8 +60,8 @@ func secondaryMstGolden(g weightedGraph) weightedGraph {
 	return t
 }
 
-func bottleNeckSpanningTreeGolden(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+func bottleNeckSpanningTreeGolden() weightedGraph {
+	t := newWeightedGraph()
 	t.AddEdgeWithWeightBi(edge{"a", "b"}, 4)
 	t.AddEdgeWithWeightBi(edge{"a", "h"}, 8)
 	t.AddEdgeWithWeightBi(edge{"c", "l"}, 2)
@@ -112,41 +112,41 @@ func checkMstOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestMstKruskal(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	mstSetup(g)
 	tree := mstKruskal(g)
-	treeExp := mstGolden(g)
+	treeExp := mstGolden()
 	checkMstOutOfOrder(t, tree, treeExp)
 }
 
 func TestMstPrim(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	mstSetup(g)
 	tree := mstPrim(g)
-	treeExp := mstGolden(g)
+	treeExp := mstGolden()
 	checkMstOutOfOrder(t, tree, treeExp)
 }
 
 func TestSecondaryMst(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	mstSetup(g)
 	tree := secondaryMst(g)
-	treeExp := secondaryMstGolden(g)
+	treeExp := secondaryMstGolden()
 	checkMstOutOfOrder(t, tree, treeExp)
 }
 
 func TestMstReducedPrim(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	mstSetup(g)
 	tree := mstReducedPrim(g, 2)
-	treeExp := mstGolden(g)
+	treeExp := mstGolden()
 	checkMstOutOfOrder(t, tree, treeExp)
 }
 
 func TestBottleNeckSpanningTree(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	mstSetup(g)
 	tree := bottleNeckSpanningTree(g)
-	treeExp := bottleNeckSpanningTreeGolden(g)
+	treeExp := bottleNeckSpanningTreeGolden()
 	checkMstOutOfOrder(t, tree, treeExp)
 }

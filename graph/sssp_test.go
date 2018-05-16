@@ -32,8 +32,8 @@ func ssspPosSetup(g weightedGraph) {
 	g.AddEdgeWithWeight(edge{"z", "s"}, 7)
 }
 
-func ssspGolden(g weightedGraph) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+func ssspGolden() weightedGraph {
+	ssspG := newWeightedGraph()
 	ssspE := make(map[interface{}]*ssspElement)
 
 	ssspE["s"] = newSsspElement("s", 0)
@@ -59,8 +59,8 @@ func ssspGolden(g weightedGraph) weightedGraph {
 	return ssspG
 }
 
-func ssspPosGolden(g weightedGraph) weightedGraph {
-	ssspG := createGraphByType(g).(weightedGraph)
+func ssspPosGolden() weightedGraph {
+	ssspG := newWeightedGraph()
 	ssspE := make(map[interface{}]*ssspElement)
 
 	ssspE["s"] = newSsspElement("s", 0)
@@ -120,34 +120,34 @@ func checkSsspOutOfOrder(t *testing.T, g, gGolden weightedGraph) {
 }
 
 func TestBellManFord(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	ssspSetup(g)
 	ssspG := bellmanFord(g, "s", new(defaultRelax))
-	ssspGExp := ssspGolden(g)
+	ssspGExp := ssspGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestSpfa(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	ssspSetup(g)
 	ssspG := spfa(g, "s", new(defaultRelax))
-	ssspGExp := ssspGolden(g)
+	ssspGExp := ssspGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestDijkstra(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	ssspPosSetup(g)
 	ssspG := dijkstra(g, "s", new(defaultRelax))
-	ssspGExp := ssspPosGolden(g)
+	ssspGExp := ssspPosGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
 func TestGabow(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	ssspPosSetup(g)
 	ssspG := gabow(g, "s", new(defaultRelax), 4)
-	ssspGExp := ssspPosGolden(g)
+	ssspGExp := ssspPosGolden()
 	checkSsspOutOfOrder(t, ssspG, ssspGExp)
 }
 
@@ -182,7 +182,7 @@ func TestNestedBoxes(t *testing.T) {
 }
 
 func TestKarp(t *testing.T) {
-	g := newAdjacencyMatrixWithWeight()
+	g := newWeightedGraph()
 	g.AddEdgeWithWeight(edge{1, 2}, 1)
 	g.AddEdgeWithWeight(edge{2, 3}, 3)
 	g.AddEdgeWithWeight(edge{1, 3}, 10)

@@ -8,7 +8,7 @@ import (
 )
 
 func mstKruskal(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+	t := newWeightedGraph()
 	dfsForest := dfs(g, nil)
 	edges := append(dfsForest.AllTreeEdges(), dfsForest.AllForwardEdges()...)
 	verticesSet := make(map[interface{}]*disjointSetTree.DisjointSet)
@@ -40,7 +40,7 @@ type mstElement struct {
 }
 
 func mstPrim(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+	t := newWeightedGraph()
 	pq := newFibHeapKeyInt()
 	elements := make(map[interface{}]*heap.FibHeapElement)
 	p := make(map[interface{}]interface{})
@@ -124,7 +124,7 @@ func secondaryMst(g weightedGraph) weightedGraph {
 
 func reduceGraphLessWeight(g weightedGraph, origin map[edge]edge, getRoot func(interface{}) interface{}) (weightedGraph, map[edge]edge) {
 	//origin points to edge in origin graph
-	newG := createGraphByType(g).(weightedGraph)
+	newG := newWeightedGraph()
 	newOrigin := make(map[edge]edge)
 	for _, e := range g.AllEdges() {
 		rootStart := getRoot(e.Start)
@@ -183,7 +183,7 @@ func mstReduceOnce(g, t weightedGraph, origin map[edge]edge) (weightedGraph, map
 
 func mstReducedPrim(g weightedGraph, k int) weightedGraph {
 
-	t := createGraphByType(g).(weightedGraph)
+	t := newWeightedGraph()
 
 	origin := make(map[edge]edge)
 	for _, e := range g.AllEdges() {
@@ -215,7 +215,7 @@ func partitionGraph(g weightedGraph) (g1, g2 weightedGraph) {
 		return g, nil
 	}
 
-	g1, g2 = createGraphByType(g).(weightedGraph), createGraphByType(g).(weightedGraph)
+	g1, g2 = newWeightedGraph(), newWeightedGraph()
 
 	mid, idx := len(edges)/2, 0
 	for end, start := len(edges)-1, 0; idx != mid; {
@@ -263,7 +263,7 @@ func bottleNeckSpanningTreeHandle(g, t weightedGraph, origin map[edge]edge) weig
 	//dfs g1
 	comps := make(map[interface{}]weightedGraph)
 	roots := make(map[interface{}]interface{})
-	treeEdge := createGraphByType(g).(weightedGraph)
+	treeEdge := newWeightedGraph()
 	handler := newDFSVisitHandler()
 	handler.TreeEdgeHandler = func(start, end *dfsElement) {
 		e := edge{start.V, end.V}
@@ -276,7 +276,7 @@ func bottleNeckSpanningTreeHandle(g, t weightedGraph, origin map[edge]edge) weig
 
 	for _, v := range g1.AllVertices() {
 		if !handler.Elements.exist(v) {
-			comps[v] = createGraphByType(g1).(weightedGraph)
+			comps[v] = newWeightedGraph()
 			dfsVisit(g1, v, handler)
 		}
 	}
@@ -297,7 +297,7 @@ func bottleNeckSpanningTreeHandle(g, t weightedGraph, origin map[edge]edge) weig
 }
 
 func bottleNeckSpanningTree(g weightedGraph) weightedGraph {
-	t := createGraphByType(g).(weightedGraph)
+	t := newWeightedGraph()
 	origin := make(map[edge]edge)
 	for _, e := range g.AllEdges() {
 		origin[e] = e
