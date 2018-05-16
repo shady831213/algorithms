@@ -1,40 +1,28 @@
 package graph
 
 import (
-	"github.com/shady831213/algorithms/tree/disjointSetTree"
 	"math"
 )
 
 func augmentingPath(g flowGraph, s interface{}, t interface{}) (int, []edge) {
-	set := make(map[interface{}]*disjointSetTree.DisjointSet)
+	augmentingEdges := make([]edge, 0, 0)
+	minRC := math.MaxInt32
 	handler := newBFSVisitHandler()
 	handler.EdgeHandler = func(start, end *bfsElement) {
-		if _, ok := set[start.V]; !ok {
-			set[start.V] = disjointSetTree.MakeSet(start)
-		}
-		if _, ok := set[end.V]; !ok {
-			set[end.V] = disjointSetTree.MakeSet(end)
-		}
-		if g.RCap(edge{start.V, end.V}) > 0 {
-			disjointSetTree.Union(set[start.V], set[end.V])
+		if end.V == t {
+			for v := end; v.P != nil; v = v.P {
+				currentEdge := edge{v.P.V, v.V}
+				augmentingEdges = append(augmentingEdges, currentEdge)
+				if rc := g.RCap(currentEdge); rc < minRC {
+					minRC = rc
+				}
+			}
 		}
 	}
 
 	bfsVisit(g, s, handler)
 
-	if _, ok := set[t]; ok && disjointSetTree.FindSet(set[t]) == disjointSetTree.FindSet(set[s]) {
-		augmentingEdges := make([]edge, 0, 0)
-		minRC := math.MaxInt32
-		for v := set[t].Value.(*bfsElement); v.P != nil; v = v.P {
-			currentEdge := edge{v.P.V, v.V}
-			augmentingEdges = append(augmentingEdges, currentEdge)
-			if rc := g.RCap(currentEdge); rc < minRC {
-				minRC = rc
-			}
-		}
-		return minRC, augmentingEdges
-	}
-	return 0, make([]edge, 0, 0)
+	return minRC, augmentingEdges
 }
 
 func updateFlow(rg, g flowGraph, rc int, edges []edge) {
