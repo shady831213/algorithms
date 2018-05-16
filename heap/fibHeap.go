@@ -148,7 +148,7 @@ type FibHeap struct {
 	mixin FibHeapMixin
 }
 
-//init : Cross package
+//Init : Cross package
 func (h *FibHeap) Init(mixin FibHeapMixin) *FibHeap {
 	h.root = newFabHeapElementList(nil)
 	h.min = nil
