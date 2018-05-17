@@ -37,6 +37,24 @@ func flowGraphGolden(g flowGraph) flowGraph {
 	return flowG
 }
 
+func pushRelabelGolden(g flowGraph) flowGraph {
+	flowG := newFlowGraph()
+	for _, e := range g.AllEdges() {
+		flowG.AddEdgeWithCap(e, g.Cap(e))
+	}
+	flowG.AddEdgeWithFlow(edge{"s", "v1"}, 13)
+	flowG.AddEdgeWithFlow(edge{"s", "v2"}, 10)
+	flowG.AddEdgeWithFlow(edge{"v2", "v1"}, -1)
+	flowG.AddEdgeWithFlow(edge{"v1", "v2"}, 1)
+	flowG.AddEdgeWithFlow(edge{"v1", "v3"}, 12)
+	flowG.AddEdgeWithFlow(edge{"v3", "v2"}, 0)
+	flowG.AddEdgeWithFlow(edge{"v2", "v4"}, 11)
+	flowG.AddEdgeWithFlow(edge{"v4", "v3"}, 7)
+	flowG.AddEdgeWithFlow(edge{"v3", "t"}, 19)
+	flowG.AddEdgeWithFlow(edge{"v4", "t"}, 4)
+	return flowG
+}
+
 func bioGraphMaxMatchSetup() (graph, []interface{}) {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
@@ -50,10 +68,18 @@ func bioGraphMaxMatchSetup() (graph, []interface{}) {
 	return g, []interface{}{"l0", "l1", "l2", "l3", "l4"}
 }
 
-func bioGraphMaxMatchGolden() graph {
+func bioGraphMaxMatchGoldenByEdmondesKarp() graph {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
 	g.AddEdgeBi(edge{"l1", "r2"})
+	g.AddEdgeBi(edge{"l2", "r1"})
+	return g
+}
+
+func bioGraphMaxMatchGoldenByPushRelabel() graph {
+	g := newGraph()
+	g.AddEdgeBi(edge{"l1", "r0"})
+	g.AddEdgeBi(edge{"l4", "r2"})
 	g.AddEdgeBi(edge{"l2", "r1"})
 	return g
 }
@@ -74,15 +100,26 @@ func checkFlowGraphOutOfOrder(t *testing.T, g, gGolden flowGraph) {
 	checkGraphOutOfOrderInString(t, g, gGolden, comparator)
 }
 
-func TestEdmondsKarp(t *testing.T) {
+func TestEdmondesKarp(t *testing.T) {
 	g := flowGraphSetup()
-	edmondsKarp(g, "s", "t")
+	edmondesKarp(g, "s", "t")
 	gGolden := flowGraphGolden(g)
 	checkFlowGraphOutOfOrder(t, g, gGolden)
 }
 
+func TestPushRelabel(t *testing.T) {
+	g := flowGraphSetup()
+	pushRelabel(g, "s", "t")
+	gGolden := pushRelabelGolden(g)
+	checkFlowGraphOutOfOrder(t, g, gGolden)
+}
+
 func TestBioGraphMaxMatch(t *testing.T) {
-	g := bioGraphMaxMatch(bioGraphMaxMatchSetup())
-	gGolden := bioGraphMaxMatchGolden()
+	bioG, l := bioGraphMaxMatchSetup()
+	gGolden := bioGraphMaxMatchGoldenByEdmondesKarp()
+	g := bioGraphMaxMatch(bioG, l, edmondesKarp)
+	checkGraphOutOfOrderInString(t, g, gGolden, nil)
+	g = bioGraphMaxMatch(bioG, l, pushRelabel)
+	gGolden = bioGraphMaxMatchGoldenByPushRelabel()
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 }
