@@ -166,3 +166,13 @@
    [Code](https://github.com/shady831213/algorithms/blob/master/graph/apsp.go)
   
    [Test](https://github.com/shady831213/algorithms/blob/master/graph/apsp_test.go)
+   
+# Max Flow
+  --------------
+  
+  CLRS Sec26
+  
+  --------------
+   [Code](https://github.com/shady831213/algorithms/blob/master/graph/flowGraph.go)
+  
+   [Test](https://github.com/shady831213/algorithms/blob/master/graph/flowGraph_test.go)
