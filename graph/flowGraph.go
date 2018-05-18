@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"container/list"
 	"math"
 )
 
@@ -95,12 +96,26 @@ type adjacencyMatrixPreFlow struct {
 	s, t           interface{}
 }
 
-func (g *adjacencyMatrixPreFlow) init(s, t interface{}) *adjacencyMatrixPreFlow {
+func (g *adjacencyMatrixPreFlow) init(fg flowGraph, s, t interface{}) *adjacencyMatrixPreFlow {
 	g.adjacencyMatrixResidual.init()
 	g.height = make(map[interface{}]int)
 	g.excess = make(map[interface{}]int)
 	g.s = s
 	g.t = t
+
+	vertices := fg.AllVertices()
+	for _, e := range fg.AllEdges() {
+		g.AddEdgeWithCap(e, fg.Cap(e))
+	}
+	g.SetHeight(s, len(vertices))
+	iter := fg.IterConnectedVertices(s)
+	for v := iter.Value(); v != nil; v = iter.Next() {
+		c := fg.Cap(edge{s, v})
+		g.AddEdgeWithFlow(edge{s, v}, c)
+		g.AddEdgeWithFlow(edge{v, s}, 0-c)
+		g.SetExcess(v, c)
+		g.SetExcess(s, g.Excess(s)-c)
+	}
 	return g
 }
 
@@ -167,21 +182,7 @@ func (g *adjacencyMatrixPreFlow) Overflow(v interface{}) bool {
 }
 
 func newPreFlowGraph(g flowGraph, s interface{}, t interface{}) preFlowGraph {
-	preFlowG := new(adjacencyMatrixPreFlow).init(s, t)
-	vertices := g.AllVertices()
-	for _, e := range g.AllEdges() {
-		preFlowG.AddEdgeWithCap(e, g.Cap(e))
-	}
-	preFlowG.SetHeight(s, len(vertices))
-	iter := g.IterConnectedVertices(s)
-	for v := iter.Value(); v != nil; v = iter.Next() {
-		c := g.Cap(edge{s, v})
-		preFlowG.AddEdgeWithFlow(edge{s, v}, c)
-		preFlowG.AddEdgeWithFlow(edge{v, s}, 0-c)
-		preFlowG.SetExcess(v, c)
-		preFlowG.SetExcess(s, preFlowG.Excess(s)-c)
-	}
-	return preFlowG
+	return new(adjacencyMatrixPreFlow).init(g, s, t)
 }
 
 func pushRelabel(g flowGraph, s interface{}, t interface{}) {
@@ -194,6 +195,62 @@ func pushRelabel(g flowGraph, s interface{}, t interface{}) {
 	}
 	for _, e := range g.AllEdges() {
 		g.AddEdgeWithFlow(e, preFlowG.Flow(e))
+	}
+}
+
+type allowedGraph interface {
+	preFlowGraph
+	Discharge(interface{})
+}
+
+type adjacencyMatrixAllowed struct {
+	adjacencyMatrixPreFlow
+	edges graph
+}
+
+func (g *adjacencyMatrixAllowed) init(fg flowGraph, s, t interface{}) *adjacencyMatrixAllowed {
+	g.adjacencyMatrixPreFlow.init(fg, s, t)
+	g.edges = newGraph()
+	for _, e := range fg.AllEdges() {
+		g.edges.AddEdgeBi(e)
+	}
+	return g
+}
+
+func (g *adjacencyMatrixAllowed) Discharge(v interface{}) {
+	iter := g.edges.IterConnectedVertices(v)
+	for g.Overflow(v) {
+		if iter.Value() == nil {
+			g.Relabel(v)
+			iter = g.edges.IterConnectedVertices(v)
+		} else if !g.Push(edge{v, iter.Value()}) {
+			iter.Next()
+		}
+	}
+}
+
+func newAllowedGraph(g flowGraph, s, t interface{}) allowedGraph {
+	return new(adjacencyMatrixAllowed).init(g, s, t)
+}
+
+func relabelToFront(g flowGraph, s interface{}, t interface{}) {
+	allowedG := newAllowedGraph(g, s, t)
+	l := list.New()
+	for _, v := range g.AllVertices() {
+		if v != s && v != t {
+			l.PushBack(v)
+		}
+	}
+	for e := l.Front(); e != nil; {
+		oldH := allowedG.Height(e.Value)
+		allowedG.Discharge(e.Value)
+		if allowedG.Height(e.Value) > oldH {
+			l.MoveToFront(e)
+		}
+		e = e.Next()
+	}
+	for _, e := range g.AllEdges() {
+		g.AddEdgeWithFlow(e, allowedG.Flow(e))
 	}
 }
 

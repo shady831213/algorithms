@@ -84,6 +84,14 @@ func bioGraphMaxMatchGoldenByPushRelabel() graph {
 	return g
 }
 
+func bioGraphMaxMatchGoldenByRelabelToFront() graph {
+	g := newGraph()
+	g.AddEdgeBi(edge{"l0", "r0"})
+	g.AddEdgeBi(edge{"l1", "r2"})
+	g.AddEdgeBi(edge{"l2", "r1"})
+	return g
+}
+
 func checkFlowGraphOutOfOrder(t *testing.T, g, gGolden flowGraph) {
 	comparator := func(t *testing.T, v, vExp []interface{}, e, eExp []edge) {
 		for _, e := range eExp {
@@ -114,12 +122,24 @@ func TestPushRelabel(t *testing.T) {
 	checkFlowGraphOutOfOrder(t, g, gGolden)
 }
 
+func TestRelabelToFront(t *testing.T) {
+	g := flowGraphSetup()
+	relabelToFront(g, "s", "t")
+	gGolden := pushRelabelGolden(g)
+	checkFlowGraphOutOfOrder(t, g, gGolden)
+}
+
 func TestBioGraphMaxMatch(t *testing.T) {
 	bioG, l := bioGraphMaxMatchSetup()
 	gGolden := bioGraphMaxMatchGoldenByEdmondesKarp()
 	g := bioGraphMaxMatch(bioG, l, edmondesKarp)
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
+
 	g = bioGraphMaxMatch(bioG, l, pushRelabel)
 	gGolden = bioGraphMaxMatchGoldenByPushRelabel()
+	checkGraphOutOfOrderInString(t, g, gGolden, nil)
+
+	g = bioGraphMaxMatch(bioG, l, relabelToFront)
+	gGolden = bioGraphMaxMatchGoldenByRelabelToFront()
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 }
