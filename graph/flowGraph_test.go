@@ -55,7 +55,7 @@ func pushRelabelGolden(g flowGraph) flowGraph {
 	return flowG
 }
 
-func bioGraphMaxMatchSetup() (graph, []interface{}) {
+func bipGraphMaxMatchSetup() (graph, []interface{}) {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
 	g.AddEdgeBi(edge{"l1", "r0"})
@@ -68,7 +68,7 @@ func bioGraphMaxMatchSetup() (graph, []interface{}) {
 	return g, []interface{}{"l0", "l1", "l2", "l3", "l4"}
 }
 
-func bioGraphMaxMatchGoldenByEdmondesKarp() graph {
+func bipGraphMaxMatchGoldenByEdmondesKarp() graph {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
 	g.AddEdgeBi(edge{"l1", "r2"})
@@ -76,7 +76,7 @@ func bioGraphMaxMatchGoldenByEdmondesKarp() graph {
 	return g
 }
 
-func bioGraphMaxMatchGoldenByPushRelabel() graph {
+func bipGraphMaxMatchGoldenByPushRelabel() graph {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l1", "r0"})
 	g.AddEdgeBi(edge{"l4", "r2"})
@@ -84,7 +84,7 @@ func bioGraphMaxMatchGoldenByPushRelabel() graph {
 	return g
 }
 
-func bioGraphMaxMatchGoldenByRelabelToFront() graph {
+func bipGraphMaxMatchGoldenByRelabelToFront() graph {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
 	g.AddEdgeBi(edge{"l1", "r2"})
@@ -129,17 +129,17 @@ func TestRelabelToFront(t *testing.T) {
 	checkFlowGraphOutOfOrder(t, g, gGolden)
 }
 
-func TestBioGraphMaxMatch(t *testing.T) {
-	bioG, l := bioGraphMaxMatchSetup()
-	gGolden := bioGraphMaxMatchGoldenByEdmondesKarp()
-	g := bioGraphMaxMatch(bioG, l, edmondesKarp)
+func TestBipGraphMaxMatch(t *testing.T) {
+	bioG, l := bipGraphMaxMatchSetup()
+	gGolden := bipGraphMaxMatchGoldenByEdmondesKarp()
+	g := bipGraphMaxMatch(bioG, l, edmondesKarp)
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 
-	g = bioGraphMaxMatch(bioG, l, pushRelabel)
-	gGolden = bioGraphMaxMatchGoldenByPushRelabel()
+	g = bipGraphMaxMatch(bioG, l, pushRelabel)
+	gGolden = bipGraphMaxMatchGoldenByPushRelabel()
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 
-	g = bioGraphMaxMatch(bioG, l, relabelToFront)
-	gGolden = bioGraphMaxMatchGoldenByRelabelToFront()
+	g = bipGraphMaxMatch(bioG, l, relabelToFront)
+	gGolden = bipGraphMaxMatchGoldenByRelabelToFront()
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
 }

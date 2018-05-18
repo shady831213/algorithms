@@ -254,7 +254,7 @@ func relabelToFront(g flowGraph, s interface{}, t interface{}) {
 	}
 }
 
-func bioGraphMaxMatch(g graph, l []interface{}, flowAlg func(g flowGraph, s interface{}, t interface{})) graph {
+func bipGraphMaxMatch(g graph, l []interface{}, flowAlg func(g flowGraph, s interface{}, t interface{})) graph {
 	//build flow graph
 	fG := newFlowGraph()
 	s := struct{ start string }{"s"}
