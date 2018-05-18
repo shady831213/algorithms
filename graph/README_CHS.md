@@ -1,7 +1,7 @@
 # graph.go
   
-  封装了邻接矩阵和邻接表表示，以及两种表示的互相转换
-  
+  使用linkMap实现的邻接矩阵表示
+ 
 # bfs.go
   
   返回一个广度优先前趋子图， 前趋子图是邻接表还是邻接矩阵依赖于输入的图是邻接表还是邻接矩阵
@@ -91,3 +91,8 @@
    
  # 顶点对最短路径
    Floyd求解最短路径矩阵的矩阵表示意义是，pi[i][j]->j,即pi[i][j]为start, j为end。pi[i]向量为以i为起点的单源最短路径树。
+   
+ # 最大流
+   残留网络中的边为cap - flow不为0的边，在residualGraph的data structure中，在更新flow时会check该值，如果为0， 删除该边。
+   饱和顶点不包括s,t
+   Relabel to Front的邻接表内容不能改变
