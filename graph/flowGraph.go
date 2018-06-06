@@ -277,3 +277,88 @@ func bipGraphMaxMatch(g graph, l []interface{}, flowAlg func(g flowGraph, s inte
 	}
 	return matchG
 }
+
+type hopcraftKarp struct {
+	g              graph // must be directed graph
+	dis            int
+	xMatch, yMatch map[interface{}]interface{}
+	xLevel, yLevel map[interface{}]int
+	matches        int
+}
+
+func (a *hopcraftKarp) init(g graph) *hopcraftKarp {
+	a.g = g
+	a.xMatch, a.yMatch = make(map[interface{}]interface{}), make(map[interface{}]interface{})
+	a.matches = 0
+	return a
+}
+
+func (a *hopcraftKarp) bfs() bool {
+	a.dis = math.MaxInt32
+	a.xLevel, a.yLevel = make(map[interface{}]int), make(map[interface{}]int)
+	//use queue
+	queue := list.New()
+	for _, x := range a.g.AllVertices() {
+		if _, ok := a.xMatch[x]; !ok {
+			queue.PushBack(x)
+			a.xLevel[x] = 0
+		}
+	}
+	for queue.Len() != 0 {
+		s := queue.Front().Value
+		queue.Remove(queue.Front())
+		if v, ok := a.xLevel[s]; ok && v > a.dis {
+			break
+		}
+		iter := a.g.IterConnectedVertices(s)
+		for y := iter.Value(); y != nil; y = iter.Next() {
+			if _, ok := a.yLevel[y]; !ok {
+				a.yLevel[y] = a.xLevel[s] + 1
+				if _, ok := a.yMatch[y]; !ok {
+					a.dis = a.yLevel[y]
+				} else {
+					a.xLevel[a.yMatch[y]] = a.yLevel[y] + 1
+					queue.PushBack(a.yMatch[y])
+				}
+			}
+		}
+	}
+	return a.dis != math.MaxInt32
+}
+
+func (a *hopcraftKarp) dfs(x interface{}, yVisit map[interface{}]bool) bool {
+	iter := a.g.IterConnectedVertices(x)
+	for y := iter.Value(); y != nil; y = iter.Next() {
+		//fmt.Println(x, y, yVisit, g.yLevel[y], g.xLevel[x], g.xMatch, g.yMatch)
+		if _, ok := yVisit[y]; !ok && a.yLevel[y] == a.xLevel[x]+1 {
+			yVisit[y] = true
+			if _, ok := a.yMatch[y]; ok && a.yLevel[y] == a.dis {
+				continue
+			}
+			if _, ok := a.yMatch[y]; !ok {
+				a.xMatch[x] = y
+				a.yMatch[y] = x
+				return true
+			} else if a.dfs(a.yMatch[y], yVisit) {
+				a.xMatch[x] = y
+				a.yMatch[y] = x
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (a *hopcraftKarp) maxMatch() int {
+	for a.bfs() {
+		yVisit := make(map[interface{}]bool)
+		for _, x := range a.g.AllVertices() {
+			if _, ok := a.xMatch[x]; !ok {
+				if a.dfs(x, yVisit) {
+					a.matches++
+				}
+			}
+		}
+	}
+	return a.matches
+}

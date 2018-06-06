@@ -84,6 +84,19 @@ func bipGraphMaxMatchGoldenByPushRelabel() graph {
 	return g
 }
 
+func hopcraftKarpSetup() graph {
+	g := newGraph()
+	g.AddEdge(edge{"l0", "r0"})
+	g.AddEdge(edge{"l1", "r0"})
+	g.AddEdge(edge{"l1", "r2"})
+	g.AddEdge(edge{"l2", "r1"})
+	g.AddEdge(edge{"l2", "r2"})
+	g.AddEdge(edge{"l2", "r3"})
+	g.AddEdge(edge{"l3", "r2"})
+	g.AddEdge(edge{"l4", "r2"})
+	return g
+}
+
 func bipGraphMaxMatchGoldenByRelabelToFront() graph {
 	g := newGraph()
 	g.AddEdgeBi(edge{"l0", "r0"})
@@ -142,4 +155,12 @@ func TestBipGraphMaxMatch(t *testing.T) {
 	g = bipGraphMaxMatch(bioG, l, relabelToFront)
 	gGolden = bipGraphMaxMatchGoldenByRelabelToFront()
 	checkGraphOutOfOrderInString(t, g, gGolden, nil)
+}
+
+func TestHopcraftKarp(t *testing.T) {
+	matches := new(hopcraftKarp).init(hopcraftKarpSetup()).maxMatch()
+	if matches != 3 {
+		t.Log("exp : 3 but get :", matches)
+		t.Fail()
+	}
 }
