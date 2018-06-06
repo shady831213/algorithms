@@ -96,3 +96,7 @@
    残留网络中的边为cap - flow不为0的边，在residualGraph的data structure中，在更新flow时会check该值，如果为0， 删除该边。
    饱和顶点不包括s,t
    Relabel to Front的邻接表内容不能改变
+   
+ # 二分图最大匹配
+   包括最大流，匈牙利(bfs和dfs)，Hopcraft-Karp
+   https://www.cnblogs.com/penseur/archive/2013/06/16/3138981.html
