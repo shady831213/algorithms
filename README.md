@@ -40,7 +40,7 @@ go version: 1.10.x
   - [mst](https://github.com/shady831213/algorithms/blob/master/graph/mst.go)(including Kruskal([disjointSet](https://github.com/shady831213/algorithms/tree/master/tree/disjointSetTree)) , Prim([fibonacci heap](https://github.com/shady831213/algorithms/blob/master/heap/fibHeap.go)), secondaryMst, mst reduce for Prim, linear time bottleneck spanning tree)
   - [Single-Source Shortest Path](https://github.com/shady831213/algorithms/blob/master/graph/sssp.go) (including bellmanFord, SPFA, Dijkstra, Gabow )
   - [All-Pairs Shortest Path](https://github.com/shady831213/algorithms/blob/master/graph/apsp.go) (including FloydWarshall, Johnson)
-  - [Max Flow](https://github.com/shady831213/algorithms/blob/master/graph/flowGraph.go) (including flowGraph , preFlowGraph and allowedGraph data structure, Edmondes Karp, Push Relabel, Relabel to Front and Bipartite Graph Max Match)
+  - [Max Flow](https://github.com/shady831213/algorithms/blob/master/graph/flowGraph.go) (including flowGraph , preFlowGraph and allowedGraph data structure, Edmondes Karp, Push Relabel, Relabel to Front, Bipartite Graph Max Match and Hopcraft-Karp)
   
 - [HashMap](https://github.com/shady831213/algorithms/tree/master/hashMap)(Support UpScale and DownScale)
   - [OpenAddressHashMap](https://github.com/shady831213/algorithms/blob/master/hashMap/openHashMap.go)
