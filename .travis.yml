@@ -15,7 +15,7 @@ script:
 #test
   - go test ./... -test.bench=".*" -test.benchtime 100ms -v -coverprofile c.out
 #lint
-  - gometalinter --disable-all --enable=golint --enable=vet --enable=gofmt ./...
+  - gometalinter --disable-all --enable=vet --enable=gofmt ./...
   - gofmt -s -l .
 
 before_script:
