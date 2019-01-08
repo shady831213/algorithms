@@ -5,7 +5,7 @@ CLRS study. Codes are written with golang.
 
 ----------------
 
-go version: 1.10.x
+go version: 1.11
 
 ----------------
 
