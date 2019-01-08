@@ -9,7 +9,7 @@ go:
 
 install:
 #for lint
-  - curl -L https://git.io/vp6lP | sh
+  - go get github.com/alecthomas/gometalinter;gometalinter --install --update
 
 script:
 #test
