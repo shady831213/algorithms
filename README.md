@@ -9,12 +9,6 @@ go version: 1.10.x
 
 ----------------
 
-- [Sort](https://github.com/shady831213/algorithms/tree/master/sort)
-  - [CountingSort](https://github.com/shady831213/algorithms/blob/master/sort/countingSort.go)
-  - [HeapSort](https://github.com/shady831213/algorithms/blob/master/sort/heapSort.go)
-  - [InsertSort](https://github.com/shady831213/algorithms/blob/master/sort/insertionSort.go)
-  - [MergeSort](https://github.com/shady831213/algorithms/blob/master/sort/mergeSort.go)
-  - [QuickSort](https://github.com/shady831213/algorithms/blob/master/sort/quickSort.go)
   
 - [Heap](https://github.com/shady831213/algorithms/tree/master/heap)
   - [BinaryHeap on array](https://github.com/shady831213/algorithms/blob/master/heap/arrayHeap.go)
@@ -54,3 +48,11 @@ go version: 1.10.x
   
 - [GreedyAlgorithm](https://github.com/shady831213/algorithms/tree/master/greedy)
   - [Minimum average end time scheduling](https://github.com/shady831213/algorithms/blob/master/greedy/minAvgCompletedTimeSch.go)
+  
+
+- [Sort](https://github.com/shady831213/algorithms/tree/master/sort)
+  - [CountingSort](https://github.com/shady831213/algorithms/blob/master/sort/countingSort.go)
+  - [HeapSort](https://github.com/shady831213/algorithms/blob/master/sort/heapSort.go)
+  - [InsertSort](https://github.com/shady831213/algorithms/blob/master/sort/insertionSort.go)
+  - [MergeSort](https://github.com/shady831213/algorithms/blob/master/sort/mergeSort.go)
+  - [QuickSort](https://github.com/shady831213/algorithms/blob/master/sort/quickSort.go)
