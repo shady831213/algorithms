@@ -1,5 +1,6 @@
 # algorithms
 [![Go Report Card](https://goreportcard.com/badge/github.com/shady831213/algorithms)](https://goreportcard.com/report/github.com/shady831213/algorithms)[![Build Status](https://travis-ci.org/shady831213/algorithms.svg?branch=master)](https://travis-ci.org/shady831213/algorithms)[![Maintainability](https://api.codeclimate.com/v1/badges/87b7c7f1222dfb1db63e/maintainability)](https://codeclimate.com/github/shady831213/algorithms/maintainability)[![Test Coverage](https://api.codeclimate.com/v1/badges/87b7c7f1222dfb1db63e/test_coverage)](https://codeclimate.com/github/shady831213/algorithms/test_coverage)
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg"></a>
 
 CLRS study. Codes are written with golang.
 
