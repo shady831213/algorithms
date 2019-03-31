@@ -7,15 +7,10 @@ language: go
 go:
   - "1.11.x"
 
-install:
-#for lint
-  - go get github.com/alecthomas/gometalinter;gometalinter --install --update
-
 script:
 #test
   - go test ./... -test.bench=".*" -test.benchtime 100ms -v -coverprofile c.out
 #lint
-  - gometalinter --disable-all --enable=vet --enable=gofmt ./...
   - gofmt -s -l .
 
 before_script:
