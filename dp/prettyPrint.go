@@ -8,6 +8,7 @@ import (
 
 func prettyPrint(words string, lineCap int) (alignIdx int, alignedWords string) {
 	wordsSlice := strings.Split(words, " ")
+	print("testing  here")
 	//side data structure, store enter position and aligneIdx(blankcnt^3)
 	alignIdxArray := make([][]int, len(wordsSlice), cap(wordsSlice))
 	enterPosArray := make([][]int, len(wordsSlice), cap(wordsSlice))
