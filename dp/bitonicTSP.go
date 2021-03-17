@@ -32,6 +32,9 @@ func (l *line) print() {
 	fmt.Println(l.p0)
 	fmt.Println(l.p1)
 	fmt.Println("----")
+	nghi := 3
+	nghi += 5
+	fmt.Println("testing ", nghi)
 }
 
 type pointSlice []*point
